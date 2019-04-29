@@ -9,7 +9,7 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ri-johnzon</artifactId>
+    <artifactId>johnzon-test</artifactId>
     <packaging>jar</packaging>
 
     <name>Apache Johnzon Test</name>
