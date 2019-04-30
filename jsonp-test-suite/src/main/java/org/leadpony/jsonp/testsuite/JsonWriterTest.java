@@ -58,7 +58,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStructureStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStructuresAsStream")
     public void writeShouldWriteJsonStructureAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{
@@ -69,7 +69,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArrayStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArraysAsStream")
     public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{
@@ -80,7 +80,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getObjectStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getObjectsAsStream")
     public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{

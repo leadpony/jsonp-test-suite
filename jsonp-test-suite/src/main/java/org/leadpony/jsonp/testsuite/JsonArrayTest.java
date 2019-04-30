@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JsonArrayTest {
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArrayStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArraysAsStream")
     public void toStringShouldReturnStringAsExpected(JsonValueSample fixture) {
 
         JsonArray sut = (JsonArray) fixture.asJsonValue();

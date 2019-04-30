@@ -42,8 +42,22 @@ enum JsonValueSample {
 
     EMPTY_STRING(createValue(""), "\"\""),
     BLANK_STRING(createValue(" "), "\" \""),
-    STRING_HELLO(createValue("hello"), "\"hello\""),
-    STRING_WITH_SPACE(createValue("hello world"), "\"hello world\""),
+    STRING_WORD(createValue("hello"), "\"hello\""),
+    STRING_CONTAINING_SPACE(createValue("hello world"), "\"hello world\""),
+    STRING_CONTAINING_QUOTATION(createValue("hello\"world"), "\"hello\\\"world\""),
+    STRING_CONTAINING_REVERSE_SOLIDUS(createValue("hello\\world"), "\"hello\\\\world\""),
+    STRING_CONTAINING_BACKSPACE(createValue("hello\bworld"), "\"hello\\bworld\""),
+    STRING_CONTAINING_FF(createValue("hello\fworld"), "\"hello\\fworld\""),
+    STRING_CONTAINING_LF(createValue("hello\nworld"), "\"hello\\nworld\""),
+    STRING_CONTAINING_CR(createValue("hello\rworld"), "\"hello\\rworld\""),
+    STRING_CONTAINING_TAB(createValue("hello\tworld"), "\"hello\\tworld\""),
+
+    STRING_CONTAINING_NULL(createValue("hello\u0000world"), "\"hello\\u0000world\""),
+    STRING_CONTAINING_VT(createValue("hello\u000bworld"), "\"hello\\u000bworld\""),
+    STRING_CONTAINING_ESC(createValue("hello\u001bworld"), "\"hello\\u001bworld\""),
+
+    // surrogate pair
+    G_CLEF(createValue("\ud834\udd1e"), "\"\ud834\udd1e\""),
 
     ZERO(createValue(0), "0"),
     ONE(createValue(1), "1"),
@@ -202,31 +216,54 @@ enum JsonValueSample {
         return string;
     }
 
+    ValueType getType() {
+        return value.getValueType();
+    }
+
+    boolean isString() {
+        return getType() == ValueType.STRING;
+    }
+
     boolean isArray() {
-        return value.getValueType() == ValueType.ARRAY;
+        return getType() == ValueType.ARRAY;
     }
 
     boolean isObject() {
-        return value.getValueType() == ValueType.OBJECT;
+        return getType() == ValueType.OBJECT;
     }
 
     boolean isStructure() {
         return isArray() || isObject();
     }
 
-    public static Stream<JsonValueSample> getArrayStream() {
+    /**
+     * Returns all arrays as a stream.
+     *
+     * @return all arrays as a stream.
+     */
+    public static Stream<JsonValueSample> getArraysAsStream() {
         return Stream.of(values())
                 .filter(JsonValueSample::isArray);
     }
 
-    public static Stream<JsonValueSample> getObjectStream() {
+    /**
+     * Returns all objects as a stream.
+     *
+     * @return all objects as a stream.
+     */
+    public static Stream<JsonValueSample> getObjectsAsStream() {
         return Stream.of(values())
                 .filter(JsonValueSample::isObject);
     }
 
-    public static Stream<JsonValueSample> getStructureStream() {
+    public static Stream<JsonValueSample> getStructuresAsStream() {
         return Stream.of(values())
                 .filter(JsonValueSample::isStructure);
+    }
+
+    public static Stream<JsonValueSample> getStringsAsStream() {
+        return Stream.of(values())
+                .filter(JsonValueSample::isString);
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {

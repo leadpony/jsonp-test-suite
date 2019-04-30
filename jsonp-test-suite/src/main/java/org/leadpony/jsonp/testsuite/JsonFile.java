@@ -35,6 +35,9 @@ enum JsonFile {
     MENU2("/org/json/example/menu2.json", ValueType.OBJECT),
     WEB_APP("/org/json/example/web-app.json", ValueType.OBJECT),
     WIDGET("/org/json/example/widget.json", ValueType.OBJECT),
+
+    IMAGE("/org/ietf/rfc/rfc7159/image.json", ValueType.OBJECT),
+    ZIP("/org/ietf/rfc/rfc7159/zip.json", ValueType.ARRAY),
     ;
 
     private final String name;

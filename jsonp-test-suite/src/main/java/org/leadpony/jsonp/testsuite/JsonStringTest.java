@@ -17,13 +17,9 @@ package org.leadpony.jsonp.testsuite;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.stream.Stream;
-
-import javax.json.Json;
 import javax.json.JsonString;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
@@ -33,35 +29,13 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class JsonStringTest {
 
-    private static Arguments[] toStringFixtures = new Arguments[] {
-            fixture("hello", "\"hello\""),
-            // empty string
-            fixture("", "\"\""),
-            // blank string
-            fixture(" ", "\" \""),
-            // contains space
-            fixture("foo bar", "\"foo bar\""),
-            // contains quotation mark
-            fixture("foo\"bar", "\"foo\\\"bar\""),
-            // contains reverse solidus
-            fixture("foo\\bar", "\"foo\\\\bar\""),
-    };
-
-    public static Stream<Arguments> toStringFixtures() {
-        return Stream.of(toStringFixtures);
-    }
-
     @ParameterizedTest
-    @MethodSource("toStringFixtures")
-    public void toStringShouldEscapeString(String value, String expected) {
-        JsonString sut = Json.createValue(value);
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStringsAsStream")
+    public void toStringShouldEscapeString(JsonValueSample fixture) {
+        JsonString sut = (JsonString) fixture.asJsonValue();
 
         String actual = sut.toString();
 
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static Arguments fixture(Object... args) {
-        return Arguments.of(args);
+        assertThat(actual).isEqualTo(fixture.asString());
     }
 }

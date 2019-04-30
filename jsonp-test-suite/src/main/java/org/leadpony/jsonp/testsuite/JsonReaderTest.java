@@ -77,6 +77,18 @@ public class JsonReaderTest {
                 );
     }
 
+    @ParameterizedTest
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getArraysAsStream")
+    public void readArrayShouldReadArrayAsExpected(JsonFile file) {
+        JsonArray actual;
+        try (JsonReader reader = factory.createReader(file.createReader())) {
+            actual = reader.readArray();
+        }
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+    }
+
     @Test
     public void readObjectShouldReadEmptyObject() {
         String json ="{}";
