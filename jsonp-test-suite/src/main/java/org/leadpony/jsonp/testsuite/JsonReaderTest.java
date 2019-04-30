@@ -26,10 +26,14 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test type to test {@link JsonReader}.
@@ -100,5 +104,42 @@ public class JsonReaderTest {
         reader.close();
 
         assertThat(actual).hasSameSizeAs(expected).containsAllEntriesOf(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getObjectsAsStream")
+    public void readObjectShouldReadObjectAsExpected(JsonFile file) {
+        JsonObject actual;
+        try (JsonReader reader = factory.createReader(file.createReader())) {
+            actual = reader.readObject();
+        }
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getStructuresAsStream")
+    public void readShouldReadStructureAsExpected(JsonFile file) {
+        JsonStructure actual;
+        try (JsonReader reader = factory.createReader(file.createReader())) {
+            actual = reader.read();
+        }
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFile.class)
+    public void readValueShouldReadValueAsExpected(JsonFile file) {
+        JsonValue actual;
+        try (JsonReader reader = factory.createReader(file.createReader())) {
+            actual = reader.readValue();
+        }
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.getValueType()).isEqualTo(file.getType());
+        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
     }
 }

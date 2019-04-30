@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringWriter;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -58,12 +57,8 @@ public class JsonWriterTest {
         assertThat(actual).isEqualTo(fixture.asString());
     }
 
-    public static Stream<JsonValueSample> structureFixtures() {
-        return JsonValueSample.getStructureStream();
-    }
-
     @ParameterizedTest
-    @MethodSource("structureFixtures")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStructureStream")
     public void writeShouldWriteJsonStructureAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{
@@ -73,12 +68,8 @@ public class JsonWriterTest {
         assertThat(actual).isEqualTo(fixture.asString());
     }
 
-    public static Stream<JsonValueSample> arrayFixtures() {
-        return JsonValueSample.getArrayStream();
-    }
-
     @ParameterizedTest
-    @MethodSource("arrayFixtures")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArrayStream")
     public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{
@@ -88,12 +79,8 @@ public class JsonWriterTest {
         assertThat(actual).isEqualTo(fixture.asString());
     }
 
-    public static Stream<JsonValueSample> objectFixtures() {
-        return JsonValueSample.getObjectStream();
-    }
-
     @ParameterizedTest
-    @MethodSource("objectFixtures")
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getObjectStream")
     public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueSample fixture) {
 
         String actual = write(writer->{
