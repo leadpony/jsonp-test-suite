@@ -40,7 +40,7 @@ import org.openjdk.jmh.annotations.State;
 @State(Scope.Benchmark)
 public class JsonParserBenchmark {
 
-    @Param({"GLOSSARY"})
+    @Param({ "RFC7159_OBJECT", "RFC7159_ARRAY" })
     private JsonResource resource;
 
     private JsonParserFactory factory;

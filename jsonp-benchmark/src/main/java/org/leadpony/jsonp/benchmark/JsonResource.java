@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
  * @author leadpony
  */
 public enum JsonResource {
-    GLOSSARY("/org/json/example/glossary.json")
+    GLOSSARY("/org/json/example/glossary.json"),
+    RFC7159_OBJECT("/org/ietf/rfc/rfc7159/image.json"),
+    RFC7159_ARRAY("/org/ietf/rfc/rfc7159/zip.json"),
     ;
 
     private final String name;
