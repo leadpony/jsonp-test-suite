@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>org.leadpony.jsonp-test-suite</groupId>
-        <artifactId>jsonp-test-suite-parent</artifactId>
+        <artifactId>jsonp-test-suite</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jsonp-test-suite</artifactId>
+            <artifactId>jsonp-test-suite-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -38,7 +38,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <dependenciesToScan>
-                            <dependency>${project.groupId}:jsonp-test-suite</dependency>
+                            <dependency>${project.groupId}:jsonp-test-suite-core</dependency>
                         </dependenciesToScan>
                         <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
