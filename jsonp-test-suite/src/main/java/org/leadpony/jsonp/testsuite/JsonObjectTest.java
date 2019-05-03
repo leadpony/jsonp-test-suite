@@ -30,12 +30,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JsonObjectTest {
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getObjectsAsStream")
-    public void toStringShouldReturnStringAsExpected(JsonValueSample fixture) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getObjectsAsStream")
+    public void toStringShouldReturnStringAsExpected(JsonValueFixture fixture) {
 
-        JsonObject sut = (JsonObject) fixture.asJsonValue();
+        JsonObject sut = (JsonObject) fixture.getJsonValue();
         String actual = sut.toString();
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 }

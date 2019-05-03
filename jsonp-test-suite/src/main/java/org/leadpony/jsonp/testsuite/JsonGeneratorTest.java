@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.StringWriter;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
@@ -28,9 +27,7 @@ import javax.json.stream.JsonGeneratorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * A test type to test {@link JsonGenerator}.
@@ -46,24 +43,29 @@ public class JsonGeneratorTest {
         factory = Json.createGeneratorFactory(null);
     }
 
-    private static final Arguments[] booleanFixtures = new Arguments[] {
-            fixture(true, "true"),
-            fixture(false, "false"),
-    };
+    static enum BooleanFixture {
+        TRUE(true, "true"),
+        FALSE(false, "false")
+        ;
 
-    public static Stream<Arguments> booleanFixtures() {
-        return Stream.of(booleanFixtures);
+        final boolean value;
+        final String expected;
+
+        private BooleanFixture(boolean value, String expected) {
+            this.value = value;
+            this.expected = expected;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("booleanFixtures")
-    public void writeShouldWriteBoolean(boolean value, String expected) {
+    @EnumSource(BooleanFixture.class)
+    public void writeShouldWriteBoolean(BooleanFixture fixture) {
 
         String actual = generate(g->{
-            g.write(value);
+            g.write(fixture.value);
         });
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.expected);
     }
 
     @Test
@@ -76,85 +78,121 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo("null");
     }
 
-    private static final Arguments[] stringFixtures = new Arguments[] {
-            fixture("hello", "\"hello\""),
-            fixture("", "\"\""),
-    };
+    static enum StringFixture {
+        EMPTY_STRING("", "\"\""),
+        BLANK_STRING(" ", "\" \""),
+        SINGLE_WORD("hello", "\"hello\""),
+        NULL("null", "\"null\""),
+        INTEGER("42", "\"42\""),
+        NUMBER("3.14", "\"3.14\""),
+        CONTAINING_SPACE("hello world", "\"hello world\""),
+        ;
 
-    public static Stream<Arguments> stringFixtures() {
-        return Stream.of(stringFixtures);
+        final String value;
+        final String expected;
+
+        private StringFixture(String value, String expected) {
+            this.value = value;
+            this.expected = expected;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("stringFixtures")
-    public void writeShouldWriteString(String value, String expected) {
+    @EnumSource(StringFixture.class)
+    public void writeShouldWriteString(StringFixture fixture) {
 
         String actual = generate(g->{
-            g.write(value);
+            g.write(fixture.value);
         });
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.expected);
     }
 
-    private static final Arguments[] intFixtures = new Arguments[] {
-            fixture(0, "0"),
-            fixture(1, "1"),
-            fixture(-1, "-1"),
-            fixture(24, "24"),
-            fixture(365, "365"),
-            fixture(2147483647, "2147483647"),
-            fixture(-2147483648, "-2147483648"),
-    };
+    static enum IntFixture {
+        ZERO(0, "0"),
+        ONE(1, "1"),
+        MINUS_ONE(-1, "-1"),
+        TEN(10, "10"),
+        MINUS_TEN(-10, "-10"),
+        HUNDRED(100, "100"),
+        MINUS_HUNDRED(-100, "-100"),
+        THOUSAND(1000, "1000"),
+        MINUS_THOUSAND(-1000, "-1000"),
+        HOURS_PER_DAY(24, "24"),
+        DAYS_PER_YEAR(365, "365"),
+        MINUS_HOURS_PER_DAY(-24, "-24"),
+        MINUS_DAYS_PER_YEAR(-365, "-365"),
+        MAX_INTEGER(Integer.MAX_VALUE, "2147483647"),
+        MIN_INTEGER(Integer.MIN_VALUE, "-2147483648"),
+        ;
 
-    public static Stream<Arguments> intFixtures() {
-        return Stream.of(intFixtures);
+        final int value;
+        final String expected;
+
+        private IntFixture(int value, String expected) {
+            this.value = value;
+            this.expected = expected;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("intFixtures")
-    public void writeShouldWriteInteger(int value, String expected) {
+    @EnumSource(IntFixture.class)
+    public void writeShouldWriteInteger(IntFixture fixture) {
 
         String actual = generate(g->{
-            g.write(value);
+            g.write(fixture.value);
         });
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.expected);
     }
 
-    private static final Arguments[] longFixtures = new Arguments[] {
-            fixture(0L, "0"),
-            fixture(1L, "1"),
-            fixture(-1L, "-1"),
-            fixture(24L, "24"),
-            fixture(365L, "365"),
-            fixture(9223372036854775807L, "9223372036854775807"),
-            fixture(-9223372036854775808L, "-9223372036854775808"),
-    };
+    static enum LongFixture {
+        ZERO(0L, "0"),
+        ONE(1L, "1"),
+        MINUS_ONE(-1L, "-1"),
+        TEN(10L, "10"),
+        MINUS_TEN(-10L, "-10"),
+        HUNDRED(100L, "100"),
+        MINUS_HUNDRED(-100L, "-100"),
+        THOUSAND(1000L, "1000"),
+        MINUS_THOUSAND(-1000L, "-1000"),
+        HOURS_PER_DAY(24L, "24"),
+        DAYS_PER_YEAR(365L, "365"),
+        MINUS_HOURS_PER_DAY(-24L, "-24"),
+        MINUS_DAYS_PER_YEAR(-365L, "-365"),
+        MAX_INTEGER(Long.MAX_VALUE, "9223372036854775807"),
+        MIN_INTEGER(Long.MIN_VALUE, "-9223372036854775808"),
+        ;
 
-    public static Stream<Arguments> longFixtures() {
-        return Stream.of(longFixtures);
+        final long value;
+        final String expected;
+
+        private LongFixture(long value, String expected) {
+            this.value = value;
+            this.expected = expected;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("longFixtures")
-    public void writeShouldWriteLong(long value, String expected) {
+    @EnumSource(LongFixture.class)
+    public void writeShouldWriteLong(LongFixture fixture) {
 
         String actual = generate(g->{
-            g.write(value);
+            g.write(fixture.value);
         });
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.expected);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonValueSample.class)
-    public void writeShouldWriteJsonValue(JsonValueSample fixture) {
+    @EnumSource(JsonValueFixture.class)
+    public void writeShouldWriteJsonValue(JsonValueFixture fixture) {
 
         String actual = generate(g->{
-            g.write(fixture.asJsonValue());
+            g.write(fixture.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 
     @Test
@@ -315,9 +353,5 @@ public class JsonGeneratorTest {
             consumer.accept(g);
         }
         return writer.toString();
-    }
-
-    private static Arguments fixture(Object... args) {
-        return Arguments.of(args);
     }
 }

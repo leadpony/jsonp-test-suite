@@ -15,8 +15,6 @@
  */
 package org.leadpony.jsonp.testsuite;
 
-import static javax.json.Json.createValue;
-
 import java.math.BigDecimal;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -35,42 +33,53 @@ import javax.json.JsonValue.ValueType;
  *
  * @author leadpony
  */
-enum JsonValueSample {
+enum JsonValueFixture {
     TRUE(JsonValue.TRUE, "true"),
     FALSE(JsonValue.FALSE, "false"),
     NULL(JsonValue.NULL, "null"),
 
-    EMPTY_STRING(createValue(""), "\"\""),
-    BLANK_STRING(createValue(" "), "\" \""),
-    STRING_WORD(createValue("hello"), "\"hello\""),
-    STRING_CONTAINING_SPACE(createValue("hello world"), "\"hello world\""),
-    STRING_CONTAINING_QUOTATION(createValue("hello\"world"), "\"hello\\\"world\""),
-    STRING_CONTAINING_REVERSE_SOLIDUS(createValue("hello\\world"), "\"hello\\\\world\""),
-    STRING_CONTAINING_BACKSPACE(createValue("hello\bworld"), "\"hello\\bworld\""),
-    STRING_CONTAINING_FF(createValue("hello\fworld"), "\"hello\\fworld\""),
-    STRING_CONTAINING_LF(createValue("hello\nworld"), "\"hello\\nworld\""),
-    STRING_CONTAINING_CR(createValue("hello\rworld"), "\"hello\\rworld\""),
-    STRING_CONTAINING_TAB(createValue("hello\tworld"), "\"hello\\tworld\""),
+    EMPTY_STRING("", "\"\""),
+    BLANK_STRING(" ", "\" \""),
+    STRING_WORD("hello", "\"hello\""),
+    STRING_CONTAINING_SPACE("hello world", "\"hello world\""),
+    STRING_CONTAINING_QUOTATION("hello\"world", "\"hello\\\"world\""),
+    STRING_CONTAINING_REVERSE_SOLIDUS("hello\\world", "\"hello\\\\world\""),
+    STRING_CONTAINING_BACKSPACE("hello\bworld", "\"hello\\bworld\""),
+    STRING_CONTAINING_FF("hello\fworld", "\"hello\\fworld\""),
+    STRING_CONTAINING_LF("hello\nworld", "\"hello\\nworld\""),
+    STRING_CONTAINING_CR("hello\rworld", "\"hello\\rworld\""),
+    STRING_CONTAINING_TAB("hello\tworld", "\"hello\\tworld\""),
 
-    STRING_CONTAINING_NULL(createValue("hello\u0000world"), "\"hello\\u0000world\""),
-    STRING_CONTAINING_VT(createValue("hello\u000bworld"), "\"hello\\u000bworld\""),
-    STRING_CONTAINING_ESC(createValue("hello\u001bworld"), "\"hello\\u001bworld\""),
+    STRING_CONTAINING_NULL("hello\u0000world", "\"hello\\u0000world\""),
+    STRING_CONTAINING_VT("hello\u000bworld", "\"hello\\u000bworld\""),
+    STRING_CONTAINING_ESC("hello\u001bworld", "\"hello\\u001bworld\""),
 
     // surrogate pair
-    G_CLEF(createValue("\ud834\udd1e"), "\"\ud834\udd1e\""),
+    G_CLEF("\ud834\udd1e", "\"\ud834\udd1e\""),
 
-    ZERO(createValue(0), "0"),
-    ONE(createValue(1), "1"),
-    TEN(createValue(10), "10"),
-    MINUS_ONE(createValue(-1), "-1"),
-    MINUS_TEN(createValue(-10), "-10"),
-    MAX_INTEGER(createValue(2147483647), "2147483647"),
-    MIN_INTEGER(createValue(-2147483648), "-2147483648"),
-    MAX_LONG(createValue(9223372036854775807L), "9223372036854775807"),
-    MIN_LONG(createValue(-9223372036854775808L), "-9223372036854775808"),
+    ZERO(0, "0"),
+    ONE(1, "1"),
+    MINUS_ONE(-1, "-1"),
+    TEN(10, "10"),
+    MINUS_TEN(-10, "-10"),
+    HUNDRED(100, "100"),
+    MINUS_HUNDRED(-100, "-100"),
+    THOUNSAND(1000, "1000"),
+    MINUS_THOUNSAND(1000, "1000"),
+    HOURS_PER_DAY(24, "24"),
+    MINUS_HOURS_PER_DAY(-24, "-24"),
+    DAYS_PER_YEAR(365, "365"),
+    MINUS_DAYS_PER_YEAR(-365, "-365"),
 
-    PI(createValue(new BigDecimal("3.141592653589793")), "3.141592653589793"),
-    MINUS_PI(createValue(new BigDecimal("-3.141592653589793")), "-3.141592653589793"),
+    MAX_INTEGER(2147483647, "2147483647"),
+    MIN_INTEGER(-2147483648, "-2147483648"),
+    MAX_LONG(9223372036854775807L, "9223372036854775807"),
+    MIN_LONG(-9223372036854775808L, "-9223372036854775808"),
+
+    BASE_OF_NATURAL_LOGARITHM(new BigDecimal("2.718281828459045"), "2.718281828459045"),
+
+    PI(new BigDecimal("3.141592653589793"), "3.141592653589793"),
+    MINUS_PI(new BigDecimal("-3.141592653589793"), "-3.141592653589793"),
 
     EMPTY_ARRAY(JsonValue.EMPTY_JSON_ARRAY, "[]"),
 
@@ -203,16 +212,32 @@ enum JsonValueSample {
 
     private static JsonBuilderFactory builderFactory;
 
-    JsonValueSample(JsonValue value, String string) {
+    JsonValueFixture(JsonValue value, String string) {
         this.value = value;
         this.string = string;
     }
 
-    JsonValue asJsonValue() {
+    JsonValueFixture(String value, String string) {
+        this(Json.createValue(value), string);
+    }
+
+    JsonValueFixture(int value, String string) {
+        this(Json.createValue(value), string);
+    }
+
+    JsonValueFixture(long value, String string) {
+        this(Json.createValue(value), string);
+    }
+
+    JsonValueFixture(BigDecimal value, String string) {
+        this(Json.createValue(value), string);
+    }
+
+    JsonValue getJsonValue() {
         return value;
     }
 
-    String asString() {
+    String getString() {
         return string;
     }
 
@@ -241,9 +266,9 @@ enum JsonValueSample {
      *
      * @return all arrays as a stream.
      */
-    public static Stream<JsonValueSample> getArraysAsStream() {
+    public static Stream<JsonValueFixture> getArraysAsStream() {
         return Stream.of(values())
-                .filter(JsonValueSample::isArray);
+                .filter(JsonValueFixture::isArray);
     }
 
     /**
@@ -251,19 +276,19 @@ enum JsonValueSample {
      *
      * @return all objects as a stream.
      */
-    public static Stream<JsonValueSample> getObjectsAsStream() {
+    public static Stream<JsonValueFixture> getObjectsAsStream() {
         return Stream.of(values())
-                .filter(JsonValueSample::isObject);
+                .filter(JsonValueFixture::isObject);
     }
 
-    public static Stream<JsonValueSample> getStructuresAsStream() {
+    public static Stream<JsonValueFixture> getStructuresAsStream() {
         return Stream.of(values())
-                .filter(JsonValueSample::isStructure);
+                .filter(JsonValueFixture::isStructure);
     }
 
-    public static Stream<JsonValueSample> getStringsAsStream() {
+    public static Stream<JsonValueFixture> getStringsAsStream() {
         return Stream.of(values())
-                .filter(JsonValueSample::isString);
+                .filter(JsonValueFixture::isString);
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {

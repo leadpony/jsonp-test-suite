@@ -30,12 +30,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JsonStringTest {
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStringsAsStream")
-    public void toStringShouldEscapeString(JsonValueSample fixture) {
-        JsonString sut = (JsonString) fixture.asJsonValue();
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getStringsAsStream")
+    public void toStringShouldEscapeString(JsonValueFixture fixture) {
+        JsonString sut = (JsonString) fixture.getJsonValue();
 
         String actual = sut.toString();
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 }

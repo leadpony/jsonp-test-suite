@@ -40,6 +40,7 @@
                         <dependenciesToScan>
                             <dependency>${project.groupId}:jsonp-test-suite</dependency>
                         </dependenciesToScan>
+                        <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
                 </plugin>
             </plugins>

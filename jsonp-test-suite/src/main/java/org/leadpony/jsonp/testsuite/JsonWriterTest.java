@@ -47,47 +47,47 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @EnumSource(JsonValueSample.class)
-    public void writeShouldWriteJsonValueAsExpected(JsonValueSample fixture) {
+    @EnumSource(JsonValueFixture.class)
+    public void writeShouldWriteJsonValueAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
-            writer.write(fixture.asJsonValue());
+            writer.write(fixture.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getStructuresAsStream")
-    public void writeShouldWriteJsonStructureAsExpected(JsonValueSample fixture) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getStructuresAsStream")
+    public void writeShouldWriteJsonStructureAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
-            writer.write((JsonStructure)fixture.asJsonValue());
+            writer.write((JsonStructure)fixture.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getArraysAsStream")
-    public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueSample fixture) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getArraysAsStream")
+    public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
-            writer.writeArray((JsonArray)fixture.asJsonValue());
+            writer.writeArray((JsonArray)fixture.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueSample#getObjectsAsStream")
-    public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueSample fixture) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getObjectsAsStream")
+    public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
-            writer.writeObject((JsonObject)fixture.asJsonValue());
+            writer.writeObject((JsonObject)fixture.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.asString());
+        assertThat(actual).isEqualTo(fixture.getString());
     }
 
     private String write(Consumer<JsonWriter> consumer) {

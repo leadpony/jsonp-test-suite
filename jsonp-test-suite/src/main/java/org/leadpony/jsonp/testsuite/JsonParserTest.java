@@ -21,7 +21,6 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -31,8 +30,7 @@ import javax.json.stream.JsonParserFactory;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * A test type to test {@link JsonParser}.
@@ -48,90 +46,81 @@ public class JsonParserTest {
         factory = Json.createParserFactory(null);
     }
 
-    private static final Arguments[] parserEventFixtures = new Arguments[] {
-            // true
-            fixture("true", Event.VALUE_TRUE),
-            // false
-            fixture("false", Event.VALUE_FALSE),
-            // null
-            fixture("null", Event.VALUE_NULL),
-            // string
-            fixture("\"abc\"", Event.VALUE_STRING),
-            // integer
-            fixture("42", Event.VALUE_NUMBER),
-            // number
-            fixture("3.14", Event.VALUE_NUMBER),
-            // empty array
-            fixture("[]", Event.START_ARRAY, Event.END_ARRAY),
-            // array with single item
-            fixture("[42]", Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
-            // array with multiple items
-            fixture("[true,false,null,\"abc\",42]",
-                    Event.START_ARRAY,
-                    Event.VALUE_TRUE,
-                    Event.VALUE_FALSE,
-                    Event.VALUE_NULL,
-                    Event.VALUE_STRING,
-                    Event.VALUE_NUMBER,
-                    Event.END_ARRAY),
-            // array with array item
-            fixture("[[]]",
-                    Event.START_ARRAY,
-                    Event.START_ARRAY,
-                    Event.END_ARRAY,
-                    Event.END_ARRAY),
-            // array with object item
-            fixture("[{}]",
-                    Event.START_ARRAY,
-                    Event.START_OBJECT,
-                    Event.END_OBJECT,
-                    Event.END_ARRAY),
-            // empty object
-            fixture("{}", Event.START_OBJECT, Event.END_OBJECT),
-            // object with single property
-            fixture("{\"a\":42}",
-                    Event.START_OBJECT,
-                    Event.KEY_NAME,
-                    Event.VALUE_NUMBER,
-                    Event.END_OBJECT),
-            // object with multiple properties
-            fixture("{\"a\":true,\"b\":false,\"c\":null,\"d\":\"abc\",\"e\":42}",
-                    Event.START_OBJECT,
-                    Event.KEY_NAME,
-                    Event.VALUE_TRUE,
-                    Event.KEY_NAME,
-                    Event.VALUE_FALSE,
-                    Event.KEY_NAME,
-                    Event.VALUE_NULL,
-                    Event.KEY_NAME,
-                    Event.VALUE_STRING,
-                    Event.KEY_NAME,
-                    Event.VALUE_NUMBER,
-                    Event.END_OBJECT),
-            // object with array property
-            fixture("{\"a\":[]}",
-                    Event.START_OBJECT,
-                    Event.KEY_NAME,
-                    Event.START_ARRAY,
-                    Event.END_ARRAY,
-                    Event.END_OBJECT),
-            // object with object property
-            fixture("{\"a\":{}}",
-                    Event.START_OBJECT,
-                    Event.KEY_NAME,
-                    Event.START_OBJECT,
-                    Event.END_OBJECT,
-                    Event.END_OBJECT),
+    static enum ParserEventFixture {
+        TRUE("true", Event.VALUE_TRUE),
+        FALSE("false", Event.VALUE_FALSE),
+        NULL("null", Event.VALUE_NULL),
+        WORD("\"abc\"", Event.VALUE_STRING),
+        INTEGER("42", Event.VALUE_NUMBER),
+        NUMBER("3.14", Event.VALUE_NUMBER),
+
+        EMPTY_ARRAY("[]", Event.START_ARRAY, Event.END_ARRAY),
+        ARRAY_OF_ITEM("[42]", Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
+        ARRAY_OF_MULTIPLE_ITEMS("[true,false,null,\"abc\",42]",
+                Event.START_ARRAY,
+                Event.VALUE_TRUE,
+                Event.VALUE_FALSE,
+                Event.VALUE_NULL,
+                Event.VALUE_STRING,
+                Event.VALUE_NUMBER,
+                Event.END_ARRAY),
+        ARRAY_OF_ARRAY("[[]]",
+                Event.START_ARRAY,
+                Event.START_ARRAY,
+                Event.END_ARRAY,
+                Event.END_ARRAY),
+        ARRAY_OF_OBJECT("[{}]",
+                Event.START_ARRAY,
+                Event.START_OBJECT,
+                Event.END_OBJECT,
+                Event.END_ARRAY),
+
+        EMPTY_OBJECT("{}", Event.START_OBJECT, Event.END_OBJECT),
+        OBJECT_OF_SINGLE_PROPERTY("{\"a\":42}",
+                Event.START_OBJECT,
+                Event.KEY_NAME,
+                Event.VALUE_NUMBER,
+                Event.END_OBJECT),
+        OBJECT_OF_MULTIPLE_PROPERTIES("{\"a\":true,\"b\":false,\"c\":null,\"d\":\"abc\",\"e\":42}",
+                Event.START_OBJECT,
+                Event.KEY_NAME,
+                Event.VALUE_TRUE,
+                Event.KEY_NAME,
+                Event.VALUE_FALSE,
+                Event.KEY_NAME,
+                Event.VALUE_NULL,
+                Event.KEY_NAME,
+                Event.VALUE_STRING,
+                Event.KEY_NAME,
+                Event.VALUE_NUMBER,
+                Event.END_OBJECT),
+        OBJECT_OF_ARRAY_PROPERTY("{\"a\":[]}",
+                Event.START_OBJECT,
+                Event.KEY_NAME,
+                Event.START_ARRAY,
+                Event.END_ARRAY,
+                Event.END_OBJECT),
+        OBJECT_OF_OBJECT_PROPERTY("{\"a\":{}}",
+                Event.START_OBJECT,
+                Event.KEY_NAME,
+                Event.START_OBJECT,
+                Event.END_OBJECT,
+                Event.END_OBJECT),
+        ;
+
+        private final String json;
+        private final Event[] events;
+
+        ParserEventFixture(String json, Event... events) {
+            this.json = json;
+            this.events = events;
+        }
     };
 
-    public static Stream<Arguments> parserEventFixtures() {
-        return Stream.of(parserEventFixtures);
-    }
-
     @ParameterizedTest
-    @MethodSource("parserEventFixtures")
-    public void nextShouldReturnEvents(String json, Event... expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(ParserEventFixture.class)
+    public void nextShouldReturnEvents(ParserEventFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
         List<Event> actual = new ArrayList<>();
 
         while (parser.hasNext()) {
@@ -139,189 +128,303 @@ public class JsonParserTest {
         }
         parser.close();
 
-        assertThat(actual).containsExactly(expected);
+        assertThat(actual).containsExactly(fixture.events);
     }
 
-    private static final Arguments[] stringFixtures = new Arguments[] {
-            fixture("\"abc\"", "abc"),
-            // empty string
-            fixture("\"\"", ""),
-            fixture("42", "42"),
-            fixture("3.14", "3.14"),
-    };
+    static enum StringFixture {
+        EMPTY_STRING("\"\"", ""),
+        BLANK_STRING("\" \"", " "),
+        TWO_SPACES("\"  \"", "  "),
+        FOUR_SPACES("\"    \"", "    "),
+        SINGLE_WORD("\"hello\"", "hello"),
 
-    public static Stream<Arguments> stringFixtures() {
-        return Stream.of(stringFixtures);
+        SENTENCE("\"The quick brown fox jumps over the lazy dog\"", "The quick brown fox jumps over the lazy dog"),
+
+        CONTAINING_SPACE("\"hello world\"", "hello world"),
+        CONTAINING_QUOTATION("\"hello\\\"world\"", "hello\"world"),
+        CONTAINING_SOLIDUS("\"hello\\/world\"", "hello/world"),
+        CONTAINING_REVERSE_SOLIDUS("\"hello\\\\world\"", "hello\\world"),
+
+        CONTAINING_BACK_SPACE("\"hello\\bworld\"", "hello\bworld"),
+        CONTAINING_FORM_FEED("\"hello\\fworld\"", "hello\fworld"),
+        CONTAINING_LINE_FEED("\"hello\\nworld\"", "hello\nworld"),
+        CONTAINING_CARIAGE_RETURN("\"hello\\rworld\"", "hello\rworld"),
+        CONTAINING_TAB("\"hello\\tworld\"", "hello\tworld"),
+
+        INTEGRAL_NUMBER("42", "42"),
+        MINUS_INTEGRAL_NUMBER("-42", "-42"),
+        DECIMAL_NUMBER("3.14", "3.14"),
+        MINUS_DECIMAL_NUMBER("-3.14", "-3.14"),
+        ;
+
+        private final String json;
+        private final String value;
+
+        private StringFixture(String json, String value) {
+            this.json = json;
+            this.value = value;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("stringFixtures")
-    public void getStringShouldReturnExpected(String json, String expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(StringFixture.class)
+    public void getStringShouldReturnStringAsExpected(StringFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         String actual = parser.getString();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.value);
     }
 
-    private static final Arguments[] bigDecimalFixtures = new Arguments[] {
-            fixture("42", new BigDecimal("42")),
-            fixture("3.14", new BigDecimal("3.14")),
-    };
+    static enum BigDecimalFixture {
+        ZERO("0"),
+        MINUS_ZERO("-0"),
+        ONE("1"),
+        MINUS_ONE("-1"),
 
-    public static Stream<Arguments> bigDecimalFixtures() {
-        return Stream.of(bigDecimalFixtures);
+        TEN("10"),
+        MINUS_TEN("-10"),
+        MAX_INTEGER("2147483647"),
+        MIN_INTEGER("-2147483648"),
+        MAX_LONG("9223372036854775807"),
+        MIN_LONG("-9223372036854775808"),
+        GREATER_THAN_MAX_LONG("9223372036854775808"),
+        LESS_THAN_MIN_LONG("-9223372036854775809"),
+
+        PI("3.14"),
+        MINUS_PI("-3.14"),
+
+        TENTH("0.1"),
+        MINUS_TENTH("-0.1"),
+
+        HUNDREDTH("0.01"),
+        MINUS_HUNDREDTH("-0.01"),
+
+        ONE_WITH_FRACTIONLAL_PART("1.0"),
+        MINS_ONE_WITH_FRACTIONLAL_PART("-1.0"),
+
+        TEN_WITH_FRACTIONLAL_PART("10.0"),
+        MINS_TEN_WITH_FRACTIONLAL_PART("-10.0"),
+
+        HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2"),
+        HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2"),
+
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION("-1e+2"),
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("-1E+2"),
+
+        TENTH_BY_SCIENTIFIC_NOTATION("1e-1"),
+        HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2"),
+        ;
+
+        private final String json;
+        private final BigDecimal value;
+
+        private BigDecimalFixture(String json) {
+            this.json = json;
+            this.value = new BigDecimal(json);
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("bigDecimalFixtures")
-    public void getBigDecimalShouldReturnExpected(String json, BigDecimal expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(BigDecimalFixture.class)
+    public void getBigDecimalShouldReturnExpected(BigDecimalFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         BigDecimal actual = parser.getBigDecimal();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static final Arguments[] jsonValueFixtures = new Arguments[] {
-            fixture("true", JsonValue.TRUE),
-            fixture("false", JsonValue.FALSE),
-            fixture("null", JsonValue.NULL),
-            fixture("\"abc\"", Json.createValue("abc")),
-            fixture("0", Json.createValue(0)),
-            fixture("-0", Json.createValue(0)),
-            fixture("1", Json.createValue(1)),
-            fixture("-1", Json.createValue(-1)),
-            fixture("2147483647", Json.createValue(2147483647)),
-            fixture("-2147483648", Json.createValue(-2147483648)),
-            fixture("9223372036854775807", Json.createValue(9223372036854775807L)),
-            fixture("-9223372036854775808", Json.createValue(-9223372036854775808L)),
-            fixture("2.718281828459045", Json.createValue(new BigDecimal("2.718281828459045"))),
-            fixture("3.141592653589793", Json.createValue(new BigDecimal("3.141592653589793"))),
-            fixture("-123.456789", Json.createValue(new BigDecimal("-123.456789"))),
-    };
-
-    public static Stream<Arguments> jsonValueFixtures() {
-        return Stream.of(jsonValueFixtures);
+        assertThat(actual).isEqualTo(fixture.value);
     }
 
     @ParameterizedTest
-    @MethodSource("jsonValueFixtures")
-    public void getValueShouldReturnExpected(String json, JsonValue expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(JsonFixture.class)
+    public void getValueShouldReturnValueAsExpected(JsonFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.getJson()));
 
         parser.next();
         JsonValue actual = parser.getValue();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.getValue());
     }
 
-    private static final Arguments[] integralFixtures = new Arguments[] {
-            fixture("0", true),
-            fixture("123", true),
-            fixture("-456", true),
-            fixture("123.456", false),
-            fixture("-123.456", false),
-            fixture("1.0", false),
-            fixture("-1.0", false),
-    };
+    static enum IntegralFixture {
+        ZERO("0", true),
+        MINUS_ZERO("-0", true),
+        ONE("1", true),
+        MINUS_ONE("-1", true),
+        TEN("10", true),
+        MINUS_TEN("-10", true),
+        MAX_INTEGER("2147483647", true),
+        MIN_INTEGER("-2147483648", true),
+        MAX_LONG("9223372036854775807", true),
+        MIN_LONG("-9223372036854775808", true),
+        GREATER_THAN_MAX_LONG("9223372036854775808", true),
+        LESS_THAN_MIN_LONG("-9223372036854775809", true),
 
-    public static Stream<Arguments> integralFixtures() {
-        return Stream.of(integralFixtures);
+        PI("3.14", false),
+        MINUS_PI("-3.14", false),
+
+        TENTH("0.1", false),
+        MINUS_TENTH("-0.1", false),
+
+        HUNDREDTH("0.01", false),
+        MINUS_HUNDREDTH("-0.01", false),
+
+        ONE_WITH_FRACTIONLAL_PART("1.0", false),
+        MINS_ONE_WITH_FRACTIONLAL_PART("-1.0", false),
+
+        TEN_WITH_FRACTIONLAL_PART("10.0", false),
+        MINS_TEN_WITH_FRACTIONLAL_PART("-10.0", false),
+
+        HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2", true),
+        HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2", true),
+
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION("-1e+2", true),
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", true),
+
+        TENTH_BY_SCIENTIFIC_NOTATION("1e-1", false),
+        HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2", false),
+        ;
+
+        final String json;
+        final boolean isIntegral;
+
+        IntegralFixture(String json, boolean isIntegral) {
+            this.json = json;
+            this.isIntegral = isIntegral;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("integralFixtures")
-    public void isIntegralNumberShouldReturnExpected(String json, boolean expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(IntegralFixture.class)
+    public void isIntegralNumberShouldReturnAsExpected(IntegralFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         boolean actual = parser.isIntegralNumber();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.isIntegral);
     }
 
-    private static final Arguments[] intFixtures = new Arguments[] {
-            fixture("0", 0),
-            fixture("-0", 0),
-            fixture("1", 1),
-            fixture("-1", -1),
-            fixture("10", 10),
-            fixture("-10", -10),
-            fixture("24", 24),
-            fixture("-24", -24),
-            fixture("365", 365),
-            fixture("-365", -365),
-            fixture("2147483647", 2147483647),
-            fixture("-2147483648", -2147483648),
-            fixture("2147483648", -2147483648),
-            fixture("-2147483649", 2147483647),
-    };
+    static enum IntFixture {
+        ZERO("0", 0),
+        MINUS_ZERO("-0", 0),
+        ONE("1", 1),
+        MINUS_ONE("-1", -1),
+        TEN("10", 10),
+        MINUS_TEN("-10", -10),
+        HUNDRED("100", 100),
+        MINUS_HUNDRED("-100", -100),
+        THOUNSAND("1000", 1000),
+        MINUS_THOUNSAND("-1000", -1000),
+        HOURS_PER_DAY("24", 24),
+        MINUS_HOURS_PER_DAY("-24", -24),
+        DAYS_PER_YEAR("365", 365),
+        MINUS_DAYS_PER_YEAR("-365", -365),
 
-    public static Stream<Arguments> intFixtures() {
-        return Stream.of(intFixtures);
+        MAX_INTEGER("2147483647", 2147483647),
+        MIN_INTEGER("-2147483648", -2147483648),
+        GREATER_THAN_MAX_INTEGER("2147483648", -2147483648),
+        LESS_THAN_MIN_INTEGER("-2147483649", 2147483647),
+
+        ONE_WITH_SCIENTIFIC_NOTATION("1e+0", 1),
+        ONE_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+0", 1),
+        MINUS_ONE_WITH_SCIENTIFIC_NOTATION("-1e+0", -1),
+        MINUS_ONE_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+0", -1),
+        TEN_WITH_SCIENTIFIC_NOTATION("1e+1", 10),
+        TEN_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+1", 10),
+        MINUS_TEN_WITH_SCIENTIFIC_NOTATION("-1e+1", -10),
+        MINUS_TEN_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+1", -10),
+        HUNDRED_WITH_SCIENTIFIC_NOTATION("1e+2", 100),
+        HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+2", 100),
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION("-1e+2", -100),
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),
+        ;
+
+        final String json;
+        final int intValue;
+
+        private IntFixture(String json, int value) {
+            this.json = json;
+            this.intValue = value;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("intFixtures")
-    public void getIntNumberShouldReturnExpected(String json, int expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(IntFixture.class)
+    public void getIntShouldReturnIntegerAsExpected(IntFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         int actual = parser.getInt();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(fixture.intValue);
     }
 
-    private static final Arguments[] longFixtures = new Arguments[] {
-            fixture("0", 0L),
-            fixture("-0", 0L),
-            fixture("1", 1L),
-            fixture("-1", -1L),
-            fixture("10", 10L),
-            fixture("-10", -10L),
-            fixture("24", 24L),
-            fixture("-24", -24L),
-            fixture("365", 365L),
-            fixture("-365", -365L),
-            fixture("2147483647", 2147483647L),
-            fixture("-2147483648", -2147483648L),
-            fixture("2147483648", 2147483648L),
-            fixture("-2147483649", -2147483649L),
-            fixture("9223372036854775807", 9223372036854775807L),
-            fixture("-9223372036854775808", -9223372036854775808L),
-            fixture("9223372036854775808", -9223372036854775808L),
-            fixture("-9223372036854775809", 9223372036854775807L),
-    };
+    static enum LongFixture {
+        ZERO("0", 0),
+        MINUS_ZERO("-0", 0),
+        ONE("1", 1),
+        MINUS_ONE("-1", -1),
+        TEN("10", 10),
+        MINUS_TEN("-10", -10),
+        HUNDRED("100", 100),
+        MINUS_HUNDRED("-100", -100),
+        THOUNSAND("1000", 1000),
+        MINUS_THOUNSAND("-1000", -1000),
+        HOURS_PER_DAY("24", 24),
+        MINUS_HOURS_PER_DAY("-24", -24),
+        DAYS_PER_YEAR("365", 365),
+        MINUS_DAYS_PER_YEAR("-365", -365),
 
-    public static Stream<Arguments> longFixtures() {
-        return Stream.of(longFixtures);
+        MAX_INTEGER("2147483647", 2147483647),
+        MIN_INTEGER("-2147483648", -2147483648),
+        GREATER_THAN_MAX_INTEGER("2147483648", 2147483648L),
+        LESS_THAN_MIN_INTEGER("-2147483649", -2147483649L),
+
+        MAX_LONG("9223372036854775807", 9223372036854775807L),
+        MIN_LONG("-9223372036854775808", -9223372036854775808L),
+        GREATER_THAN_MAX_LONG("9223372036854775808", -9223372036854775808L),
+        LESS_THAN_MIN_LONG("-9223372036854775809", 9223372036854775807L),
+
+        ONE_WITH_SCIENTIFIC_NOTATION("1e+0", 1),
+        ONE_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+0", 1),
+        MINUS_ONE_WITH_SCIENTIFIC_NOTATION("-1e+0", -1),
+        MINUS_ONE_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+0", -1),
+        TEN_WITH_SCIENTIFIC_NOTATION("1e+1", 10),
+        TEN_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+1", 10),
+        MINUS_TEN_WITH_SCIENTIFIC_NOTATION("-1e+1", -10),
+        MINUS_TEN_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+1", -10),
+        HUNDRED_WITH_SCIENTIFIC_NOTATION("1e+2", 100),
+        HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+2", 100),
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION("-1e+2", -100),
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),
+        ;
+
+        final String json;
+        final long longValue;
+
+        private LongFixture(String json, long value) {
+            this.json = json;
+            this.longValue = value;
+        }
     }
 
     @ParameterizedTest
-    @MethodSource("longFixtures")
-    public void getLongNumberShouldReturnExpected(String json, long expected) {
-        JsonParser parser = factory.createParser(new StringReader(json));
+    @EnumSource(LongFixture.class)
+    public void getLongShouldReturnLongAsExpected(LongFixture fixture) {
+        JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         long actual = parser.getLong();
         parser.close();
 
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    private static Arguments fixture(Object... args) {
-        return Arguments.of(args);
-    }
-
-    private static Arguments fixture(String json, Event... expected) {
-        return Arguments.of(json, expected);
+        assertThat(actual).isEqualTo(fixture.longValue);
     }
 }
