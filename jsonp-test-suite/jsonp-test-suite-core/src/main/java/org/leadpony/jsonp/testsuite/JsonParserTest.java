@@ -106,6 +106,7 @@ public class JsonParserTest {
                 Event.START_OBJECT,
                 Event.END_OBJECT,
                 Event.END_OBJECT),
+
         ;
 
         private final String json;
@@ -140,21 +141,43 @@ public class JsonParserTest {
 
         SENTENCE("\"The quick brown fox jumps over the lazy dog\"", "The quick brown fox jumps over the lazy dog"),
 
+        STARTING_WITH_SPACE("\" hello\"", " hello"),
+        ENDING_WITH_SPACE("\"hello \"", "hello "),
         CONTAINING_SPACE("\"hello world\"", "hello world"),
+
+        QUOTATION("\"\\\"\"", "\""),
+        ESCAPED_SOLIDUS("\"\\/\"", "/"),
+        REVERSE_SOLIDUS("\"\\\\\"", "\\"),
+
+        BACKSPACE("\"\\b\"", "\b"),
+        FORM_FEED("\"\\f\"", "\f"),
+        LINE_FEED("\"\\n\"", "\n"),
+        CARIAGE_RETURN("\"\\r\"", "\r"),
+        TAB("\"\\t\"", "\t"),
+
         CONTAINING_QUOTATION("\"hello\\\"world\"", "hello\"world"),
-        CONTAINING_SOLIDUS("\"hello\\/world\"", "hello/world"),
+        CONTAINING_ESCAPED_SOLIDUS("\"hello\\/world\"", "hello/world"),
         CONTAINING_REVERSE_SOLIDUS("\"hello\\\\world\"", "hello\\world"),
 
-        CONTAINING_BACK_SPACE("\"hello\\bworld\"", "hello\bworld"),
+        CONTAINING_BACKSPACE("\"hello\\bworld\"", "hello\bworld"),
         CONTAINING_FORM_FEED("\"hello\\fworld\"", "hello\fworld"),
         CONTAINING_LINE_FEED("\"hello\\nworld\"", "hello\nworld"),
         CONTAINING_CARIAGE_RETURN("\"hello\\rworld\"", "hello\rworld"),
         CONTAINING_TAB("\"hello\\tworld\"", "hello\tworld"),
 
-        INTEGRAL_NUMBER("42", "42"),
-        MINUS_INTEGRAL_NUMBER("-42", "-42"),
-        DECIMAL_NUMBER("3.14", "3.14"),
-        MINUS_DECIMAL_NUMBER("-3.14", "-3.14"),
+        INFINITE("\"\\u221E\"", "∞"),
+        PI("\"\\u03c0\"", "π"),
+        // surrogate pair
+        G_CLEF("\"\\ud834\\udd1e\"", "\ud834\udd1e"),
+
+        CONTAINING_INFINITE("\"hello\\u221Eworld\"", "hello∞world"),
+        CONTAINING_PI("\"hello\\u03c0world\"", "helloπworld"),
+        CONTAINING_G_CLEF("\"hello\\ud834\\udd1eworld\"", "hello\ud834\udd1eworld"),
+
+        INTEGER("42", "42"),
+        NEGATIVE_INTEGER("-42", "-42"),
+        NUMBER("3.14", "3.14"),
+        NEGATIVE__NUMBER("-3.14", "-3.14"),
         ;
 
         private final String json;
@@ -171,6 +194,35 @@ public class JsonParserTest {
     public void getStringShouldReturnStringAsExpected(StringFixture fixture) {
         JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
+        parser.next();
+        String actual = parser.getString();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(StringFixture.class)
+    public void getStringShouldReturnStringInArrayAsExpected(StringFixture fixture) {
+        String json = arrayOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '['
+        parser.next();
+        String actual = parser.getString();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(StringFixture.class)
+    public void getStringShouldReturnStringInObjectAsExpected(StringFixture fixture) {
+        String json = objectOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '{'
+        parser.next(); // key name
         parser.next();
         String actual = parser.getString();
         parser.close();
@@ -216,6 +268,8 @@ public class JsonParserTest {
 
         TENTH_BY_SCIENTIFIC_NOTATION("1e-1"),
         HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2"),
+
+        AVOGADRO_CONSTANT("6.022140857e23"),
         ;
 
         private final String json;
@@ -229,9 +283,38 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnExpected(BigDecimalFixture fixture) {
+    public void getBigDecimalShouldReturnBigDecimalAsExpected(BigDecimalFixture fixture) {
         JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
+        parser.next();
+        BigDecimal actual = parser.getBigDecimal();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(BigDecimalFixture.class)
+    public void getBigDecimalShouldReturnBigDecimalInArrayAsExpected(BigDecimalFixture fixture) {
+        String json = arrayOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '['
+        parser.next();
+        BigDecimal actual = parser.getBigDecimal();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(BigDecimalFixture.class)
+    public void getBigDecimalShouldReturnBigDecimalInObjectAsExpected(BigDecimalFixture fixture) {
+        String json = objectOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '{'
+        parser.next(); // key name
         parser.next();
         BigDecimal actual = parser.getBigDecimal();
         parser.close();
@@ -244,6 +327,35 @@ public class JsonParserTest {
     public void getValueShouldReturnValueAsExpected(JsonFixture fixture) {
         JsonParser parser = factory.createParser(new StringReader(fixture.getJson()));
 
+        parser.next();
+        JsonValue actual = parser.getValue();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.getValue());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void getValueShouldReturnValueInArrayAsExpected(JsonFixture fixture) {
+        String json = arrayOf(fixture.getJson());
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '['
+        parser.next();
+        JsonValue actual = parser.getValue();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.getValue());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void getValueShouldReturnValueInObjectAsExpected(JsonFixture fixture) {
+        String json = objectOf(fixture.getJson());
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '{'
+        parser.next(); // key name
         parser.next();
         JsonValue actual = parser.getValue();
         parser.close();
@@ -280,14 +392,16 @@ public class JsonParserTest {
         TEN_WITH_FRACTIONLAL_PART("10.0", false),
         MINS_TEN_WITH_FRACTIONLAL_PART("-10.0", false),
 
-        HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2", true),
-        HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2", true),
+        HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2", false),
+        HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2", false),
 
-        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION("-1e+2", true),
-        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", true),
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION("-1e+2", false),
+        MINUS_HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", false),
 
         TENTH_BY_SCIENTIFIC_NOTATION("1e-1", false),
         HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2", false),
+
+        AVOGADRO_CONSTANT("6.022140857e23", false),
         ;
 
         final String json;
@@ -347,24 +461,53 @@ public class JsonParserTest {
         ;
 
         final String json;
-        final int intValue;
+        final int value;
 
         private IntFixture(String json, int value) {
             this.json = json;
-            this.intValue = value;
+            this.value = value;
         }
     }
 
     @ParameterizedTest
     @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntegerAsExpected(IntFixture fixture) {
+    public void getIntShouldReturnIntAsExpected(IntFixture fixture) {
         JsonParser parser = factory.createParser(new StringReader(fixture.json));
 
         parser.next();
         int actual = parser.getInt();
         parser.close();
 
-        assertThat(actual).isEqualTo(fixture.intValue);
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(IntFixture.class)
+    public void getIntShouldReturnIntInArrayAsExpected(IntFixture fixture) {
+        String json = arrayOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '['
+        parser.next();
+        int actual = parser.getInt();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(IntFixture.class)
+    public void getIntShouldReturnIntInObjectAsExpected(IntFixture fixture) {
+        String json = objectOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '{'
+        parser.next(); // key name
+        parser.next();
+        int actual = parser.getInt();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
     }
 
     static enum LongFixture {
@@ -408,11 +551,11 @@ public class JsonParserTest {
         ;
 
         final String json;
-        final long longValue;
+        final long value;
 
         private LongFixture(String json, long value) {
             this.json = json;
-            this.longValue = value;
+            this.value = value;
         }
     }
 
@@ -425,6 +568,43 @@ public class JsonParserTest {
         long actual = parser.getLong();
         parser.close();
 
-        assertThat(actual).isEqualTo(fixture.longValue);
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(LongFixture.class)
+    public void getLongShouldReturnLongInArrayAsExpected(LongFixture fixture) {
+        String json = arrayOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '[
+        parser.next();
+        long actual = parser.getLong();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    @ParameterizedTest
+    @EnumSource(LongFixture.class)
+    public void getLongShouldReturnLongInObjectAsExpected(LongFixture fixture) {
+        String json = objectOf(fixture.json);
+        JsonParser parser = factory.createParser(new StringReader(json));
+
+        parser.next(); // '{'
+        parser.next(); // key name
+        parser.next();
+        long actual = parser.getLong();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    private static String arrayOf(String json) {
+        return "[" + json + "]";
+    }
+
+    private static String objectOf(String json) {
+        return "{\"foo\":" + json + "}";
     }
 }
