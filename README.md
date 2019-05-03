@@ -2,6 +2,17 @@
 
 This project provides a set of tests for implementations of [Java API for JSON Processing (JSR 374)]
 
+## Test Suite
+
+### How to Build
+
+The following commands build and install the test suite into your local Maven repository.
+
+```
+$ cd jsonp-test-suite
+$ mvn clean install
+```
+
 ## Copyright Notice
 Copyright &copy; 2019 JSON-P Test Suite Authors. This software is licensed under [Apache License, Versions 2.0][Apache 2.0 License].
 
