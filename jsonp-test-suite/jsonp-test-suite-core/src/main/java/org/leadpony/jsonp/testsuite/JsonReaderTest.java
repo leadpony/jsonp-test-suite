@@ -78,15 +78,15 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getArraysAsStream")
-    public void readArrayShouldReadArrayAsExpected(JsonFile file) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getArraysAsStream")
+    public void readArrayShouldReadArrayAsExpected(JsonResource resource) {
         JsonArray actual;
-        try (JsonReader reader = factory.createReader(file.createReader())) {
+        try (JsonReader reader = factory.createReader(resource.createReader())) {
             actual = reader.readArray();
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
     }
 
     @Test
@@ -119,39 +119,39 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getObjectsAsStream")
-    public void readObjectShouldReadObjectAsExpected(JsonFile file) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getObjectsAsStream")
+    public void readObjectShouldReadObjectAsExpected(JsonResource resource) {
         JsonObject actual;
-        try (JsonReader reader = factory.createReader(file.createReader())) {
+        try (JsonReader reader = factory.createReader(resource.createReader())) {
             actual = reader.readObject();
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonFile#getStructuresAsStream")
-    public void readShouldReadStructureAsExpected(JsonFile file) {
+    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getStructuresAsStream")
+    public void readShouldReadStructureAsExpected(JsonResource resource) {
         JsonStructure actual;
-        try (JsonReader reader = factory.createReader(file.createReader())) {
+        try (JsonReader reader = factory.createReader(resource.createReader())) {
             actual = reader.read();
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFile.class)
-    public void readValueShouldReadValueAsExpected(JsonFile file) {
+    @EnumSource(JsonResource.class)
+    public void readValueShouldReadValueAsExpected(JsonResource resource) {
         JsonValue actual;
-        try (JsonReader reader = factory.createReader(file.createReader())) {
+        try (JsonReader reader = factory.createReader(resource.createReader())) {
             actual = reader.readValue();
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.getValueType()).isEqualTo(file.getType());
-        assertThat(actual.toString()).isEqualTo(file.getMinifiedString());
+        assertThat(actual.getValueType()).isEqualTo(resource.getType());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
     }
 }

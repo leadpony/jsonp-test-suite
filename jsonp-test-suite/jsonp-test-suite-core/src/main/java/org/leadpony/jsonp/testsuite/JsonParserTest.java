@@ -46,6 +46,43 @@ public class JsonParserTest {
         parserFactory = Json.createParserFactory(null);
     }
 
+    static enum ContinuityFixture {
+        LITERAL("365", 1, false),
+        ARRAY("[1,2,3]", 5, false),
+        OBJECt("{\"a\":1}", 4, false),
+        ARRAY_MISSING_END("[1,2,3", 4, false),
+        ARRAY_MISSING_ITEM("[1,2,", 3, true),
+        OBJECT_MISSING_END("{\"a\":1", 3, false),
+        OBJECT_MISSING_VALUE("{\"a\":", 2, true),
+        OBJECT_MISSING_COLON("{\"a\"", 2, false),
+        OBJECT_MISSING_KEY("{", 1, false),
+        EMPTY("", 0, false),
+        BLANK("    ", 0, false),
+        ;
+        final String json;
+        final int count;
+        final boolean result;
+
+        ContinuityFixture(String json, int count, boolean result) {
+            this.json = json;
+            this.count = count;
+            this.result = result;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ContinuityFixture.class)
+    public void hasNextShouldReturnResultAsExpected(ContinuityFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
+
+        int remaining = fixture.count;
+        while (remaining-- > 0) {
+            assertThat(parser.hasNext()).isTrue();
+            parser.next();
+        }
+        assertThat(parser.hasNext()).isEqualTo(fixture.result);
+    }
+
     static enum ParserEventFixture {
         TRUE("true", Event.VALUE_TRUE),
         FALSE("false", Event.VALUE_FALSE),

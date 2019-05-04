@@ -29,7 +29,7 @@ import javax.json.JsonValue.ValueType;
 /**
  * @author leadpony
  */
-enum JsonFile {
+enum JsonResource {
     GLOSSARY("/org/json/example/glossary.json", ValueType.OBJECT),
     MENU("/org/json/example/menu.json", ValueType.OBJECT),
     MENU2("/org/json/example/menu2.json", ValueType.OBJECT),
@@ -44,11 +44,11 @@ enum JsonFile {
     private final ValueType type;
     private final Charset charset;
 
-    private JsonFile(String name, ValueType type) {
+    private JsonResource(String name, ValueType type) {
         this(name, type, StandardCharsets.UTF_8);
     }
 
-    private JsonFile(String name, ValueType type, Charset charset) {
+    private JsonResource(String name, ValueType type, Charset charset) {
         this.name = name;
         this.type = type;
         this.charset = charset;
@@ -96,15 +96,15 @@ enum JsonFile {
         return b.toString();
     }
 
-    static Stream<JsonFile> getArraysAsStream() {
-        return Stream.of(values()).filter(JsonFile::isArray);
+    static Stream<JsonResource> getArraysAsStream() {
+        return Stream.of(values()).filter(JsonResource::isArray);
     }
 
-    static Stream<JsonFile> getObjectsAsStream() {
-        return Stream.of(values()).filter(JsonFile::isObject);
+    static Stream<JsonResource> getObjectsAsStream() {
+        return Stream.of(values()).filter(JsonResource::isObject);
     }
 
-    static Stream<JsonFile> getStructuresAsStream() {
-        return Stream.of(values()).filter(JsonFile::isStructure);
+    static Stream<JsonResource> getStructuresAsStream() {
+        return Stream.of(values()).filter(JsonResource::isStructure);
     }
 }
