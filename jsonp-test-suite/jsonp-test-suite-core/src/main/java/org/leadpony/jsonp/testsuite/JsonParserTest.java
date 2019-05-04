@@ -39,11 +39,11 @@ import org.junit.jupiter.params.provider.EnumSource;
  */
 public class JsonParserTest {
 
-    private static JsonParserFactory factory;
+    protected static JsonParserFactory parserFactory;
 
     @BeforeAll
     public static void setUpOnce() {
-        factory = Json.createParserFactory(null);
+        parserFactory = Json.createParserFactory(null);
     }
 
     static enum ParserEventFixture {
@@ -120,8 +120,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(ParserEventFixture.class)
-    public void nextShouldReturnEvents(ParserEventFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+    public void nextShouldReturnEventsAsExpected(ParserEventFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
         List<Event> actual = new ArrayList<>();
 
         while (parser.hasNext()) {
@@ -192,7 +192,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(StringFixture.class)
     public void getStringShouldReturnStringAsExpected(StringFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+        JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
         String actual = parser.getString();
@@ -205,7 +205,7 @@ public class JsonParserTest {
     @EnumSource(StringFixture.class)
     public void getStringShouldReturnStringInArrayAsExpected(StringFixture fixture) {
         String json = arrayOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '['
         parser.next();
@@ -219,7 +219,7 @@ public class JsonParserTest {
     @EnumSource(StringFixture.class)
     public void getStringShouldReturnStringInObjectAsExpected(StringFixture fixture) {
         String json = objectOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -284,7 +284,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(BigDecimalFixture.class)
     public void getBigDecimalShouldReturnBigDecimalAsExpected(BigDecimalFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+        JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
         BigDecimal actual = parser.getBigDecimal();
@@ -297,7 +297,7 @@ public class JsonParserTest {
     @EnumSource(BigDecimalFixture.class)
     public void getBigDecimalShouldReturnBigDecimalInArrayAsExpected(BigDecimalFixture fixture) {
         String json = arrayOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '['
         parser.next();
@@ -311,7 +311,7 @@ public class JsonParserTest {
     @EnumSource(BigDecimalFixture.class)
     public void getBigDecimalShouldReturnBigDecimalInObjectAsExpected(BigDecimalFixture fixture) {
         String json = objectOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -325,7 +325,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(JsonFixture.class)
     public void getValueShouldReturnValueAsExpected(JsonFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.getJson()));
+        JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
         JsonValue actual = parser.getValue();
@@ -338,7 +338,7 @@ public class JsonParserTest {
     @EnumSource(JsonFixture.class)
     public void getValueShouldReturnValueInArrayAsExpected(JsonFixture fixture) {
         String json = arrayOf(fixture.getJson());
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '['
         parser.next();
@@ -352,7 +352,7 @@ public class JsonParserTest {
     @EnumSource(JsonFixture.class)
     public void getValueShouldReturnValueInObjectAsExpected(JsonFixture fixture) {
         String json = objectOf(fixture.getJson());
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -416,7 +416,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(IntegralFixture.class)
     public void isIntegralNumberShouldReturnAsExpected(IntegralFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+        JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
         boolean actual = parser.isIntegralNumber();
@@ -472,7 +472,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(IntFixture.class)
     public void getIntShouldReturnIntAsExpected(IntFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+        JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
         int actual = parser.getInt();
@@ -485,7 +485,7 @@ public class JsonParserTest {
     @EnumSource(IntFixture.class)
     public void getIntShouldReturnIntInArrayAsExpected(IntFixture fixture) {
         String json = arrayOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '['
         parser.next();
@@ -499,7 +499,7 @@ public class JsonParserTest {
     @EnumSource(IntFixture.class)
     public void getIntShouldReturnIntInObjectAsExpected(IntFixture fixture) {
         String json = objectOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -562,7 +562,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(LongFixture.class)
     public void getLongShouldReturnLongAsExpected(LongFixture fixture) {
-        JsonParser parser = factory.createParser(new StringReader(fixture.json));
+        JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
         long actual = parser.getLong();
@@ -575,7 +575,7 @@ public class JsonParserTest {
     @EnumSource(LongFixture.class)
     public void getLongShouldReturnLongInArrayAsExpected(LongFixture fixture) {
         String json = arrayOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '[
         parser.next();
@@ -589,7 +589,7 @@ public class JsonParserTest {
     @EnumSource(LongFixture.class)
     public void getLongShouldReturnLongInObjectAsExpected(LongFixture fixture) {
         String json = objectOf(fixture.json);
-        JsonParser parser = factory.createParser(new StringReader(json));
+        JsonParser parser = createJsonParser(json);
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -598,6 +598,10 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    protected JsonParser createJsonParser(String json) {
+        return parserFactory.createParser(new StringReader(json));
     }
 
     private static String arrayOf(String json) {

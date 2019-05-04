@@ -14,6 +14,10 @@
 
     <name>JSON-P Test Suite Core</name>
 
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>jakarta.json</groupId>
