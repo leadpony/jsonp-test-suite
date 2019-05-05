@@ -16,10 +16,12 @@
 package org.leadpony.jsonp.testsuite;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -28,6 +30,7 @@ import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
+import javax.json.stream.JsonParsingException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,8 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @author leadpony
  */
 public class JsonReaderTest {
+
+    private static final Logger log = LogHelper.getLogger(JsonReaderTest.class);
 
     private static JsonReaderFactory factory;
 
@@ -153,5 +158,20 @@ public class JsonReaderTest {
         assertThat(actual).isNotNull();
         assertThat(actual.getValueType()).isEqualTo(resource.getType());
         assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(IllFormedJsonFixture.class)
+    public void readValueShouldThrowExceptionIfIllFormed(IllFormedJsonFixture fixture) {
+        Throwable thrown = catchThrowable(()->{
+            try (JsonReader reader = factory.createReader(
+                    new StringReader(fixture.getJson()))) {
+                reader.readValue();
+            }
+        });
+
+        log.info("[" + fixture.toString() + "]" + thrown.getMessage());
+
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
     }
 }
