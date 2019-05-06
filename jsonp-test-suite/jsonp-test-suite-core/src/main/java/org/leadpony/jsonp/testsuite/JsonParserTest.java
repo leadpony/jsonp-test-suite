@@ -16,12 +16,15 @@
 package org.leadpony.jsonp.testsuite;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.leadpony.jsonp.testsuite.JsonLocations.at;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 import javax.json.Json;
@@ -635,6 +638,140 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    static enum LocationFixture {
+
+        SIMPLE_VALUE("42", at(1, 3, 2)),
+
+        ARRAY_IN_ONE_LINE(
+                "[\"hello\",42,true]",
+                at(1, 2, 1),    // [
+                at(1, 9, 8),    // "hello"
+                at(1, 12, 11),  // 42
+                at(1, 17, 16),  // true
+                at(1, 18, 17)   // ]
+                ),
+
+        ARRAY_IN_MULTIPLE_LINES(
+                "[\n" +
+                "    \"hello\",\n" +
+                "    42,\n" +
+                "    true\n" +
+                "]",
+                at(1, 2, 1),    // [
+                at(2, 12, 13),  // "hello"
+                at(3, 7, 21),   // 42
+                at(4, 9, 31),   // true
+                at(5, 2, 33)    // ]
+                ),
+
+        ARRAY_IN_MULTIPLE_LINES_CRLF(
+                "[\r\n" +
+                "    \"hello\",\r\n" +
+                "    42,\r\n" +
+                "    true\r\n" +
+                "]",
+                at(1, 2, 1),    // [
+                at(2, 12, 14),  // "hello"
+                at(3, 7, 23),   // 42
+                at(4, 9, 34),   // true
+                at(5, 2, 37)    // ]
+                ),
+
+        OBJECT_IN_ONE_LINE(
+                "{\"first\":\"hello\",\"second\":42}",
+                at(1, 2, 1),    // {
+                at(1, 9, 8),    // "first"
+                at(1, 17, 16),  // "hello"
+                at(1, 26, 25),  // "second"
+                at(1, 29, 28),  // 42
+                at(1, 30, 29)   // }
+                ),
+
+        OBJECT_IN_MULTIPLE_LINES(
+                "{\n" +
+                "    \"first\":\"hello\",\n" +
+                "    \"second\":42\n" +
+                "}",
+                at(1, 2, 1),    // {
+                at(2, 12, 13),  // "first"
+                at(2, 20, 21),  // "hello"
+                at(3, 13, 35),  // "second"
+                at(3, 16, 38),  // 42
+                at(4, 2, 40)    // }
+                ),
+
+        OBJECT_IN_MULTIPLE_LINES_CRLF(
+                "{\r\n" +
+                "    \"first\":\"hello\",\r\n" +
+                "    \"second\":42\r\n" +
+                "}",
+                at(1, 2, 1),    // {
+                at(2, 12, 14),  // "first"
+                at(2, 20, 22),  // "hello"
+                at(3, 13, 37),  // "second"
+                at(3, 16, 40),  // 42
+                at(4, 2, 43)    // }
+                ),
+        ;
+
+        final String json;
+        final List<JsonLocation> locations;
+
+        LocationFixture(String json, JsonLocation... locations) {
+            this.json = json;
+            this.locations = Arrays.asList(locations);
+        }
+
+        JsonLocation getFinalLocation() {
+            return locations.get(locations.size() - 1);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(LocationFixture.class)
+    public void getLocationShouldReturnLocationsAsExpected(LocationFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
+
+        List<JsonLocation> actual = new ArrayList<>();
+        while (parser.hasNext()) {
+            parser.next();
+            actual.add(parser.getLocation());
+        }
+
+        parser.close();
+
+        assertThat(actual)
+            .usingElementComparator(JsonLocations.COMPARATOR)
+            .containsExactlyElementsOf(fixture.locations);
+    }
+
+    @ParameterizedTest
+    @EnumSource(LocationFixture.class)
+    public void getLocationShouldReturnInitialLocationAsExpected(LocationFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
+        JsonLocation actual = parser.getLocation();
+        parser.close();
+
+        assertThat(actual.getLineNumber()).isEqualTo(1);
+        assertThat(actual.getColumnNumber()).isEqualTo(1);
+        assertThat(actual.getStreamOffset()).isEqualTo(0);
+    }
+
+    @ParameterizedTest
+    @EnumSource(LocationFixture.class)
+    public void getLocationShouldReturnFinalLocationAsExpected(LocationFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
+        while (parser.hasNext()) {
+            parser.next();
+        }
+        JsonLocation actual = parser.getLocation();
+        parser.close();
+
+        assertThat(actual)
+            .usingComparator(JsonLocations.COMPARATOR)
+            .isEqualTo(fixture.getFinalLocation());
     }
 
     protected JsonParser createJsonParser(String json) {

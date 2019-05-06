@@ -18,7 +18,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>8</java.version>
+        <java.version>9</java.version>
         <jsonp.version>1.1.5</jsonp.version>
         <junit.version>5.4.2</junit.version>
     </properties>

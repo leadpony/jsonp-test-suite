@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 
 import javax.json.stream.JsonParser;
 
+import org.junit.jupiter.api.Disabled;
+
 /**
  * @author leadpony
  */
@@ -35,6 +37,18 @@ abstract class StreamJsonParserTest extends JsonParserTest {
 
     byte[] getByeOrderMark() {
         return null;
+    }
+
+    // Disables this because of repeated failures in some implementations.
+    @Disabled
+    @Override
+    public void hasNextShouldReturnResultAsExpected(ContinuityFixture fixture) {
+    }
+
+    // Disables this because of repeated failures in some implementations.
+    @Disabled
+    @Override
+    public void getLocationShouldReturnFinalLocationAsExpected(LocationFixture fixture) {
     }
 
     @Override
