@@ -26,31 +26,32 @@ import javax.json.stream.JsonLocation;
  */
 class JsonLocations {
 
+    /**
+     * A comparator which compares two instances of {@link JsonLocation}.
+     */
     static final Comparator<JsonLocation> COMPARATOR = new Comparator<JsonLocation>() {
 
         @Override
         public int compare(JsonLocation o1, JsonLocation o2) {
-            int result = compareLong(o1.getLineNumber(), o2.getLineNumber());
+            int result = Long.compare(o1.getLineNumber(), o2.getLineNumber());
             if (result == 0) {
-                result = compareLong(o1.getColumnNumber(), o2.getColumnNumber());
+                result = Long.compare(o1.getColumnNumber(), o2.getColumnNumber());
                 if (result == 0) {
-                    result = compareLong(o1.getStreamOffset(), o2.getStreamOffset());
+                    result = Long.compare(o1.getStreamOffset(), o2.getStreamOffset());
                 }
             }
             return result;
         }
     };
 
-    private static int compareLong(long a, long b) {
-        if (a < b) {
-            return -1;
-        } else if (a > b) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
+    /**
+     * Returns the instance of {@link JsonLocation} at the specified location.
+     *
+     * @param lineNumber   the line number of the location.
+     * @param columnNumber the column number of the location.
+     * @param streamOffset the stream offset of the location.
+     * @return the instance of {@link JsonLocation}
+     */
     static JsonLocation at(long lineNumber, long columnNumber, long streamOffset) {
         return new JsonLocationImpl(lineNumber, columnNumber, streamOffset);
     }
