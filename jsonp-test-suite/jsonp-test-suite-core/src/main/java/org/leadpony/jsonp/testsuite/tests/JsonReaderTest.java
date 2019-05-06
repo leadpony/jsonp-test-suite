@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
  * A test type to test {@link JsonReader}.
@@ -83,7 +84,7 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getArraysAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonResource#getArraysAsStream")
     public void readArrayShouldReadArrayAsExpected(JsonResource resource) {
         JsonArray actual;
         try (JsonReader reader = factory.createReader(resource.createReader())) {
@@ -124,7 +125,7 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getObjectsAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonResource#getObjectsAsStream")
     public void readObjectShouldReadObjectAsExpected(JsonResource resource) {
         JsonObject actual;
         try (JsonReader reader = factory.createReader(resource.createReader())) {
@@ -136,7 +137,7 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonResource#getStructuresAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonResource#getStructuresAsStream")
     public void readShouldReadStructureAsExpected(JsonResource resource) {
         JsonStructure actual;
         try (JsonReader reader = factory.createReader(resource.createReader())) {

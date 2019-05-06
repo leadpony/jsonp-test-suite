@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.helper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  *
  * @author leadpony
  */
-interface LogHelper {
+public interface LogHelper {
 
     static LogManager logManager = configureLogManager();
 

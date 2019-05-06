@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +58,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getStructuresAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getStructuresAsStream")
     public void writeShouldWriteJsonStructureAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
@@ -69,7 +69,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getArraysAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getArraysAsStream")
     public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{
@@ -80,7 +80,7 @@ public class JsonWriterTest {
     }
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getObjectsAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getObjectsAsStream")
     public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueFixture fixture) {
 
         String actual = write(writer->{

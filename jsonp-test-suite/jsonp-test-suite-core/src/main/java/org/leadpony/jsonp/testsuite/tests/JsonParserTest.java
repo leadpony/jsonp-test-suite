@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.leadpony.jsonp.testsuite.JsonLocations.at;
+import static org.leadpony.jsonp.testsuite.helper.JsonLocations.at;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -34,6 +34,9 @@ import javax.json.stream.JsonParserFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.leadpony.jsonp.testsuite.helper.Ambiguous;
+import org.leadpony.jsonp.testsuite.helper.JsonLocations;
 
 /**
  * A test type to test {@link JsonParser}.
@@ -52,15 +55,7 @@ public class JsonParserTest {
     static enum ContinuityFixture {
         LITERAL("365", 1, false),
         ARRAY("[1,2,3]", 5, false),
-        OBJECt("{\"a\":1}", 4, false),
-        ARRAY_MISSING_END("[1,2,3", 4, false),
-        ARRAY_MISSING_ITEM("[1,2,", 3, true),
-        OBJECT_MISSING_END("{\"a\":1", 3, false),
-        OBJECT_MISSING_VALUE("{\"a\":", 2, true),
-        OBJECT_MISSING_COLON("{\"a\"", 2, false),
-        OBJECT_MISSING_KEY("{", 1, false),
-        EMPTY("", 0, false),
-        BLANK("    ", 0, false),
+        OBJECT("{\"a\":1}", 4, false),
         ;
         final String json;
         final int count;
@@ -84,6 +79,50 @@ public class JsonParserTest {
             parser.next();
         }
         assertThat(parser.hasNext()).isEqualTo(fixture.result);
+        parser.close();
+    }
+
+    static enum DiscontinuityFixture {
+        ARRAY_MISSING_END("[1,2,3", 4, false),
+        ARRAY_MISSING_ITEM("[1,2,", 3, true),
+        OBJECT_MISSING_END("{\"a\":1", 3, false),
+        OBJECT_MISSING_VALUE("{\"a\":", 2, true),
+        OBJECT_MISSING_COLON("{\"a\"", 2, false),
+        OBJECT_MISSING_KEY("{", 1, false),
+        ;
+        final String json;
+        final int count;
+        final boolean result;
+
+        DiscontinuityFixture(String json, int count, boolean result) {
+            this.json = json;
+            this.count = count;
+            this.result = result;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(DiscontinuityFixture.class)
+    @Ambiguous
+    public void hasNextShouldReturnFalseWhenBroken(DiscontinuityFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.json);
+
+        int remaining = fixture.count;
+        while (remaining-- > 0) {
+            assertThat(parser.hasNext()).isTrue();
+            parser.next();
+        }
+        assertThat(parser.hasNext()).isEqualTo(fixture.result);
+        parser.close();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings= { "", "    " })
+    @Ambiguous
+    public void hasNextShouldReturnFalseIfInputIsBlank(String json) {
+        JsonParser parser = createJsonParser(json);
+        assertThat(parser.hasNext()).isEqualTo(false);
+        parser.close();
     }
 
     static enum ParserEventFixture {
@@ -761,6 +800,7 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(LocationFixture.class)
+    @Ambiguous
     public void getLocationShouldReturnFinalLocationAsExpected(LocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
         while (parser.hasNext()) {

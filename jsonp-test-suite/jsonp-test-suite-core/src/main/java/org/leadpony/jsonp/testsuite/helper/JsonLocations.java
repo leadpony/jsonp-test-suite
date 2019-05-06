@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.helper;
 
 import java.util.Comparator;
 
@@ -24,12 +24,12 @@ import javax.json.stream.JsonLocation;
  *
  * @author leadpony
  */
-class JsonLocations {
+public class JsonLocations {
 
     /**
      * A comparator which compares two instances of {@link JsonLocation}.
      */
-    static final Comparator<JsonLocation> COMPARATOR = new Comparator<JsonLocation>() {
+    public static final Comparator<JsonLocation> COMPARATOR = new Comparator<JsonLocation>() {
 
         @Override
         public int compare(JsonLocation o1, JsonLocation o2) {
@@ -52,7 +52,7 @@ class JsonLocations {
      * @param streamOffset the stream offset of the location.
      * @return the instance of {@link JsonLocation}
      */
-    static JsonLocation at(long lineNumber, long columnNumber, long streamOffset) {
+    public static JsonLocation at(long lineNumber, long columnNumber, long streamOffset) {
         return new JsonLocationImpl(lineNumber, columnNumber, streamOffset);
     }
 

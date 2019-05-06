@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite;
+package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class JsonStringTest {
 
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.JsonValueFixture#getStringsAsStream")
+    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getStringsAsStream")
     public void toStringShouldEscapeString(JsonValueFixture fixture) {
         JsonString sut = (JsonString) fixture.getJsonValue();
 

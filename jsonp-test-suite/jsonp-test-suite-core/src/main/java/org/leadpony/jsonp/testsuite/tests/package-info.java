@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 /**
+ * Provides a test suite for Java API for JSON Processing (JSR 374).
+ *
  * @author leadpony
  */
-module org.leadpony.jsonp.testsuite {
-
-    requires java.json;
-    requires java.logging;
-    requires org.assertj.core;
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
-}
+package org.leadpony.jsonp.testsuite.tests;

@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.jsonp.testsuite.helper;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.Tag;
+
 /**
  * @author leadpony
  */
-module org.leadpony.jsonp.testsuite {
-
-    requires java.json;
-    requires java.logging;
-    requires org.assertj.core;
-    requires org.junit.jupiter.api;
-    requires org.junit.jupiter.params;
+@Target({ ElementType.TYPE, ElementType.METHOD })
+@Retention(RetentionPolicy.RUNTIME)
+@Tag("ambiguous")
+public @interface Ambiguous {
 }

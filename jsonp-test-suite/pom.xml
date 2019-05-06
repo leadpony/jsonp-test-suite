@@ -80,6 +80,7 @@
                         <excludes>
                             <exclude />
                         </excludes>
+                        <excludedGroups>ambiguous</excludedGroups>
                         <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
                 </plugin>
