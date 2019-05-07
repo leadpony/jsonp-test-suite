@@ -30,6 +30,7 @@ import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
+import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParsingException;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -171,8 +172,14 @@ public class JsonReaderTest {
             }
         });
 
-        log.info("[" + fixture.toString() + "]" + thrown.getMessage());
+        log.info(fixture.toString());
+        log.info(thrown.getMessage());
 
         assertThat(thrown).isInstanceOf(JsonParsingException.class);
+        JsonParsingException actual = (JsonParsingException) thrown;
+        JsonLocation location = actual.getLocation();
+        assertThat(location.getLineNumber()).isEqualTo(fixture.getLineNumber());
+        assertThat(location.getColumnNumber()).isEqualTo(fixture.getColumnNumber());
+        assertThat(location.getStreamOffset()).isEqualTo(fixture.getStreamOffset());
     }
 }
