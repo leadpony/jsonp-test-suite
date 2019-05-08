@@ -23,7 +23,7 @@ import javax.json.JsonValue;
 /**
  * @author leadpony
  */
-enum JsonFixture {
+enum JsonFixture implements JsonSource {
     TRUE,
     FALSE,
     NULL,
@@ -58,8 +58,8 @@ enum JsonFixture {
     PI,
     MINUS_PI,
 
-    HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2", new BigDecimal("1E+2")),
-    HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2", HUNDRED_BY_SCIENTIFIC_NOTATION.value),
+    HUNDRED_SCIENTIFIC_NOTATION("1e+2", new BigDecimal("1E+2")),
+    HUNDRED_SCIENTIFIC_NOTATION_CAPITAL("1E+2", HUNDRED_SCIENTIFIC_NOTATION.value),
 
     HUNDREDTH_SCIENTIFIC_NOTATION_MINUS("1e-2", new BigDecimal("1E-2")),
     HUNDREDTH_NOTATION_CAPITAL_MINNUS("1E-2", HUNDREDTH_SCIENTIFIC_NOTATION_MINUS.value),
@@ -85,11 +85,13 @@ enum JsonFixture {
         this.value = Json.createValue(value);
     }
 
-    String getJson() {
+    @Override
+    public String getJson() {
         return json;
     }
 
-    JsonValue getValue() {
+    @Override
+    public JsonValue getValue() {
         return value;
     }
 }

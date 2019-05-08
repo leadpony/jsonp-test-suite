@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.leadpony.jsonp.testsuite.helper.JsonLocations.at;
 
 import java.io.StringReader;
@@ -23,6 +24,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
@@ -32,11 +36,14 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonParserFactory;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.helper.Ambiguous;
 import org.leadpony.jsonp.testsuite.helper.JsonLocations;
+import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
  * A test type to test {@link JsonParser}.
@@ -45,6 +52,8 @@ import org.leadpony.jsonp.testsuite.helper.JsonLocations;
  */
 public class JsonParserTest {
 
+    private static final Logger log = LogHelper.getLogger(JsonParserTest.class);
+
     protected static JsonParserFactory parserFactory;
 
     @BeforeAll
@@ -52,28 +61,29 @@ public class JsonParserTest {
         parserFactory = Json.createParserFactory(null);
     }
 
-    static enum ContinuityFixture {
+    enum TerminationFixture {
         LITERAL("365", 1, false),
         ARRAY("[1,2,3]", 5, false),
         OBJECT("{\"a\":1}", 4, false),
         ;
+
         final String json;
-        final int count;
+        final int iterations;
         final boolean result;
 
-        ContinuityFixture(String json, int count, boolean result) {
+        TerminationFixture(String json, int iterations, boolean result) {
             this.json = json;
-            this.count = count;
+            this.iterations = iterations;
             this.result = result;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(ContinuityFixture.class)
-    public void hasNextShouldReturnResultAsExpected(ContinuityFixture fixture) {
+    @EnumSource(TerminationFixture.class)
+    public void hasNextShouldReturnResult(TerminationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
-        int remaining = fixture.count;
+        int remaining = fixture.iterations;
         while (remaining-- > 0) {
             assertThat(parser.hasNext()).isTrue();
             parser.next();
@@ -82,7 +92,7 @@ public class JsonParserTest {
         parser.close();
     }
 
-    static enum DiscontinuityFixture {
+    enum UnexpectedTerminationFixture {
         ARRAY_MISSING_END("[1,2,3", 4, false),
         ARRAY_MISSING_ITEM("[1,2,", 3, true),
         OBJECT_MISSING_END("{\"a\":1", 3, false),
@@ -90,24 +100,25 @@ public class JsonParserTest {
         OBJECT_MISSING_COLON("{\"a\"", 2, false),
         OBJECT_MISSING_KEY("{", 1, false),
         ;
+
         final String json;
-        final int count;
+        final int iterations;
         final boolean result;
 
-        DiscontinuityFixture(String json, int count, boolean result) {
+        UnexpectedTerminationFixture(String json, int iterations, boolean result) {
             this.json = json;
-            this.count = count;
+            this.iterations = iterations;
             this.result = result;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(DiscontinuityFixture.class)
+    @EnumSource(UnexpectedTerminationFixture.class)
     @Ambiguous
-    public void hasNextShouldReturnFalseWhenBroken(DiscontinuityFixture fixture) {
+    public void hasNextShouldReturnFalseWhenTerminated(UnexpectedTerminationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
-        int remaining = fixture.count;
+        int remaining = fixture.iterations;
         while (remaining-- > 0) {
             assertThat(parser.hasNext()).isTrue();
             parser.next();
@@ -117,7 +128,7 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings= { "", "    " })
+    @ValueSource(strings = { "", "    " })
     @Ambiguous
     public void hasNextShouldReturnFalseIfInputIsBlank(String json) {
         JsonParser parser = createJsonParser(json);
@@ -125,7 +136,7 @@ public class JsonParserTest {
         parser.close();
     }
 
-    static enum ParserEventFixture {
+    enum ParserEventFixture {
         TRUE("true", Event.VALUE_TRUE),
         FALSE("false", Event.VALUE_FALSE),
         NULL("null", Event.VALUE_NULL),
@@ -133,58 +144,32 @@ public class JsonParserTest {
         INTEGER("42", Event.VALUE_NUMBER),
         NUMBER("3.14", Event.VALUE_NUMBER),
 
-        EMPTY_ARRAY("[]", Event.START_ARRAY, Event.END_ARRAY),
-        ARRAY_OF_ITEM("[42]", Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
+        EMPTY_ARRAY("[]",
+                Event.START_ARRAY, Event.END_ARRAY),
+        ARRAY_OF_ITEM("[42]",
+                Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
         ARRAY_OF_MULTIPLE_ITEMS("[true,false,null,\"abc\",42]",
-                Event.START_ARRAY,
-                Event.VALUE_TRUE,
-                Event.VALUE_FALSE,
-                Event.VALUE_NULL,
-                Event.VALUE_STRING,
-                Event.VALUE_NUMBER,
-                Event.END_ARRAY),
+                Event.START_ARRAY, Event.VALUE_TRUE, Event.VALUE_FALSE,
+                Event.VALUE_NULL, Event.VALUE_STRING, Event.VALUE_NUMBER, Event.END_ARRAY),
         ARRAY_OF_ARRAY("[[]]",
-                Event.START_ARRAY,
-                Event.START_ARRAY,
-                Event.END_ARRAY,
-                Event.END_ARRAY),
+                Event.START_ARRAY, Event.START_ARRAY, Event.END_ARRAY, Event.END_ARRAY),
         ARRAY_OF_OBJECT("[{}]",
-                Event.START_ARRAY,
-                Event.START_OBJECT,
-                Event.END_OBJECT,
-                Event.END_ARRAY),
+                Event.START_ARRAY, Event.START_OBJECT, Event.END_OBJECT, Event.END_ARRAY),
 
-        EMPTY_OBJECT("{}", Event.START_OBJECT, Event.END_OBJECT),
+        EMPTY_OBJECT("{}",
+                Event.START_OBJECT, Event.END_OBJECT),
         OBJECT_OF_SINGLE_PROPERTY("{\"a\":42}",
-                Event.START_OBJECT,
-                Event.KEY_NAME,
-                Event.VALUE_NUMBER,
+                Event.START_OBJECT, Event.KEY_NAME, Event.VALUE_NUMBER,
                 Event.END_OBJECT),
-        OBJECT_OF_MULTIPLE_PROPERTIES("{\"a\":true,\"b\":false,\"c\":null,\"d\":\"abc\",\"e\":42}",
-                Event.START_OBJECT,
-                Event.KEY_NAME,
-                Event.VALUE_TRUE,
-                Event.KEY_NAME,
-                Event.VALUE_FALSE,
-                Event.KEY_NAME,
-                Event.VALUE_NULL,
-                Event.KEY_NAME,
-                Event.VALUE_STRING,
-                Event.KEY_NAME,
-                Event.VALUE_NUMBER,
-                Event.END_OBJECT),
+        OBJECT_OF_MULTIPLE_PROPERTIES("{\"a\":true,\"b\":false,\"c\":null,\"d\":\"abc\",\"e\":42}", Event.START_OBJECT,
+                Event.KEY_NAME, Event.VALUE_TRUE, Event.KEY_NAME, Event.VALUE_FALSE, Event.KEY_NAME, Event.VALUE_NULL,
+                Event.KEY_NAME, Event.VALUE_STRING, Event.KEY_NAME, Event.VALUE_NUMBER, Event.END_OBJECT),
         OBJECT_OF_ARRAY_PROPERTY("{\"a\":[]}",
-                Event.START_OBJECT,
-                Event.KEY_NAME,
-                Event.START_ARRAY,
-                Event.END_ARRAY,
+                Event.START_OBJECT, Event.KEY_NAME, Event.START_ARRAY, Event.END_ARRAY,
                 Event.END_OBJECT),
         OBJECT_OF_OBJECT_PROPERTY("{\"a\":{}}",
-                Event.START_OBJECT,
-                Event.KEY_NAME,
-                Event.START_OBJECT,
-                Event.END_OBJECT,
-                Event.END_OBJECT),
+                Event.START_OBJECT, Event.KEY_NAME, Event.START_OBJECT,
+                Event.END_OBJECT, Event.END_OBJECT),
 
         ;
 
@@ -211,7 +196,24 @@ public class JsonParserTest {
         assertThat(actual).containsExactly(fixture.events);
     }
 
-    static enum StringFixture {
+    @Test
+    public void nextShouldThrowNoSuchElementExceptionAfterEOI() {
+        JsonParser parser = createJsonParser("{}");
+
+        parser.next();
+        parser.next();
+
+        Throwable thrown = catchThrowable(()->{
+            parser.next();
+        });
+
+        parser.close();
+
+        assertThat(thrown).isInstanceOf(NoSuchElementException.class);
+        log.info(thrown.getMessage());
+    }
+
+    enum StringFixture implements JsonSource {
         EMPTY_STRING("\"\"", ""),
         BLANK_STRING("\" \"", " "),
         TWO_SPACES("\"  \"", "  "),
@@ -256,8 +258,7 @@ public class JsonParserTest {
         INTEGER("42", "42"),
         NEGATIVE_INTEGER("-42", "-42"),
         NUMBER("3.14", "3.14"),
-        NEGATIVE__NUMBER("-3.14", "-3.14"),
-        ;
+        NEGATIVE_NUMBER("-3.14", "-3.14"),;
 
         private final String json;
         private final String value;
@@ -266,12 +267,20 @@ public class JsonParserTest {
             this.json = json;
             this.value = value;
         }
+
+        public String getJson() {
+            return json;
+        }
+
+        boolean isString() {
+            return json.startsWith("\"");
+        }
     }
 
     @ParameterizedTest
     @EnumSource(StringFixture.class)
-    public void getStringShouldReturnStringAsExpected(StringFixture fixture) {
-        JsonParser parser = createJsonParser(fixture.json);
+    public void getStringShouldReturnString(StringFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
         String actual = parser.getString();
@@ -282,9 +291,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(StringFixture.class)
-    public void getStringShouldReturnStringInArrayAsExpected(StringFixture fixture) {
-        String json = arrayOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getStringShouldReturnStringFromItem(StringFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
         parser.next();
@@ -294,11 +302,27 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
+    public static Stream<StringFixture> getStringShouldReturnStringFromPropertyKey() {
+        return Stream.of(StringFixture.values()).filter(StringFixture::isString);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void getStringShouldReturnStringFromPropertyKey(StringFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyKey());
+
+        parser.next(); // '{'
+        parser.next(); // key name
+        String actual = parser.getString();
+        parser.close();
+
+        assertThat(actual).isEqualTo(fixture.value);
+    }
+
     @ParameterizedTest
     @EnumSource(StringFixture.class)
-    public void getStringShouldReturnStringInObjectAsExpected(StringFixture fixture) {
-        String json = objectOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getStringShouldReturnStringFromPropertyValue(StringFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -309,7 +333,7 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    static enum BigDecimalFixture {
+    enum BigDecimalFixture implements JsonSource {
         ZERO("0"),
         MINUS_ZERO("-0"),
         ONE("1"),
@@ -334,10 +358,10 @@ public class JsonParserTest {
         MINUS_HUNDREDTH("-0.01"),
 
         ONE_WITH_FRACTIONLAL_PART("1.0"),
-        MINS_ONE_WITH_FRACTIONLAL_PART("-1.0"),
+        MINUS_ONE_WITH_FRACTIONLAL_PART("-1.0"),
 
         TEN_WITH_FRACTIONLAL_PART("10.0"),
-        MINS_TEN_WITH_FRACTIONLAL_PART("-10.0"),
+        MINUS_TEN_WITH_FRACTIONLAL_PART("-10.0"),
 
         HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2"),
         HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2"),
@@ -348,8 +372,7 @@ public class JsonParserTest {
         TENTH_BY_SCIENTIFIC_NOTATION("1e-1"),
         HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2"),
 
-        AVOGADRO_CONSTANT("6.022140857e23"),
-        ;
+        AVOGADRO_CONSTANT("6.022140857e23"),;
 
         private final String json;
         private final BigDecimal value;
@@ -358,12 +381,16 @@ public class JsonParserTest {
             this.json = json;
             this.value = new BigDecimal(json);
         }
+
+        public String getJson() {
+            return json;
+        }
     }
 
     @ParameterizedTest
     @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimalAsExpected(BigDecimalFixture fixture) {
-        JsonParser parser = createJsonParser(fixture.json);
+    public void getBigDecimalShouldReturnBigDecimal(BigDecimalFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
         BigDecimal actual = parser.getBigDecimal();
@@ -374,9 +401,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimalInArrayAsExpected(BigDecimalFixture fixture) {
-        String json = arrayOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getBigDecimalShouldReturnBigDecimalFromItem(BigDecimalFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
         parser.next();
@@ -388,9 +414,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimalInObjectAsExpected(BigDecimalFixture fixture) {
-        String json = objectOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getBigDecimalShouldReturnBigDecimalFromPropertyValue(BigDecimalFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -403,7 +428,7 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(JsonFixture.class)
-    public void getValueShouldReturnValueAsExpected(JsonFixture fixture) {
+    public void getValueShouldReturnValue(JsonFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
@@ -415,9 +440,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(JsonFixture.class)
-    public void getValueShouldReturnValueInArrayAsExpected(JsonFixture fixture) {
-        String json = arrayOf(fixture.getJson());
-        JsonParser parser = createJsonParser(json);
+    public void getValueShouldReturnValueFromItem(JsonFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
         parser.next();
@@ -429,9 +453,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(JsonFixture.class)
-    public void getValueShouldReturnValueInObjectAsExpected(JsonFixture fixture) {
-        String json = objectOf(fixture.getJson());
-        JsonParser parser = createJsonParser(json);
+    public void getValueShouldReturnValueFromPropertyValue(JsonFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -442,7 +465,7 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.getValue());
     }
 
-    static enum IntegralFixture {
+    enum IntegralFixture {
         ZERO("0", true),
         MINUS_ZERO("-0", true),
         ONE("1", true),
@@ -466,10 +489,10 @@ public class JsonParserTest {
         MINUS_HUNDREDTH("-0.01", false),
 
         ONE_WITH_FRACTIONLAL_PART("1.0", false),
-        MINS_ONE_WITH_FRACTIONLAL_PART("-1.0", false),
+        MINUS_ONE_WITH_FRACTIONLAL_PART("-1.0", false),
 
         TEN_WITH_FRACTIONLAL_PART("10.0", false),
-        MINS_TEN_WITH_FRACTIONLAL_PART("-10.0", false),
+        MINUS_TEN_WITH_FRACTIONLAL_PART("-10.0", false),
 
         HUNDRED_BY_SCIENTIFIC_NOTATION("1e+2", false),
         HUNDRED_BY_SCIENTIFIC_NOTATION_CAPITAL("1E+2", false),
@@ -480,8 +503,7 @@ public class JsonParserTest {
         TENTH_BY_SCIENTIFIC_NOTATION("1e-1", false),
         HUNDREDTH_BY_SCIENTIFIC_NOTATION("1e-2", false),
 
-        AVOGADRO_CONSTANT("6.022140857e23", false),
-        ;
+        AVOGADRO_CONSTANT("6.022140857e23", false),;
 
         final String json;
         final boolean isIntegral;
@@ -494,7 +516,7 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(IntegralFixture.class)
-    public void isIntegralNumberShouldReturnAsExpected(IntegralFixture fixture) {
+    public void isIntegralNumberShouldReturnBoolean(IntegralFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
@@ -504,7 +526,7 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.isIntegral);
     }
 
-    static enum IntFixture {
+    enum IntFixture implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -536,8 +558,7 @@ public class JsonParserTest {
         HUNDRED_WITH_SCIENTIFIC_NOTATION("1e+2", 100),
         HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+2", 100),
         MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION("-1e+2", -100),
-        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),
-        ;
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),;
 
         final String json;
         final int value;
@@ -546,12 +567,16 @@ public class JsonParserTest {
             this.json = json;
             this.value = value;
         }
+
+        public String getJson() {
+            return json;
+        }
     }
 
     @ParameterizedTest
     @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntAsExpected(IntFixture fixture) {
-        JsonParser parser = createJsonParser(fixture.json);
+    public void getIntShouldReturnInt(IntFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
         int actual = parser.getInt();
@@ -562,9 +587,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntInArrayAsExpected(IntFixture fixture) {
-        String json = arrayOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getIntShouldReturnIntFromItem(IntFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
         parser.next();
@@ -576,9 +600,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntInObjectAsExpected(IntFixture fixture) {
-        String json = objectOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getIntShouldReturnIntFromPropertyValue(IntFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -589,7 +612,7 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    static enum LongFixture {
+    enum LongFixture implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -626,8 +649,7 @@ public class JsonParserTest {
         HUNDRED_WITH_SCIENTIFIC_NOTATION("1e+2", 100),
         HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("1E+2", 100),
         MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION("-1e+2", -100),
-        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),
-        ;
+        MINUS_HUNDRED_WITH_SCIENTIFIC_NOTATION_CAPITAL("-1E+2", -100),;
 
         final String json;
         final long value;
@@ -636,12 +658,16 @@ public class JsonParserTest {
             this.json = json;
             this.value = value;
         }
+
+        public String getJson() {
+            return json;
+        }
     }
 
     @ParameterizedTest
     @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLongAsExpected(LongFixture fixture) {
-        JsonParser parser = createJsonParser(fixture.json);
+    public void getLongShouldReturnLong(LongFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
         long actual = parser.getLong();
@@ -652,9 +678,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLongInArrayAsExpected(LongFixture fixture) {
-        String json = arrayOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getLongShouldReturnLongFromItem(LongFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '[
         parser.next();
@@ -666,9 +691,8 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLongInObjectAsExpected(LongFixture fixture) {
-        String json = objectOf(fixture.json);
-        JsonParser parser = createJsonParser(json);
+    public void getLongShouldReturnLongFromPropertyValue(LongFixture fixture) {
+        JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
         parser.next(); // key name
@@ -679,81 +703,55 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    static enum LocationFixture {
+    enum LocationFixture {
 
         SIMPLE_VALUE("42", at(1, 3, 2)),
 
-        ARRAY_IN_ONE_LINE(
-                "[\"hello\",42,true]",
-                at(1, 2, 1),    // [
-                at(1, 9, 8),    // "hello"
-                at(1, 12, 11),  // 42
-                at(1, 17, 16),  // true
-                at(1, 18, 17)   // ]
-                ),
+        ARRAY_IN_ONE_LINE("[\"hello\",42,true]", at(1, 2, 1), // [
+                at(1, 9, 8), // "hello"
+                at(1, 12, 11), // 42
+                at(1, 17, 16), // true
+                at(1, 18, 17) // ]
+        ),
 
-        ARRAY_IN_MULTIPLE_LINES(
-                "[\n" +
-                "    \"hello\",\n" +
-                "    42,\n" +
-                "    true\n" +
-                "]",
-                at(1, 2, 1),    // [
-                at(2, 12, 13),  // "hello"
-                at(3, 7, 21),   // 42
-                at(4, 9, 31),   // true
-                at(5, 2, 33)    // ]
-                ),
+        ARRAY_IN_MULTIPLE_LINES("[\n" + "    \"hello\",\n" + "    42,\n" + "    true\n" + "]", at(1, 2, 1), // [
+                at(2, 12, 13), // "hello"
+                at(3, 7, 21), // 42
+                at(4, 9, 31), // true
+                at(5, 2, 33) // ]
+        ),
 
-        ARRAY_IN_MULTIPLE_LINES_CRLF(
-                "[\r\n" +
-                "    \"hello\",\r\n" +
-                "    42,\r\n" +
-                "    true\r\n" +
-                "]",
-                at(1, 2, 1),    // [
-                at(2, 12, 14),  // "hello"
-                at(3, 7, 23),   // 42
-                at(4, 9, 34),   // true
-                at(5, 2, 37)    // ]
-                ),
+        ARRAY_IN_MULTIPLE_LINES_CRLF("[\r\n" + "    \"hello\",\r\n" + "    42,\r\n" + "    true\r\n" + "]", at(1, 2, 1), // [
+                at(2, 12, 14), // "hello"
+                at(3, 7, 23), // 42
+                at(4, 9, 34), // true
+                at(5, 2, 37) // ]
+        ),
 
-        OBJECT_IN_ONE_LINE(
-                "{\"first\":\"hello\",\"second\":42}",
-                at(1, 2, 1),    // {
-                at(1, 9, 8),    // "first"
-                at(1, 17, 16),  // "hello"
-                at(1, 26, 25),  // "second"
-                at(1, 29, 28),  // 42
-                at(1, 30, 29)   // }
-                ),
+        OBJECT_IN_ONE_LINE("{\"first\":\"hello\",\"second\":42}", at(1, 2, 1), // {
+                at(1, 9, 8), // "first"
+                at(1, 17, 16), // "hello"
+                at(1, 26, 25), // "second"
+                at(1, 29, 28), // 42
+                at(1, 30, 29) // }
+        ),
 
-        OBJECT_IN_MULTIPLE_LINES(
-                "{\n" +
-                "    \"first\":\"hello\",\n" +
-                "    \"second\":42\n" +
-                "}",
-                at(1, 2, 1),    // {
-                at(2, 12, 13),  // "first"
-                at(2, 20, 21),  // "hello"
-                at(3, 13, 35),  // "second"
-                at(3, 16, 38),  // 42
-                at(4, 2, 40)    // }
-                ),
+        OBJECT_IN_MULTIPLE_LINES("{\n" + "    \"first\":\"hello\",\n" + "    \"second\":42\n" + "}", at(1, 2, 1), // {
+                at(2, 12, 13), // "first"
+                at(2, 20, 21), // "hello"
+                at(3, 13, 35), // "second"
+                at(3, 16, 38), // 42
+                at(4, 2, 40) // }
+        ),
 
-        OBJECT_IN_MULTIPLE_LINES_CRLF(
-                "{\r\n" +
-                "    \"first\":\"hello\",\r\n" +
-                "    \"second\":42\r\n" +
-                "}",
-                at(1, 2, 1),    // {
-                at(2, 12, 14),  // "first"
-                at(2, 20, 22),  // "hello"
-                at(3, 13, 37),  // "second"
-                at(3, 16, 40),  // 42
-                at(4, 2, 43)    // }
-                ),
-        ;
+        OBJECT_IN_MULTIPLE_LINES_CRLF("{\r\n" + "    \"first\":\"hello\",\r\n" + "    \"second\":42\r\n" + "}",
+                at(1, 2, 1), // {
+                at(2, 12, 14), // "first"
+                at(2, 20, 22), // "hello"
+                at(3, 13, 37), // "second"
+                at(3, 16, 40), // 42
+                at(4, 2, 43) // }
+        ),;
 
         final String json;
         final List<JsonLocation> locations;
@@ -770,7 +768,7 @@ public class JsonParserTest {
 
     @ParameterizedTest
     @EnumSource(LocationFixture.class)
-    public void getLocationShouldReturnLocationsAsExpected(LocationFixture fixture) {
+    public void getLocationShouldReturnLocations(LocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
         List<JsonLocation> actual = new ArrayList<>();
@@ -781,14 +779,13 @@ public class JsonParserTest {
 
         parser.close();
 
-        assertThat(actual)
-            .usingElementComparator(JsonLocations.COMPARATOR)
-            .containsExactlyElementsOf(fixture.locations);
+        assertThat(actual).usingElementComparator(JsonLocations.COMPARATOR)
+                .containsExactlyElementsOf(fixture.locations);
     }
 
     @ParameterizedTest
     @EnumSource(LocationFixture.class)
-    public void getLocationShouldReturnInitialLocationAsExpected(LocationFixture fixture) {
+    public void getLocationShouldReturnInitialLocation(LocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
         JsonLocation actual = parser.getLocation();
         parser.close();
@@ -801,7 +798,7 @@ public class JsonParserTest {
     @ParameterizedTest
     @EnumSource(LocationFixture.class)
     @Ambiguous
-    public void getLocationShouldReturnFinalLocationAsExpected(LocationFixture fixture) {
+    public void getLocationShouldReturnFinalLocation(LocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
         while (parser.hasNext()) {
             parser.next();
@@ -809,20 +806,10 @@ public class JsonParserTest {
         JsonLocation actual = parser.getLocation();
         parser.close();
 
-        assertThat(actual)
-            .usingComparator(JsonLocations.COMPARATOR)
-            .isEqualTo(fixture.getFinalLocation());
+        assertThat(actual).usingComparator(JsonLocations.COMPARATOR).isEqualTo(fixture.getFinalLocation());
     }
 
     protected JsonParser createJsonParser(String json) {
         return parserFactory.createParser(new StringReader(json));
-    }
-
-    private static String arrayOf(String json) {
-        return "[" + json + "]";
-    }
-
-    private static String objectOf(String json) {
-        return "{\"foo\":" + json + "}";
     }
 }

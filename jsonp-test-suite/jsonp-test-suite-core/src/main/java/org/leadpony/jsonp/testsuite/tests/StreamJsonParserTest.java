@@ -42,13 +42,13 @@ abstract class StreamJsonParserTest extends JsonParserTest {
     // Disables this because of repeated failures in some implementations.
     @Disabled
     @Override
-    public void hasNextShouldReturnResultAsExpected(ContinuityFixture fixture) {
+    public void hasNextShouldReturnResult(TerminationFixture fixture) {
     }
 
     // Disables this because of repeated failures in some implementations.
     @Disabled
     @Override
-    public void getLocationShouldReturnFinalLocationAsExpected(LocationFixture fixture) {
+    public void getLocationShouldReturnFinalLocation(LocationFixture fixture) {
     }
 
     @Override

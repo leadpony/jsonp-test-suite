@@ -13,9 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.leadpony.jsonp.testsuite.tests;
+
+import javax.json.JsonValue;
+
 /**
- * Provides a test suite for Java API for JSON Processing (JSR 374).
- *
  * @author leadpony
  */
-package org.leadpony.jsonp.testsuite;
+interface JsonSource {
+
+    String getJson();
+
+    default JsonValue getValue() {
+        throw new UnsupportedOperationException();
+    }
+
+    default String getJsonAsArrayItem() {
+        return "[" + getJson() + "]";
+    }
+
+    default String getJsonAsPropertyKey() {
+        return "{" + getJson() + ":\"foo\"}";
+    }
+
+    default String getJsonAsPropertyValue() {
+        return "{\"foo\":" + getJson() + "}";
+    }
+}
