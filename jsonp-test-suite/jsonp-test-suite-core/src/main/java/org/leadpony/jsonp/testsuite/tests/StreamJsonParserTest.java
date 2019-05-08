@@ -21,47 +21,111 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import javax.json.Json;
 import javax.json.stream.JsonParser;
+import javax.json.stream.JsonParserFactory;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * @author leadpony
  */
-abstract class StreamJsonParserTest extends JsonParserTest {
+public class StreamJsonParserTest {
 
     static final Charset UTF_32BE = Charset.forName("UTF-32BE");
     static final Charset UTF_32LE = Charset.forName("UTF-32LE");
 
-    abstract Charset getEncoding();
+    private static final byte[] UTF_8_BOM = { (byte) 0xef, (byte) 0xbb, (byte) 0xbf };
+    private static final byte[] UTF_16BE_BOM = { (byte) 0xfe, (byte) 0xff };
+    private static final byte[] UTF_16LE_BOM = { (byte) 0xff, (byte) 0xfe };
+    private static final byte[] UTF_32BE_BOM = { 0x00, 0x00, (byte) 0xfe, (byte) 0xff };
+    private static final byte[] UTF_32LE_BOM = { (byte) 0xff, (byte) 0xfe, 0x00, 0x00 };
 
-    byte[] getByeOrderMark() {
-        return null;
+    private static JsonParserFactory parserFactory;
+
+    @BeforeAll
+    public static void setUpOnce() {
+        parserFactory = Json.createParserFactory(null);
     }
 
-    // Disables this because of repeated failures in some implementations.
-    @Disabled
-    @Override
-    public void hasNextShouldReturnResult(TerminationFixture fixture) {
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf8(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_8);
     }
 
-    // Disables this because of repeated failures in some implementations.
-    @Disabled
-    @Override
-    public void getLocationShouldReturnFinalLocation(LocationFixture fixture) {
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf16be(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_16BE);
     }
 
-    @Override
-    protected JsonParser createJsonParser(String json) {
-        Charset charset = getEncoding();
-        byte[] bom = getByeOrderMark();
-        InputStream in;
-        if (bom != null) {
-            in = createEncodedStream(json, charset, bom);
-        } else {
-            in = createEncodedStream(json, charset);
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf16le(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_16LE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf32be(JsonFixture fixture) {
+        testParser(fixture, UTF_32BE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf32le(JsonFixture fixture) {
+        testParser(fixture, UTF_32LE);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf8WithBom(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_8, UTF_8_BOM);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf16beWithBom(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_16BE, UTF_16BE_BOM);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf16leWithBom(JsonFixture fixture) {
+        testParser(fixture, StandardCharsets.UTF_16LE, UTF_16LE_BOM);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf32beWithBom(JsonFixture fixture) {
+        testParser(fixture, UTF_32BE, UTF_32BE_BOM);
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonFixture.class)
+    public void utf32leWithBom(JsonFixture fixture) {
+        testParser(fixture, UTF_32LE, UTF_32LE_BOM);
+    }
+
+    private void testParser(JsonFixture fixture, Charset charset) {
+        InputStream in = createEncodedStream(fixture.getJson(), charset);
+        JsonParser parser = parserFactory.createParser(in);
+        while (parser.hasNext()) {
+            parser.next();
         }
-        return parserFactory.createParser(in);
+        parser.close();
+    }
+
+    private void testParser(JsonFixture fixture, Charset charset, byte[] bom) {
+        InputStream in = createEncodedStream(fixture.getJson(), charset, bom);
+        JsonParser parser = parserFactory.createParser(in);
+        while (parser.hasNext()) {
+            parser.next();
+        }
+        parser.close();
     }
 
     private InputStream createEncodedStream(String json, Charset charset) {
@@ -75,95 +139,5 @@ abstract class StreamJsonParserTest extends JsonParserTest {
         System.arraycopy(bom, 0, bytes, 0, bom.length);
         System.arraycopy(buffer.array(), 0, bytes, bom.length, buffer.remaining());
         return new ByteArrayInputStream(bytes);
-    }
-
-    public static class UTF8Test extends StreamJsonParserTest {
-
-        @Override
-        Charset getEncoding() {
-            return StandardCharsets.UTF_8;
-        }
-    }
-
-    public static class UTF16BETest extends StreamJsonParserTest {
-
-        @Override
-        Charset getEncoding() {
-            return StandardCharsets.UTF_16BE;
-        }
-    }
-
-    public static class UTF16LETest extends StreamJsonParserTest {
-
-        @Override
-        Charset getEncoding() {
-            return StandardCharsets.UTF_16LE;
-        }
-    }
-
-    public static class UTF32BETest extends StreamJsonParserTest {
-
-        @Override
-        Charset getEncoding() {
-            return UTF_32BE;
-        }
-    }
-
-    public static class UTF32LETest extends StreamJsonParserTest {
-
-        @Override
-        Charset getEncoding() {
-            return UTF_32LE;
-        }
-    }
-
-    public static class BomUTF8Test extends UTF8Test {
-
-        private static final byte[] BOM = { (byte) 0xef, (byte) 0xbb, (byte) 0xbf };
-
-        @Override
-        byte[] getByeOrderMark() {
-            return BOM;
-        }
-    }
-
-    public static class BomUTF16BETest extends UTF16BETest {
-
-        private static final byte[] BOM = { (byte) 0xfe, (byte) 0xff };
-
-        @Override
-        byte[] getByeOrderMark() {
-            return BOM;
-        }
-    }
-
-    public static class BomUTF16LETest extends UTF16LETest {
-
-        private static final byte[] BOM = { (byte) 0xff, (byte) 0xfe };
-
-        @Override
-        byte[] getByeOrderMark() {
-            return BOM;
-        }
-    }
-
-    public static class BomUTF32BETest extends UTF32BETest {
-
-        private static final byte[] BOM = { 0x00, 0x00, (byte) 0xfe, (byte) 0xff };
-
-        @Override
-        byte[] getByeOrderMark() {
-            return BOM;
-        }
-    }
-
-    public static class BomUTF32LETest extends UTF32LETest {
-
-        private static final byte[] BOM = { (byte) 0xff, (byte) 0xfe, 0x00, 0x00 };
-
-        @Override
-        byte[] getByeOrderMark() {
-            return BOM;
-        }
     }
 }

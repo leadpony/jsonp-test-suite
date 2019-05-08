@@ -77,9 +77,6 @@
                         <dependenciesToScan>
                             <dependency>${project.groupId}:jsonp-test-suite-core</dependency>
                         </dependenciesToScan>
-                        <excludes>
-                            <exclude />
-                        </excludes>
                         <excludedGroups>ambiguous</excludedGroups>
                         <testFailureIgnore>true</testFailureIgnore>
                     </configuration>

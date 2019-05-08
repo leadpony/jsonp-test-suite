@@ -54,7 +54,7 @@ public class JsonParserTest {
 
     private static final Logger log = LogHelper.getLogger(JsonParserTest.class);
 
-    protected static JsonParserFactory parserFactory;
+    private static JsonParserFactory parserFactory;
 
     @BeforeAll
     public static void setUpOnce() {
