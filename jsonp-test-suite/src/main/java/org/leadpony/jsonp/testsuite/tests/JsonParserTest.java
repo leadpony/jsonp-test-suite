@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -210,10 +211,11 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(thrown).isInstanceOf(NoSuchElementException.class);
+
         log.info(thrown.getMessage());
     }
 
-    enum StringFixture implements JsonSource {
+    enum GetStringFixture implements JsonSource {
         EMPTY_STRING("\"\"", ""),
         BLANK_STRING("\" \"", " "),
         TWO_SPACES("\"  \"", "  "),
@@ -263,7 +265,7 @@ public class JsonParserTest {
         private final String json;
         private final String value;
 
-        private StringFixture(String json, String value) {
+        private GetStringFixture(String json, String value) {
             this.json = json;
             this.value = value;
         }
@@ -278,8 +280,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(StringFixture.class)
-    public void getStringShouldReturnString(StringFixture fixture) {
+    @EnumSource(GetStringFixture.class)
+    public void getStringShouldReturnString(GetStringFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
@@ -290,8 +292,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(StringFixture.class)
-    public void getStringShouldReturnStringFromItem(StringFixture fixture) {
+    @EnumSource(GetStringFixture.class)
+    public void getStringShouldReturnStringFromItem(GetStringFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
@@ -302,13 +304,13 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    public static Stream<StringFixture> getStringShouldReturnStringFromPropertyKey() {
-        return Stream.of(StringFixture.values()).filter(StringFixture::isString);
+    public static Stream<GetStringFixture> getStringShouldReturnStringFromPropertyKey() {
+        return Stream.of(GetStringFixture.values()).filter(GetStringFixture::isString);
     }
 
     @ParameterizedTest
     @MethodSource
-    public void getStringShouldReturnStringFromPropertyKey(StringFixture fixture) {
+    public void getStringShouldReturnStringFromPropertyKey(GetStringFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsPropertyKey());
 
         parser.next(); // '{'
@@ -320,8 +322,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(StringFixture.class)
-    public void getStringShouldReturnStringFromPropertyValue(StringFixture fixture) {
+    @EnumSource(GetStringFixture.class)
+    public void getStringShouldReturnStringFromPropertyValue(GetStringFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
@@ -333,7 +335,45 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    enum BigDecimalFixture implements JsonSource {
+    enum IllegalStateGetStingFixture implements JsonSource {
+        EMPTY("", 0),
+
+        TRUE("true", 1),
+        FALSE("false", 1),
+        NULL("null", 1),
+
+        ARRAY_OPENING("[]", 1),
+        ARRAY_CLOSING("[]", 2),
+
+        OBJECT_OPENING("{}", 1),
+        OBJECT_CLOSING("{}", 2),
+        ;
+        private final String json;
+        final int iterations;
+
+        IllegalStateGetStingFixture(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+        }
+
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetStingFixture.class)
+    public void getStringShouldThrowIllegalStateException(IllegalStateGetStingFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::getString);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    enum GetBigDecimalFixture implements JsonSource {
         ZERO("0"),
         MINUS_ZERO("-0"),
         ONE("1"),
@@ -377,7 +417,7 @@ public class JsonParserTest {
         private final String json;
         private final BigDecimal value;
 
-        private BigDecimalFixture(String json) {
+        private GetBigDecimalFixture(String json) {
             this.json = json;
             this.value = new BigDecimal(json);
         }
@@ -388,8 +428,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimal(BigDecimalFixture fixture) {
+    @EnumSource(GetBigDecimalFixture.class)
+    public void getBigDecimalShouldReturnBigDecimal(GetBigDecimalFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
@@ -400,8 +440,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimalFromItem(BigDecimalFixture fixture) {
+    @EnumSource(GetBigDecimalFixture.class)
+    public void getBigDecimalShouldReturnBigDecimalFromItem(GetBigDecimalFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
@@ -413,8 +453,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(BigDecimalFixture.class)
-    public void getBigDecimalShouldReturnBigDecimalFromPropertyValue(BigDecimalFixture fixture) {
+    @EnumSource(GetBigDecimalFixture.class)
+    public void getBigDecimalShouldReturnBigDecimalFromPropertyValue(GetBigDecimalFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
@@ -424,6 +464,46 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(fixture.value);
+    }
+
+    enum IllegalStateGetNumberFixture implements JsonSource {
+        EMPTY("", 0),
+
+        TRUE("true", 1),
+        FALSE("false", 1),
+        NULL("null", 1),
+
+        STRING("\"hello\"", 1),
+
+        ARRAY_OPENING("[]", 1),
+        ARRAY_CLOSING("[]", 2),
+
+        OBJECT_OPENING("{}", 1),
+        OBJECT_CLOSING("{}", 2),
+        ;
+        private final String json;
+        final int iterations;
+
+        IllegalStateGetNumberFixture(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+        }
+
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetNumberFixture.class)
+    public void getBigDecimalShouldThrowIllegalStateException(IllegalStateGetNumberFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::getBigDecimal);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
     }
 
     @ParameterizedTest
@@ -465,7 +545,37 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.getValue());
     }
 
-    enum IntegralFixture {
+    enum IllegalStateGetValueFixture implements JsonSource {
+        EMPTY("", 0),
+        ARRAY_CLOSING("[]", 2),
+        OBJECT_CLOSING("{}", 2),
+        ;
+        private final String json;
+        final int iterations;
+
+        IllegalStateGetValueFixture(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+        }
+
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetValueFixture.class)
+    public void getValueShouldThrowIllegalStateException(IllegalStateGetValueFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::getValue);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    enum IsIntegralFixture {
         ZERO("0", true),
         MINUS_ZERO("-0", true),
         ONE("1", true),
@@ -508,15 +618,15 @@ public class JsonParserTest {
         final String json;
         final boolean isIntegral;
 
-        IntegralFixture(String json, boolean isIntegral) {
+        IsIntegralFixture(String json, boolean isIntegral) {
             this.json = json;
             this.isIntegral = isIntegral;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(IntegralFixture.class)
-    public void isIntegralNumberShouldReturnBoolean(IntegralFixture fixture) {
+    @EnumSource(IsIntegralFixture.class)
+    public void isIntegralNumberShouldReturnBoolean(IsIntegralFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
         parser.next();
@@ -526,7 +636,19 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.isIntegral);
     }
 
-    enum IntFixture implements JsonSource {
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetNumberFixture.class)
+    public void isIntegralNumberShouldThrowIllegalStateException(IllegalStateGetNumberFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::isIntegralNumber);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    enum GetIntFixture implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -563,7 +685,7 @@ public class JsonParserTest {
         final String json;
         final int value;
 
-        private IntFixture(String json, int value) {
+        private GetIntFixture(String json, int value) {
             this.json = json;
             this.value = value;
         }
@@ -574,8 +696,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(IntFixture.class)
-    public void getIntShouldReturnInt(IntFixture fixture) {
+    @EnumSource(GetIntFixture.class)
+    public void getIntShouldReturnInt(GetIntFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
@@ -586,8 +708,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntFromItem(IntFixture fixture) {
+    @EnumSource(GetIntFixture.class)
+    public void getIntShouldReturnIntFromItem(GetIntFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '['
@@ -599,8 +721,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(IntFixture.class)
-    public void getIntShouldReturnIntFromPropertyValue(IntFixture fixture) {
+    @EnumSource(GetIntFixture.class)
+    public void getIntShouldReturnIntFromPropertyValue(GetIntFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
@@ -612,7 +734,19 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    enum LongFixture implements JsonSource {
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetNumberFixture.class)
+    public void getIntNumberShouldThrowIllegalStateException(IllegalStateGetNumberFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::getInt);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    enum GetLongFixture implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -654,7 +788,7 @@ public class JsonParserTest {
         final String json;
         final long value;
 
-        private LongFixture(String json, long value) {
+        private GetLongFixture(String json, long value) {
             this.json = json;
             this.value = value;
         }
@@ -665,8 +799,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLong(LongFixture fixture) {
+    @EnumSource(GetLongFixture.class)
+    public void getLongShouldReturnLong(GetLongFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJson());
 
         parser.next();
@@ -677,8 +811,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLongFromItem(LongFixture fixture) {
+    @EnumSource(GetLongFixture.class)
+    public void getLongShouldReturnLongFromItem(GetLongFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsArrayItem());
 
         parser.next(); // '[
@@ -690,8 +824,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LongFixture.class)
-    public void getLongShouldReturnLongFromPropertyValue(LongFixture fixture) {
+    @EnumSource(GetLongFixture.class)
+    public void getLongShouldReturnLongFromPropertyValue(GetLongFixture fixture) {
         JsonParser parser = createJsonParser(fixture.getJsonAsPropertyValue());
 
         parser.next(); // '{'
@@ -703,7 +837,19 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(fixture.value);
     }
 
-    enum LocationFixture {
+    @ParameterizedTest
+    @EnumSource(IllegalStateGetNumberFixture.class)
+    public void getLongNumberShouldThrowIllegalStateException(IllegalStateGetNumberFixture fixture) {
+        Throwable thrown = doIllegalCall(
+                fixture.getJson(), fixture.iterations,
+                JsonParser::getLong);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
+    }
+
+    enum GetLocationFixture {
 
         SIMPLE_VALUE("42", at(1, 3, 2)),
 
@@ -756,7 +902,7 @@ public class JsonParserTest {
         final String json;
         final List<JsonLocation> locations;
 
-        LocationFixture(String json, JsonLocation... locations) {
+        GetLocationFixture(String json, JsonLocation... locations) {
             this.json = json;
             this.locations = Arrays.asList(locations);
         }
@@ -767,8 +913,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LocationFixture.class)
-    public void getLocationShouldReturnLocations(LocationFixture fixture) {
+    @EnumSource(GetLocationFixture.class)
+    public void getLocationShouldReturnLocations(GetLocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
 
         List<JsonLocation> actual = new ArrayList<>();
@@ -784,8 +930,8 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LocationFixture.class)
-    public void getLocationShouldReturnInitialLocation(LocationFixture fixture) {
+    @EnumSource(GetLocationFixture.class)
+    public void getLocationShouldReturnInitialLocation(GetLocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
         JsonLocation actual = parser.getLocation();
         parser.close();
@@ -796,9 +942,9 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(LocationFixture.class)
+    @EnumSource(GetLocationFixture.class)
     @Ambiguous
-    public void getLocationShouldReturnFinalLocation(LocationFixture fixture) {
+    public void getLocationShouldReturnFinalLocation(GetLocationFixture fixture) {
         JsonParser parser = createJsonParser(fixture.json);
         while (parser.hasNext()) {
             parser.next();
@@ -809,7 +955,18 @@ public class JsonParserTest {
         assertThat(actual).usingComparator(JsonLocations.COMPARATOR).isEqualTo(fixture.getFinalLocation());
     }
 
-    protected JsonParser createJsonParser(String json) {
+    private JsonParser createJsonParser(String json) {
         return parserFactory.createParser(new StringReader(json));
+    }
+
+    private Throwable doIllegalCall(String json, int iterations, Consumer<JsonParser> consumer) {
+        try (JsonParser parser = createJsonParser(json)) {
+            while (iterations-- > 0) {
+                parser.next();
+            }
+            return catchThrowable(()->{
+                consumer.accept(parser);
+            });
+        }
     }
 }
