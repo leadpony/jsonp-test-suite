@@ -15,10 +15,23 @@ The following tools are required to build and run the artifacts.
 
 The commands below build and install the test suite into your local Maven repository.
 
-```
+```bash
 $ cd jsonp-test-suite
 $ mvn clean install
 ```
+
+For testing with the Reference Implementation:
+
+```bash
+$ mvn test -P test-with-ri
+```
+
+For testing with [Apache Johnzon]:
+
+```bash
+$ mvn test -P test-with-johnzon
+```
+
 ## Benchmark
 
 ### How to Build

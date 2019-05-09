@@ -6,15 +6,9 @@
     <groupId>org.leadpony.jsonp-test-suite</groupId>
     <artifactId>jsonp-test-suite</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <name>JSON-P Test Suite</name>
-
-    <modules>
-        <module>jsonp-test-suite-core</module>
-        <module>ri-test</module>
-        <module>johnzon-test</module>
-    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -48,6 +42,25 @@
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -74,15 +87,47 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M3</version>
                     <configuration>
-                        <dependenciesToScan>
-                            <dependency>${project.groupId}:jsonp-test-suite-core</dependency>
-                        </dependenciesToScan>
+                        <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
                         <excludedGroups>ambiguous</excludedGroups>
-                        <testFailureIgnore>true</testFailureIgnore>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
+
+    <profiles>
+        <profile>
+            <id>no-test</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-with-ri</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>jakarta.json</artifactId>
+                    <version>1.1.5</version>
+                    <classifier>module</classifier>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>test-with-johnzon</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.johnzon</groupId>
+                    <artifactId>johnzon-core</artifactId>
+                    <version>1.1.11</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
 </project>
