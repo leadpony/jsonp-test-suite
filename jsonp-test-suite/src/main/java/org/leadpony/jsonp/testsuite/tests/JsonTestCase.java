@@ -23,7 +23,7 @@ import javax.json.JsonValue;
 /**
  * @author leadpony
  */
-enum JsonFixture implements JsonSource {
+enum JsonTestCase implements JsonSource {
     TRUE,
     FALSE,
     NULL,
@@ -69,18 +69,18 @@ enum JsonFixture implements JsonSource {
     private final String json;
     private final JsonValue value;
 
-    private JsonFixture() {
-        JsonValueFixture fixture = JsonValueFixture.valueOf(name());
-        this.json = fixture.getString();
-        this.value = fixture.getJsonValue();
+    private JsonTestCase() {
+        JsonValueTestCase testCase = JsonValueTestCase.valueOf(name());
+        this.json = testCase.getString();
+        this.value = testCase.getJsonValue();
     }
 
-    private JsonFixture(String json, JsonValue value) {
+    private JsonTestCase(String json, JsonValue value) {
         this.json = json;
         this.value = value;
     }
 
-    private JsonFixture(String json, BigDecimal value) {
+    private JsonTestCase(String json, BigDecimal value) {
         this.json = json;
         this.value = Json.createValue(value);
     }

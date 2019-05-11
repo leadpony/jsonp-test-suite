@@ -32,7 +32,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 /**
  * @author leadpony
  */
-public class StreamJsonParserTest {
+public class CharsetDetectionTest {
 
     static final Charset UTF_32BE = Charset.forName("UTF-32BE");
     static final Charset UTF_32LE = Charset.forName("UTF-32LE");
@@ -51,67 +51,67 @@ public class StreamJsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf8(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_8);
+    @EnumSource(JsonTestCase.class)
+    public void utf8(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_8);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf16be(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_16BE);
+    @EnumSource(JsonTestCase.class)
+    public void utf16be(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_16BE);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf16le(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_16LE);
+    @EnumSource(JsonTestCase.class)
+    public void utf16le(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_16LE);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf32be(JsonFixture fixture) {
-        testParser(fixture, UTF_32BE);
+    @EnumSource(JsonTestCase.class)
+    public void utf32be(JsonTestCase test) {
+        testParser(test, UTF_32BE);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf32le(JsonFixture fixture) {
-        testParser(fixture, UTF_32LE);
+    @EnumSource(JsonTestCase.class)
+    public void utf32le(JsonTestCase test) {
+        testParser(test, UTF_32LE);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf8WithBom(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_8, UTF_8_BOM);
+    @EnumSource(JsonTestCase.class)
+    public void utf8WithBom(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_8, UTF_8_BOM);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf16beWithBom(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_16BE, UTF_16BE_BOM);
+    @EnumSource(JsonTestCase.class)
+    public void utf16beWithBom(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_16BE, UTF_16BE_BOM);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf16leWithBom(JsonFixture fixture) {
-        testParser(fixture, StandardCharsets.UTF_16LE, UTF_16LE_BOM);
+    @EnumSource(JsonTestCase.class)
+    public void utf16leWithBom(JsonTestCase test) {
+        testParser(test, StandardCharsets.UTF_16LE, UTF_16LE_BOM);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf32beWithBom(JsonFixture fixture) {
-        testParser(fixture, UTF_32BE, UTF_32BE_BOM);
+    @EnumSource(JsonTestCase.class)
+    public void utf32beWithBom(JsonTestCase test) {
+        testParser(test, UTF_32BE, UTF_32BE_BOM);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonFixture.class)
-    public void utf32leWithBom(JsonFixture fixture) {
-        testParser(fixture, UTF_32LE, UTF_32LE_BOM);
+    @EnumSource(JsonTestCase.class)
+    public void utf32leWithBom(JsonTestCase test) {
+        testParser(test, UTF_32LE, UTF_32LE_BOM);
     }
 
-    private void testParser(JsonFixture fixture, Charset charset) {
-        InputStream in = createEncodedStream(fixture.getJson(), charset);
+    private void testParser(JsonTestCase test, Charset charset) {
+        InputStream in = createEncodedStream(test.getJson(), charset);
         JsonParser parser = parserFactory.createParser(in);
         while (parser.hasNext()) {
             parser.next();
@@ -119,8 +119,8 @@ public class StreamJsonParserTest {
         parser.close();
     }
 
-    private void testParser(JsonFixture fixture, Charset charset, byte[] bom) {
-        InputStream in = createEncodedStream(fixture.getJson(), charset, bom);
+    private void testParser(JsonTestCase test, Charset charset, byte[] bom) {
+        InputStream in = createEncodedStream(test.getJson(), charset, bom);
         JsonParser parser = parserFactory.createParser(in);
         while (parser.hasNext()) {
             parser.next();

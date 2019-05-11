@@ -163,23 +163,23 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
-    @EnumSource(IllFormedJsonFixture.class)
-    public void readValueShouldThrowExceptionIfIllFormed(IllFormedJsonFixture fixture) {
+    @EnumSource(IllFormedJsonTestCase.class)
+    public void readValueShouldThrowExceptionIfIllFormed(IllFormedJsonTestCase test) {
         Throwable thrown = catchThrowable(()->{
             try (JsonReader reader = factory.createReader(
-                    new StringReader(fixture.getJson()))) {
+                    new StringReader(test.getJson()))) {
                 reader.readValue();
             }
         });
 
-        log.info(fixture.toString());
+        log.info(test.toString());
         log.info(thrown.getMessage());
 
         assertThat(thrown).isInstanceOf(JsonParsingException.class);
         JsonParsingException actual = (JsonParsingException) thrown;
         JsonLocation location = actual.getLocation();
-        assertThat(location.getLineNumber()).isEqualTo(fixture.getLineNumber());
-        assertThat(location.getColumnNumber()).isEqualTo(fixture.getColumnNumber());
-        assertThat(location.getStreamOffset()).isEqualTo(fixture.getStreamOffset());
+        assertThat(location.getLineNumber()).isEqualTo(test.getLineNumber());
+        assertThat(location.getColumnNumber()).isEqualTo(test.getColumnNumber());
+        assertThat(location.getStreamOffset()).isEqualTo(test.getStreamOffset());
     }
 }

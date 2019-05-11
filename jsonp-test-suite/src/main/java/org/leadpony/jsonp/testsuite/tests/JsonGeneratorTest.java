@@ -43,7 +43,7 @@ public class JsonGeneratorTest {
         factory = Json.createGeneratorFactory(null);
     }
 
-    static enum BooleanFixture {
+    static enum BooleanTestCase {
         TRUE(true, "true"),
         FALSE(false, "false")
         ;
@@ -51,21 +51,21 @@ public class JsonGeneratorTest {
         final boolean value;
         final String expected;
 
-        private BooleanFixture(boolean value, String expected) {
+        private BooleanTestCase(boolean value, String expected) {
             this.value = value;
             this.expected = expected;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(BooleanFixture.class)
-    public void writeShouldWriteBoolean(BooleanFixture fixture) {
+    @EnumSource(BooleanTestCase.class)
+    public void writeShouldWriteBoolean(BooleanTestCase test) {
 
         String actual = generate(g->{
-            g.write(fixture.value);
+            g.write(test.value);
         });
 
-        assertThat(actual).isEqualTo(fixture.expected);
+        assertThat(actual).isEqualTo(test.expected);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo("null");
     }
 
-    static enum StringFixture {
+    static enum StringTestCase {
         EMPTY_STRING("", "\"\""),
         BLANK_STRING(" ", "\" \""),
         SINGLE_WORD("hello", "\"hello\""),
@@ -91,24 +91,24 @@ public class JsonGeneratorTest {
         final String value;
         final String expected;
 
-        private StringFixture(String value, String expected) {
+        private StringTestCase(String value, String expected) {
             this.value = value;
             this.expected = expected;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(StringFixture.class)
-    public void writeShouldWriteString(StringFixture fixture) {
+    @EnumSource(StringTestCase.class)
+    public void writeShouldWriteString(StringTestCase test) {
 
         String actual = generate(g->{
-            g.write(fixture.value);
+            g.write(test.value);
         });
 
-        assertThat(actual).isEqualTo(fixture.expected);
+        assertThat(actual).isEqualTo(test.expected);
     }
 
-    static enum IntFixture {
+    static enum IntTestCase {
         ZERO(0, "0"),
         ONE(1, "1"),
         MINUS_ONE(-1, "-1"),
@@ -129,24 +129,24 @@ public class JsonGeneratorTest {
         final int value;
         final String expected;
 
-        private IntFixture(int value, String expected) {
+        private IntTestCase(int value, String expected) {
             this.value = value;
             this.expected = expected;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(IntFixture.class)
-    public void writeShouldWriteInteger(IntFixture fixture) {
+    @EnumSource(IntTestCase.class)
+    public void writeShouldWriteInteger(IntTestCase test) {
 
         String actual = generate(g->{
-            g.write(fixture.value);
+            g.write(test.value);
         });
 
-        assertThat(actual).isEqualTo(fixture.expected);
+        assertThat(actual).isEqualTo(test.expected);
     }
 
-    static enum LongFixture {
+    static enum LongTestCase {
         ZERO(0L, "0"),
         ONE(1L, "1"),
         MINUS_ONE(-1L, "-1"),
@@ -167,32 +167,32 @@ public class JsonGeneratorTest {
         final long value;
         final String expected;
 
-        private LongFixture(long value, String expected) {
+        private LongTestCase(long value, String expected) {
             this.value = value;
             this.expected = expected;
         }
     }
 
     @ParameterizedTest
-    @EnumSource(LongFixture.class)
-    public void writeShouldWriteLong(LongFixture fixture) {
+    @EnumSource(LongTestCase.class)
+    public void writeShouldWriteLong(LongTestCase test) {
 
         String actual = generate(g->{
-            g.write(fixture.value);
+            g.write(test.value);
         });
 
-        assertThat(actual).isEqualTo(fixture.expected);
+        assertThat(actual).isEqualTo(test.expected);
     }
 
     @ParameterizedTest
-    @EnumSource(JsonValueFixture.class)
-    public void writeShouldWriteJsonValue(JsonValueFixture fixture) {
+    @EnumSource(JsonValueTestCase.class)
+    public void writeShouldWriteJsonValue(JsonValueTestCase test) {
 
         String actual = generate(g->{
-            g.write(fixture.getJsonValue());
+            g.write(test.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(fixture.getString());
+        assertThat(actual).isEqualTo(test.getString());
     }
 
     @Test

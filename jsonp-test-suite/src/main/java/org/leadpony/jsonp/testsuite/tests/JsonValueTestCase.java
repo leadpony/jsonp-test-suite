@@ -33,7 +33,7 @@ import javax.json.JsonValue.ValueType;
  *
  * @author leadpony
  */
-enum JsonValueFixture {
+enum JsonValueTestCase {
     TRUE(JsonValue.TRUE, "true"),
     FALSE(JsonValue.FALSE, "false"),
     NULL(JsonValue.NULL, "null"),
@@ -212,24 +212,24 @@ enum JsonValueFixture {
 
     private static JsonBuilderFactory builderFactory;
 
-    JsonValueFixture(JsonValue value, String string) {
+    JsonValueTestCase(JsonValue value, String string) {
         this.value = value;
         this.string = string;
     }
 
-    JsonValueFixture(String value, String string) {
+    JsonValueTestCase(String value, String string) {
         this(Json.createValue(value), string);
     }
 
-    JsonValueFixture(int value, String string) {
+    JsonValueTestCase(int value, String string) {
         this(Json.createValue(value), string);
     }
 
-    JsonValueFixture(long value, String string) {
+    JsonValueTestCase(long value, String string) {
         this(Json.createValue(value), string);
     }
 
-    JsonValueFixture(BigDecimal value, String string) {
+    JsonValueTestCase(BigDecimal value, String string) {
         this(Json.createValue(value), string);
     }
 
@@ -266,9 +266,9 @@ enum JsonValueFixture {
      *
      * @return all arrays as a stream.
      */
-    public static Stream<JsonValueFixture> getArraysAsStream() {
+    public static Stream<JsonValueTestCase> getArraysAsStream() {
         return Stream.of(values())
-                .filter(JsonValueFixture::isArray);
+                .filter(JsonValueTestCase::isArray);
     }
 
     /**
@@ -276,19 +276,19 @@ enum JsonValueFixture {
      *
      * @return all objects as a stream.
      */
-    public static Stream<JsonValueFixture> getObjectsAsStream() {
+    public static Stream<JsonValueTestCase> getObjectsAsStream() {
         return Stream.of(values())
-                .filter(JsonValueFixture::isObject);
+                .filter(JsonValueTestCase::isObject);
     }
 
-    public static Stream<JsonValueFixture> getStructuresAsStream() {
+    public static Stream<JsonValueTestCase> getStructuresAsStream() {
         return Stream.of(values())
-                .filter(JsonValueFixture::isStructure);
+                .filter(JsonValueTestCase::isStructure);
     }
 
-    public static Stream<JsonValueFixture> getStringsAsStream() {
+    public static Stream<JsonValueTestCase> getStringsAsStream() {
         return Stream.of(values())
-                .filter(JsonValueFixture::isString);
+                .filter(JsonValueTestCase::isString);
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {

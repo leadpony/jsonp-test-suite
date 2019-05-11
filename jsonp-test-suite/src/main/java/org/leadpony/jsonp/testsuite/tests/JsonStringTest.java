@@ -17,6 +17,8 @@ package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.Stream;
+
 import javax.json.JsonString;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,13 +31,17 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class JsonStringTest {
 
+    public static Stream<JsonValueTestCase> toStringShouldEscapeString() {
+        return JsonValueTestCase.getStringsAsStream();
+    }
+
     @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getStringsAsStream")
-    public void toStringShouldEscapeString(JsonValueFixture fixture) {
-        JsonString sut = (JsonString) fixture.getJsonValue();
+    @MethodSource
+    public void toStringShouldEscapeString(JsonValueTestCase test) {
+        JsonString sut = (JsonString) test.getJsonValue();
 
         String actual = sut.toString();
 
-        assertThat(actual).isEqualTo(fixture.getString());
+        assertThat(actual).isEqualTo(test.getString());
     }
 }

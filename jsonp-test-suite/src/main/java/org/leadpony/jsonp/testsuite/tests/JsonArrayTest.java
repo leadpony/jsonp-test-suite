@@ -17,6 +17,8 @@ package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.stream.Stream;
+
 import javax.json.JsonArray;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,13 +31,17 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class JsonArrayTest {
 
-    @ParameterizedTest
-    @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonValueFixture#getArraysAsStream")
-    public void toStringShouldReturnStringAsExpected(JsonValueFixture fixture) {
+    public static Stream<JsonValueTestCase> toStringShouldReturnStringAsExpected() {
+        return JsonValueTestCase.getArraysAsStream();
+    }
 
-        JsonArray sut = (JsonArray) fixture.getJsonValue();
+    @ParameterizedTest
+    @MethodSource
+    public void toStringShouldReturnStringAsExpected(JsonValueTestCase test) {
+
+        JsonArray sut = (JsonArray) test.getJsonValue();
         String actual = sut.toString();
 
-        assertThat(actual).isEqualTo(fixture.getString());
+        assertThat(actual).isEqualTo(test.getString());
     }
 }

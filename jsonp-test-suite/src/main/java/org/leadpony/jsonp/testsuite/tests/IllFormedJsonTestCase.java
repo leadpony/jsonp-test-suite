@@ -16,11 +16,11 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 /**
- * Test fixtures for ill-formed JSON.
+ * Test cases for ill-formed JSON.
  *
  * @author leadpony
  */
-enum IllFormedJsonFixture {
+enum IllFormedJsonTestCase {
 
     EMPTY("", 1, 1, 0),
     BLANK("    ", 1, 5, 4),
@@ -68,7 +68,7 @@ enum IllFormedJsonFixture {
     private final long columnNumber;
     private final long streamOffset;
 
-    private IllFormedJsonFixture(String json, long lineNumber, long columnNumber, long streamOffset) {
+    private IllFormedJsonTestCase(String json, long lineNumber, long columnNumber, long streamOffset) {
         this.json = json;
         this.lineNumber = lineNumber;
         this.columnNumber = columnNumber;
