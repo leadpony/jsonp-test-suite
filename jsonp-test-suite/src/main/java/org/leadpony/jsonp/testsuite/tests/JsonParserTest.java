@@ -506,75 +506,6 @@ public class JsonParserTest {
         log.info(thrown.getMessage());
     }
 
-    @ParameterizedTest
-    @EnumSource(JsonTestCase.class)
-    public void getValueShouldReturnValue(JsonTestCase test) {
-        JsonParser parser = createJsonParser(test.getJson());
-
-        parser.next();
-        JsonValue actual = parser.getValue();
-        parser.close();
-
-        assertThat(actual).isEqualTo(test.getValue());
-    }
-
-    @ParameterizedTest
-    @EnumSource(JsonTestCase.class)
-    public void getValueShouldReturnValueFromItem(JsonTestCase test) {
-        JsonParser parser = createJsonParser(test.getJsonAsArrayItem());
-
-        parser.next(); // '['
-        parser.next();
-        JsonValue actual = parser.getValue();
-        parser.close();
-
-        assertThat(actual).isEqualTo(test.getValue());
-    }
-
-    @ParameterizedTest
-    @EnumSource(JsonTestCase.class)
-    public void getValueShouldReturnValueFromPropertyValue(JsonTestCase test) {
-        JsonParser parser = createJsonParser(test.getJsonAsPropertyValue());
-
-        parser.next(); // '{'
-        parser.next(); // key name
-        parser.next();
-        JsonValue actual = parser.getValue();
-        parser.close();
-
-        assertThat(actual).isEqualTo(test.getValue());
-    }
-
-    enum IllegalValueRetrievalTestCase implements JsonSource {
-        EMPTY("", 0),
-        ARRAY_CLOSING("[]", 2),
-        OBJECT_CLOSING("{}", 2),
-        ;
-        private final String json;
-        final int iterations;
-
-        IllegalValueRetrievalTestCase(String json, int iterations) {
-            this.json = json;
-            this.iterations = iterations;
-        }
-
-        public String getJson() {
-            return json;
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalValueRetrievalTestCase.class)
-    public void getValueShouldThrowIllegalStateException(IllegalValueRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getValue);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        log.info(thrown.getMessage());
-    }
-
     enum IsIntegralTestCase {
         ZERO("0", true),
         MINUS_ZERO("-0", true),
@@ -953,6 +884,75 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).usingComparator(JsonLocations.COMPARATOR).isEqualTo(test.getFinalLocation());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonTestCase.class)
+    public void getValueShouldReturnValue(JsonTestCase test) {
+        JsonParser parser = createJsonParser(test.getJson());
+
+        parser.next();
+        JsonValue actual = parser.getValue();
+        parser.close();
+
+        assertThat(actual).isEqualTo(test.getValue());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonTestCase.class)
+    public void getValueShouldReturnValueFromItem(JsonTestCase test) {
+        JsonParser parser = createJsonParser(test.getJsonAsArrayItem());
+
+        parser.next(); // '['
+        parser.next();
+        JsonValue actual = parser.getValue();
+        parser.close();
+
+        assertThat(actual).isEqualTo(test.getValue());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonTestCase.class)
+    public void getValueShouldReturnValueFromPropertyValue(JsonTestCase test) {
+        JsonParser parser = createJsonParser(test.getJsonAsPropertyValue());
+
+        parser.next(); // '{'
+        parser.next(); // key name
+        parser.next();
+        JsonValue actual = parser.getValue();
+        parser.close();
+
+        assertThat(actual).isEqualTo(test.getValue());
+    }
+
+    enum IllegalValueRetrievalTestCase implements JsonSource {
+        EMPTY("", 0),
+        ARRAY_CLOSING("[]", 2),
+        OBJECT_CLOSING("{}", 2),
+        ;
+        private final String json;
+        final int iterations;
+
+        IllegalValueRetrievalTestCase(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+        }
+
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IllegalValueRetrievalTestCase.class)
+    public void getValueShouldThrowIllegalStateException(IllegalValueRetrievalTestCase test) {
+        Throwable thrown = doIllegalCall(
+                test.getJson(), test.iterations,
+                JsonParser::getValue);
+
+        assertThat(thrown).isInstanceOf(IllegalStateException.class);
+
+        log.info(thrown.getMessage());
     }
 
     private JsonParser createJsonParser(String json) {
