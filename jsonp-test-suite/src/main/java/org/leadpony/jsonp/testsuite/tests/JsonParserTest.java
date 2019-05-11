@@ -21,9 +21,11 @@ import static org.leadpony.jsonp.testsuite.helper.JsonLocations.at;
 
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -953,6 +955,126 @@ public class JsonParserTest {
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
         log.info(thrown.getMessage());
+    }
+
+    enum ArrayStreamTestCase implements JsonSource {
+        EMPTY_ARRAY("[]"),
+        SIMPLE_ARRAY("[42,\"hello\", true,false,null]",
+                Json.createValue(42),
+                Json.createValue("hello"),
+                JsonValue.TRUE,
+                JsonValue.FALSE,
+                JsonValue.NULL
+                ),
+        NESTED_ARRAY("[[],{}]",
+                JsonValue.EMPTY_JSON_ARRAY,
+                JsonValue.EMPTY_JSON_OBJECT),
+        ;
+
+        private final String json;
+        final JsonValue[] values;
+
+        ArrayStreamTestCase(String json, JsonValue... values) {
+            this.json = json;
+            this.values = values;
+        }
+
+        @Override
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ArrayStreamTestCase.class)
+    public void getArrayStreamShouldReturnsItemsAsStream(ArrayStreamTestCase test) {
+        JsonParser parser = createJsonParser(test.getJson());
+        parser.next();
+        Stream<JsonValue> actual = parser.getArrayStream();
+
+        assertThat(actual).containsExactly(test.values);
+        parser.close();
+    }
+
+    enum ObjectStreamTestCase implements JsonSource {
+        EMPTY_OBJECT("{}"),
+
+        SIMPLE_OBJECT("{\"a\":42,\"b\":\"hello\",\"c\":true,\"d\":false,\"e\":null}",
+                entry("a", Json.createValue(42)),
+                entry("b", Json.createValue("hello")),
+                entry("c", JsonValue.TRUE),
+                entry("d", JsonValue.FALSE),
+                entry("e", JsonValue.NULL)
+                ),
+
+        NESTED_OBJECT("{\"a\":[],\"b\":{}}",
+                entry("a", JsonValue.EMPTY_JSON_ARRAY),
+                entry("b", JsonValue.EMPTY_JSON_OBJECT)
+                )
+        ;
+
+        private final String json;
+        final Map.Entry<String, JsonValue>[] values;
+
+        @SafeVarargs
+        ObjectStreamTestCase(String json, Map.Entry<String, JsonValue>... values) {
+            this.json = json;
+            this.values = values;
+        }
+
+        @Override
+        public String getJson() {
+            return json;
+        }
+
+        private static Map.Entry<String, JsonValue> entry(String key, JsonValue value) {
+            return new AbstractMap.SimpleEntry<String, JsonValue>(key, value);
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ObjectStreamTestCase.class)
+    public void getObjectStreamShouldReturnsItemsAsStream(ObjectStreamTestCase test) {
+        JsonParser parser = createJsonParser(test.getJson());
+        parser.next();
+        Stream<Map.Entry<String, JsonValue>> actual = parser.getObjectStream();
+
+        assertThat(actual).containsExactly(test.values);
+        parser.close();
+    }
+
+    enum ValueStreamTestCase implements JsonSource {
+        NUMBER("42", Json.createValue(42)),
+        STRING("\"hello\"", Json.createValue("hello")),
+        TRUE("true", JsonValue.TRUE),
+        FALSE("false", JsonValue.FALSE),
+        NULL("null", JsonValue.NULL),
+        EMPTY_ARRAY("[]", JsonValue.EMPTY_JSON_ARRAY),
+        EMPTY_OBJECT("{}", JsonValue.EMPTY_JSON_OBJECT),
+        ;
+
+        private final String json;
+        final JsonValue[] values;
+
+        ValueStreamTestCase(String json, JsonValue... values) {
+            this.json = json;
+            this.values = values;
+        }
+
+        @Override
+        public String getJson() {
+            return json;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ValueStreamTestCase.class)
+    public void getValueStreamShouldReturnsItemsAsStream(ValueStreamTestCase test) {
+        JsonParser parser = createJsonParser(test.getJson());
+        Stream<JsonValue> actual = parser.getValueStream();
+
+        assertThat(actual).containsExactly(test.values);
+        parser.close();
     }
 
     private JsonParser createJsonParser(String json) {
