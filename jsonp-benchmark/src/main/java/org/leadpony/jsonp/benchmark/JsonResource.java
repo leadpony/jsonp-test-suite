@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the JSON-P Benchmark Authors.
+ * Copyright 2019 the JSON-P Test Suite Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public enum JsonResource {
     GLOSSARY("/org/json/example/glossary.json"),
     RFC7159_OBJECT("/org/ietf/rfc/rfc7159/image.json"),
     RFC7159_ARRAY("/org/ietf/rfc/rfc7159/zip.json"),
+    ATOM_API("/com/github/atom-api.json"),
     ;
 
     private final String name;

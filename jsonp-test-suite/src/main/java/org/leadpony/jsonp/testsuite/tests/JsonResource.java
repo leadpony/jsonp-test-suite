@@ -38,6 +38,8 @@ enum JsonResource {
 
     IMAGE("/org/ietf/rfc/rfc7159/image.json", ValueType.OBJECT),
     ZIP("/org/ietf/rfc/rfc7159/zip.json", ValueType.ARRAY),
+
+    ATOM_API("/com/github/atom-api.json", ValueType.OBJECT),
     ;
 
     private final String name;
