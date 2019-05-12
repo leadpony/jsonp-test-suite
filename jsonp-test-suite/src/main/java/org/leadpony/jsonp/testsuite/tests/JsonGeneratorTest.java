@@ -43,15 +43,14 @@ public class JsonGeneratorTest {
         factory = Json.createGeneratorFactory(null);
     }
 
-    static enum BooleanTestCase {
+    enum BooleanTestCase {
         TRUE(true, "true"),
-        FALSE(false, "false")
-        ;
+        FALSE(false, "false");
 
         final boolean value;
         final String expected;
 
-        private BooleanTestCase(boolean value, String expected) {
+        BooleanTestCase(boolean value, String expected) {
             this.value = value;
             this.expected = expected;
         }
@@ -61,7 +60,7 @@ public class JsonGeneratorTest {
     @EnumSource(BooleanTestCase.class)
     public void writeShouldWriteBoolean(BooleanTestCase test) {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.write(test.value);
         });
 
@@ -71,27 +70,26 @@ public class JsonGeneratorTest {
     @Test
     public void writeNullShouldWriteNull() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeNull();
         });
 
         assertThat(actual).isEqualTo("null");
     }
 
-    static enum StringTestCase {
+    enum StringTestCase {
         EMPTY_STRING("", "\"\""),
         BLANK_STRING(" ", "\" \""),
         SINGLE_WORD("hello", "\"hello\""),
         NULL("null", "\"null\""),
         INTEGER("42", "\"42\""),
         NUMBER("3.14", "\"3.14\""),
-        CONTAINING_SPACE("hello world", "\"hello world\""),
-        ;
+        CONTAINING_SPACE("hello world", "\"hello world\"");
 
         final String value;
         final String expected;
 
-        private StringTestCase(String value, String expected) {
+        StringTestCase(String value, String expected) {
             this.value = value;
             this.expected = expected;
         }
@@ -101,14 +99,14 @@ public class JsonGeneratorTest {
     @EnumSource(StringTestCase.class)
     public void writeShouldWriteString(StringTestCase test) {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.write(test.value);
         });
 
         assertThat(actual).isEqualTo(test.expected);
     }
 
-    static enum IntTestCase {
+    enum IntTestCase {
         ZERO(0, "0"),
         ONE(1, "1"),
         MINUS_ONE(-1, "-1"),
@@ -123,13 +121,12 @@ public class JsonGeneratorTest {
         MINUS_HOURS_PER_DAY(-24, "-24"),
         MINUS_DAYS_PER_YEAR(-365, "-365"),
         MAX_INTEGER(Integer.MAX_VALUE, "2147483647"),
-        MIN_INTEGER(Integer.MIN_VALUE, "-2147483648"),
-        ;
+        MIN_INTEGER(Integer.MIN_VALUE, "-2147483648");
 
         final int value;
         final String expected;
 
-        private IntTestCase(int value, String expected) {
+        IntTestCase(int value, String expected) {
             this.value = value;
             this.expected = expected;
         }
@@ -139,14 +136,14 @@ public class JsonGeneratorTest {
     @EnumSource(IntTestCase.class)
     public void writeShouldWriteInteger(IntTestCase test) {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.write(test.value);
         });
 
         assertThat(actual).isEqualTo(test.expected);
     }
 
-    static enum LongTestCase {
+    enum LongTestCase {
         ZERO(0L, "0"),
         ONE(1L, "1"),
         MINUS_ONE(-1L, "-1"),
@@ -161,13 +158,12 @@ public class JsonGeneratorTest {
         MINUS_HOURS_PER_DAY(-24L, "-24"),
         MINUS_DAYS_PER_YEAR(-365L, "-365"),
         MAX_INTEGER(Long.MAX_VALUE, "9223372036854775807"),
-        MIN_INTEGER(Long.MIN_VALUE, "-9223372036854775808"),
-        ;
+        MIN_INTEGER(Long.MIN_VALUE, "-9223372036854775808");
 
         final long value;
         final String expected;
 
-        private LongTestCase(long value, String expected) {
+        LongTestCase(long value, String expected) {
             this.value = value;
             this.expected = expected;
         }
@@ -177,7 +173,7 @@ public class JsonGeneratorTest {
     @EnumSource(LongTestCase.class)
     public void writeShouldWriteLong(LongTestCase test) {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.write(test.value);
         });
 
@@ -188,7 +184,7 @@ public class JsonGeneratorTest {
     @EnumSource(JsonValueTestCase.class)
     public void writeShouldWriteJsonValue(JsonValueTestCase test) {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.write(test.getJsonValue());
         });
 
@@ -198,7 +194,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteEmptyArray() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartArray();
             g.writeEnd();
             g.flush();
@@ -210,7 +206,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteSingleItemArray() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartArray();
             g.write(true);
             g.writeEnd();
@@ -223,7 +219,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteMultipleItemsArray() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartArray();
             g.write(true);
             g.write(false);
@@ -236,7 +232,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteArrayContainingArray() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartArray();
             g.writeStartArray();
             g.write(1);
@@ -255,7 +251,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteArrayContainingObject() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartArray();
             g.writeStartObject();
             g.write("a", 1);
@@ -274,7 +270,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteEmptyObject() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartObject();
             g.writeEnd();
         });
@@ -285,7 +281,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteSinglePropertyObject() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartObject();
             g.write("a", 365);
             g.writeEnd();
@@ -297,7 +293,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteMultiplePropertiesObject() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartObject();
             g.write("a", 365);
             g.write("b", "hello");
@@ -310,7 +306,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteObjectContainingArray() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartObject();
             g.writeStartArray("a");
             g.write(1);
@@ -330,7 +326,7 @@ public class JsonGeneratorTest {
     @Test
     public void generatorShouldWriteObjectContainingObject() {
 
-        String actual = generate(g->{
+        String actual = generate(g -> {
             g.writeStartObject();
             g.writeStartObject("a");
             g.write("a1", 1);

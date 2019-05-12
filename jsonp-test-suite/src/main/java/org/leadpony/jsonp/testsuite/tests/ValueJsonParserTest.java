@@ -51,10 +51,10 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
 public class ValueJsonParserTest {
 
     @SuppressWarnings("unused")
-    private static final Logger log = LogHelper.getLogger(JsonParserTest.class);
+    private static final Logger LOG = LogHelper.getLogger(JsonParserTest.class);
 
-    private static final JsonParserFactory parserFactory = Json.createParserFactory(null);
-    private static final JsonBuilderFactory builderFactory = Json.createBuilderFactory(null);
+    private static final JsonParserFactory PARSER_FACTORY = Json.createParserFactory(null);
+    private static final JsonBuilderFactory BUILDER_FACTORY = Json.createBuilderFactory(null);
 
     enum ArrayParserEventTestCase {
         EMPTY_ARRAY(
@@ -142,8 +142,7 @@ public class ValueJsonParserTest {
                 Event.KEY_NAME,
                 Event.VALUE_NULL,
                 Event.END_OBJECT,
-                Event.END_ARRAY),
-                ;
+                Event.END_ARRAY);
 
         final JsonArray value;
         final Event[] events;
@@ -253,8 +252,7 @@ public class ValueJsonParserTest {
                 Event.KEY_NAME,
                 Event.VALUE_NULL,
                 Event.END_OBJECT,
-                Event.END_OBJECT),
-                ;
+                Event.END_OBJECT);
 
         final JsonObject value;
         final Event[] events;
@@ -292,7 +290,7 @@ public class ValueJsonParserTest {
                 parser.next();
             }
 
-            thrown = catchThrowable(()->parser.next());
+            thrown = catchThrowable(() -> parser.next());
         }
 
         assertThat(thrown).isInstanceOf(NoSuchElementException.class);
@@ -300,65 +298,54 @@ public class ValueJsonParserTest {
 
     enum StringTestCase {
         STRING_AS_FIRST_ITEM(
-                array(b->b.add("hello").add("world")),
+                array(b -> b.add("hello").add("world")),
                 2,
-                "hello"
-                ),
+                "hello"),
 
         STRING_AS_LAST_ITEM(
                 STRING_AS_FIRST_ITEM.json,
                 3,
-                "world"
-                ),
+                "world"),
 
         NUMBER_AS_FIRST_ITEM(
-                array(b->b.add(42).add(new BigDecimal("3.14"))),
+                array(b -> b.add(42).add(new BigDecimal("3.14"))),
                 2,
-                "42"
-                ),
+                "42"),
 
         NUMBER_AS_LAST_ITEM(
                 NUMBER_AS_FIRST_ITEM.json,
                 3,
-                "3.14"
-                ),
+                "3.14"),
 
         STRING_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", "hello").add("b", "world")),
+                object(b -> b.add("a", "hello").add("b", "world")),
                 3,
-                "hello"
-                ),
+                "hello"),
 
         STRING_AS_LAST_PROPERTY_VALUE(
                 STRING_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                "world"
-                ),
+                "world"),
 
         NUMBER_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", 42).add("b", new BigDecimal("3.14"))),
+                object(b -> b.add("a", 42).add("b", new BigDecimal("3.14"))),
                 3,
-                "42"
-                ),
+                "42"),
 
         NUMBER_AS_LAST_PROPERTY_VALUE(
                 NUMBER_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                "3.14"
-                ),
+                "3.14"),
 
         STRING_AS_FIRST_PROPERTY_KEY(
-                object(b->b.add("hello", 1).add("world", 2)),
+                object(b -> b.add("hello", 1).add("world", 2)),
                 2,
-                "hello"
-                ),
+                "hello"),
 
         STRING_AS_LAST_PROPERTY_KEY(
                 STRING_AS_FIRST_PROPERTY_KEY.json,
                 4,
-                "world"
-                ),
-        ;
+                "world");
 
         final JsonStructure json;
         final int iterations;
@@ -383,29 +370,24 @@ public class ValueJsonParserTest {
     enum IsIntegralNumberTestCase {
 
         NUMBER_AS_FIRST_ITEM(
-                array(b->b.add(42).add(new BigDecimal("3.14"))),
+                array(b -> b.add(42).add(new BigDecimal("3.14"))),
                 2,
-                true
-                ),
+                true),
 
         NUMBER_AS_LAST_ITEM(
                 NUMBER_AS_FIRST_ITEM.json,
                 3,
-                false
-                ),
+                false),
 
         NUMBER_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", 42).add("b", new BigDecimal("3.14"))),
+                object(b -> b.add("a", 42).add("b", new BigDecimal("3.14"))),
                 3,
-                true
-                ),
+                true),
 
         NUMBER_AS_LAST_PROPERTY_VALUE(
                 NUMBER_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                false
-                ),
-        ;
+                false);
 
         final JsonStructure json;
         final int iterations;
@@ -430,29 +412,24 @@ public class ValueJsonParserTest {
     enum IntTestCase {
 
         NUMBER_AS_FIRST_ITEM(
-                array(b->b.add(Integer.MAX_VALUE).add(Integer.MIN_VALUE)),
+                array(b -> b.add(Integer.MAX_VALUE).add(Integer.MIN_VALUE)),
                 2,
-                Integer.MAX_VALUE
-                ),
+                Integer.MAX_VALUE),
 
         NUMBER_AS_LAST_ITEM(
                 NUMBER_AS_FIRST_ITEM.json,
                 3,
-                Integer.MIN_VALUE
-                ),
+                Integer.MIN_VALUE),
 
         NUMBER_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", Integer.MAX_VALUE).add("b", Integer.MIN_VALUE)),
+                object(b -> b.add("a", Integer.MAX_VALUE).add("b", Integer.MIN_VALUE)),
                 3,
-                Integer.MAX_VALUE
-                ),
+                Integer.MAX_VALUE),
 
         NUMBER_AS_LAST_PROPERTY_VALUE(
                 NUMBER_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                Integer.MIN_VALUE
-                ),
-        ;
+                Integer.MIN_VALUE);
 
         final JsonStructure json;
         final int iterations;
@@ -477,29 +454,24 @@ public class ValueJsonParserTest {
     enum LongTestCase {
 
         NUMBER_AS_FIRST_ITEM(
-                array(b->b.add(Long.MAX_VALUE).add(Long.MIN_VALUE)),
+                array(b -> b.add(Long.MAX_VALUE).add(Long.MIN_VALUE)),
                 2,
-                Long.MAX_VALUE
-                ),
+                Long.MAX_VALUE),
 
         NUMBER_AS_LAST_ITEM(
                 NUMBER_AS_FIRST_ITEM.json,
                 3,
-                Long.MIN_VALUE
-                ),
+                Long.MIN_VALUE),
 
         NUMBER_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", Long.MAX_VALUE).add("b", Long.MIN_VALUE)),
+                object(b -> b.add("a", Long.MAX_VALUE).add("b", Long.MIN_VALUE)),
                 3,
-                Long.MAX_VALUE
-                ),
+                Long.MAX_VALUE),
 
         NUMBER_AS_LAST_PROPERTY_VALUE(
                 NUMBER_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                Long.MIN_VALUE
-                ),
-        ;
+                Long.MIN_VALUE);
 
         final JsonStructure json;
         final int iterations;
@@ -524,29 +496,24 @@ public class ValueJsonParserTest {
     enum BigDecimalTestCase {
 
         NUMBER_AS_FIRST_ITEM(
-                array(b->b.add(42).add(new BigDecimal("3.14"))),
+                array(b -> b.add(42).add(new BigDecimal("3.14"))),
                 2,
-                new BigDecimal(42)
-                ),
+                new BigDecimal(42)),
 
         NUMBER_AS_LAST_ITEM(
                 NUMBER_AS_FIRST_ITEM.json,
                 3,
-                new BigDecimal("3.14")
-                ),
+                new BigDecimal("3.14")),
 
         NUMBER_AS_FIRST_PROPERTY_VALUE(
-                object(b->b.add("a", 42).add("b", new BigDecimal("3.14"))),
+                object(b -> b.add("a", 42).add("b", new BigDecimal("3.14"))),
                 3,
-                new BigDecimal(42)
-                ),
+                new BigDecimal(42)),
 
         NUMBER_AS_LAST_PROPERTY_VALUE(
                 NUMBER_AS_FIRST_PROPERTY_VALUE.json,
                 5,
-                new BigDecimal("3.14")
-                ),
-        ;
+                new BigDecimal("3.14"));
 
         final JsonStructure json;
         final int iterations;
@@ -570,90 +537,74 @@ public class ValueJsonParserTest {
 
     enum ValueTestCase {
         SIMPLE_ARRAY(
-                array(b ->
-                    b.add("hello").add(42).add(true).add(false).addNull()
-                )),
+                array(b -> b.add("hello").add(42).add(true).add(false).addNull())),
 
         STRING_IN_ARRAY(
                 SIMPLE_ARRAY.json,
                 2,
-                Json.createValue("hello")
-                ),
+                Json.createValue("hello")),
 
         NUMBER_IN_ARRAY(
                 SIMPLE_ARRAY.json,
                 3,
-                Json.createValue(42)
-                ),
+                Json.createValue(42)),
 
         TRUE_IN_ARRAY(
                 SIMPLE_ARRAY.json,
                 4,
-                JsonValue.TRUE
-                ),
+                JsonValue.TRUE),
 
         FALSE_IN_ARRAY(
                 SIMPLE_ARRAY.json,
                 5,
-                JsonValue.FALSE
-                ),
+                JsonValue.FALSE),
 
         NULL_IN_ARRAY(
                 SIMPLE_ARRAY.json,
                 6,
-                JsonValue.NULL
-                ),
+                JsonValue.NULL),
 
         SIMPLE_OBJECT(
                 object(b -> b.add("a", "hello")
                         .add("b", 42)
                         .add("c", true)
                         .add("d", false)
-                        .addNull("e")
-                )),
+                        .addNull("e"))),
 
         STRING_IN_OBJECT(
                 SIMPLE_OBJECT.json,
                 3,
-                Json.createValue("hello")
-                ),
+                Json.createValue("hello")),
 
         NUMBER_IN_OBJECT(
                 SIMPLE_OBJECT.json,
                 5,
-                Json.createValue(42)
-                ),
+                Json.createValue(42)),
 
         TRUE_IN_OBJECT(
                 SIMPLE_OBJECT.json,
                 7,
-                JsonValue.TRUE
-                ),
+                JsonValue.TRUE),
 
         FALSE_IN_OBJECT(
                 SIMPLE_OBJECT.json,
                 9,
-                JsonValue.FALSE
-                ),
+                JsonValue.FALSE),
 
         NULL_IN_OBJECT(
                 SIMPLE_OBJECT.json,
                 11,
-                JsonValue.NULL
-                ),
+                JsonValue.NULL),
 
         ARRAY_IN_ARRAY(
-                array(b->b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
+                array(b -> b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
                 2,
-                SIMPLE_ARRAY.json
-                ),
+                SIMPLE_ARRAY.json),
 
         OBJECT_IN_ARRAY(
-                array(b->b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
+                array(b -> b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
                 9,
-                SIMPLE_OBJECT.json
-                ),
-        ;
+                SIMPLE_OBJECT.json);
 
         final JsonStructure json;
         final int iterations;
@@ -730,20 +681,20 @@ public class ValueJsonParserTest {
 
     private static JsonParser createParser(JsonStructure value) {
         if (value.getValueType() == ValueType.ARRAY) {
-            return parserFactory.createParser((JsonArray)value);
+            return PARSER_FACTORY.createParser((JsonArray) value);
         } else {
-            return parserFactory.createParser((JsonObject)value);
+            return PARSER_FACTORY.createParser((JsonObject) value);
         }
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {
-        JsonArrayBuilder builder = builderFactory.createArrayBuilder();
+        JsonArrayBuilder builder = BUILDER_FACTORY.createArrayBuilder();
         consumer.accept(builder);
         return builder.build();
     }
 
     private static JsonObject object(Consumer<JsonObjectBuilder> consumer) {
-        JsonObjectBuilder builder = builderFactory.createObjectBuilder();
+        JsonObjectBuilder builder = BUILDER_FACTORY.createObjectBuilder();
         consumer.accept(builder);
         return builder.build();
     }

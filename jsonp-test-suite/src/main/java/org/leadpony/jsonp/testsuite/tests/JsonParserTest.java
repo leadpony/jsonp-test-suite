@@ -55,7 +55,7 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
  */
 public class JsonParserTest {
 
-    private static final Logger log = LogHelper.getLogger(JsonParserTest.class);
+    private static final Logger LOG = LogHelper.getLogger(JsonParserTest.class);
 
     private static JsonParserFactory parserFactory;
 
@@ -67,8 +67,7 @@ public class JsonParserTest {
     enum TerminationTestCase {
         LITERAL("365", 1, false),
         ARRAY("[1,2,3]", 5, false),
-        OBJECT("{\"a\":1}", 4, false),
-        ;
+        OBJECT("{\"a\":1}", 4, false);
 
         final String json;
         final int iterations;
@@ -101,8 +100,7 @@ public class JsonParserTest {
         OBJECT_MISSING_END("{\"a\":1", 3, false),
         OBJECT_MISSING_VALUE("{\"a\":", 2, true),
         OBJECT_MISSING_COLON("{\"a\"", 2, false),
-        OBJECT_MISSING_KEY("{", 1, false),
-        ;
+        OBJECT_MISSING_KEY("{", 1, false);
 
         final String json;
         final int iterations;
@@ -172,9 +170,7 @@ public class JsonParserTest {
                 Event.END_OBJECT),
         OBJECT_OF_OBJECT_PROPERTY("{\"a\":{}}",
                 Event.START_OBJECT, Event.KEY_NAME, Event.START_OBJECT,
-                Event.END_OBJECT, Event.END_OBJECT),
-
-        ;
+                Event.END_OBJECT, Event.END_OBJECT);
 
         private final String json;
         private final Event[] events;
@@ -206,7 +202,7 @@ public class JsonParserTest {
         parser.next();
         parser.next();
 
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             parser.next();
         });
 
@@ -214,7 +210,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(NoSuchElementException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum StringRetrievalTestCase implements JsonSource {
@@ -224,7 +220,8 @@ public class JsonParserTest {
         FOUR_SPACES("\"    \"", "    "),
         SINGLE_WORD("\"hello\"", "hello"),
 
-        SENTENCE("\"The quick brown fox jumps over the lazy dog\"", "The quick brown fox jumps over the lazy dog"),
+        SENTENCE("\"The quick brown fox jumps over the lazy dog\"",
+                "The quick brown fox jumps over the lazy dog"),
 
         STARTING_WITH_SPACE("\" hello\"", " hello"),
         ENDING_WITH_SPACE("\"hello \"", "hello "),
@@ -267,7 +264,7 @@ public class JsonParserTest {
         private final String json;
         private final String value;
 
-        private StringRetrievalTestCase(String json, String value) {
+        StringRetrievalTestCase(String json, String value) {
             this.json = json;
             this.value = value;
         }
@@ -348,8 +345,8 @@ public class JsonParserTest {
         ARRAY_CLOSING("[]", 2),
 
         OBJECT_OPENING("{}", 1),
-        OBJECT_CLOSING("{}", 2),
-        ;
+        OBJECT_CLOSING("{}", 2);
+
         private final String json;
         final int iterations;
 
@@ -372,7 +369,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum BigDecimalRetrievalTestCase implements JsonSource {
@@ -419,7 +416,7 @@ public class JsonParserTest {
         private final String json;
         private final BigDecimal value;
 
-        private BigDecimalRetrievalTestCase(String json) {
+        BigDecimalRetrievalTestCase(String json) {
             this.json = json;
             this.value = new BigDecimal(json);
         }
@@ -481,8 +478,8 @@ public class JsonParserTest {
         ARRAY_CLOSING("[]", 2),
 
         OBJECT_OPENING("{}", 1),
-        OBJECT_CLOSING("{}", 2),
-        ;
+        OBJECT_CLOSING("{}", 2);
+
         private final String json;
         final int iterations;
 
@@ -505,7 +502,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum IsIntegralTestCase {
@@ -578,7 +575,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum IntRetrievalTestCase implements JsonSource {
@@ -618,7 +615,7 @@ public class JsonParserTest {
         final String json;
         final int value;
 
-        private IntRetrievalTestCase(String json, int value) {
+        IntRetrievalTestCase(String json, int value) {
             this.json = json;
             this.value = value;
         }
@@ -676,7 +673,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum LongRetrievalTestCase implements JsonSource {
@@ -721,7 +718,7 @@ public class JsonParserTest {
         final String json;
         final long value;
 
-        private LongRetrievalTestCase(String json, long value) {
+        LongRetrievalTestCase(String json, long value) {
             this.json = json;
             this.value = value;
         }
@@ -779,35 +776,39 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum LocationTestCase {
 
         SIMPLE_VALUE("42", at(1, 3, 2)),
 
-        ARRAY_IN_ONE_LINE("[\"hello\",42,true]", at(1, 2, 1), // [
+        ARRAY_IN_ONE_LINE("[\"hello\",42,true]",
+                at(1, 2, 1), // [
                 at(1, 9, 8), // "hello"
                 at(1, 12, 11), // 42
                 at(1, 17, 16), // true
                 at(1, 18, 17) // ]
         ),
 
-        ARRAY_IN_MULTIPLE_LINES("[\n" + "    \"hello\",\n" + "    42,\n" + "    true\n" + "]", at(1, 2, 1), // [
+        ARRAY_IN_MULTIPLE_LINES("[\n" + "    \"hello\",\n" + "    42,\n" + "    true\n" + "]",
+                at(1, 2, 1), // [
                 at(2, 12, 13), // "hello"
                 at(3, 7, 21), // 42
                 at(4, 9, 31), // true
                 at(5, 2, 33) // ]
         ),
 
-        ARRAY_IN_MULTIPLE_LINES_CRLF("[\r\n" + "    \"hello\",\r\n" + "    42,\r\n" + "    true\r\n" + "]", at(1, 2, 1), // [
+        ARRAY_IN_MULTIPLE_LINES_CRLF("[\r\n" + "    \"hello\",\r\n" + "    42,\r\n" + "    true\r\n" + "]",
+                at(1, 2, 1), // [
                 at(2, 12, 14), // "hello"
                 at(3, 7, 23), // 42
                 at(4, 9, 34), // true
                 at(5, 2, 37) // ]
         ),
 
-        OBJECT_IN_ONE_LINE("{\"first\":\"hello\",\"second\":42}", at(1, 2, 1), // {
+        OBJECT_IN_ONE_LINE("{\"first\":\"hello\",\"second\":42}",
+                at(1, 2, 1), // {
                 at(1, 9, 8), // "first"
                 at(1, 17, 16), // "hello"
                 at(1, 26, 25), // "second"
@@ -815,7 +816,8 @@ public class JsonParserTest {
                 at(1, 30, 29) // }
         ),
 
-        OBJECT_IN_MULTIPLE_LINES("{\n" + "    \"first\":\"hello\",\n" + "    \"second\":42\n" + "}", at(1, 2, 1), // {
+        OBJECT_IN_MULTIPLE_LINES("{\n" + "    \"first\":\"hello\",\n" + "    \"second\":42\n" + "}",
+                at(1, 2, 1), // {
                 at(2, 12, 13), // "first"
                 at(2, 20, 21), // "hello"
                 at(3, 13, 35), // "second"
@@ -930,8 +932,8 @@ public class JsonParserTest {
     enum IllegalValueRetrievalTestCase implements JsonSource {
         EMPTY("", 0),
         ARRAY_CLOSING("[]", 2),
-        OBJECT_CLOSING("{}", 2),
-        ;
+        OBJECT_CLOSING("{}", 2);
+
         private final String json;
         final int iterations;
 
@@ -954,7 +956,7 @@ public class JsonParserTest {
 
         assertThat(thrown).isInstanceOf(IllegalStateException.class);
 
-        log.info(thrown.getMessage());
+        LOG.info(thrown.getMessage());
     }
 
     enum ArrayStreamTestCase implements JsonSource {
@@ -964,12 +966,10 @@ public class JsonParserTest {
                 Json.createValue("hello"),
                 JsonValue.TRUE,
                 JsonValue.FALSE,
-                JsonValue.NULL
-                ),
+                JsonValue.NULL),
         NESTED_ARRAY("[[],{}]",
                 JsonValue.EMPTY_JSON_ARRAY,
-                JsonValue.EMPTY_JSON_OBJECT),
-        ;
+                JsonValue.EMPTY_JSON_OBJECT);
 
         private final String json;
         final JsonValue[] values;
@@ -1004,14 +1004,11 @@ public class JsonParserTest {
                 entry("b", Json.createValue("hello")),
                 entry("c", JsonValue.TRUE),
                 entry("d", JsonValue.FALSE),
-                entry("e", JsonValue.NULL)
-                ),
+                entry("e", JsonValue.NULL)),
 
         NESTED_OBJECT("{\"a\":[],\"b\":{}}",
                 entry("a", JsonValue.EMPTY_JSON_ARRAY),
-                entry("b", JsonValue.EMPTY_JSON_OBJECT)
-                )
-        ;
+                entry("b", JsonValue.EMPTY_JSON_OBJECT));
 
         private final String json;
         final Map.Entry<String, JsonValue>[] values;
@@ -1050,8 +1047,7 @@ public class JsonParserTest {
         FALSE("false", JsonValue.FALSE),
         NULL("null", JsonValue.NULL),
         EMPTY_ARRAY("[]", JsonValue.EMPTY_JSON_ARRAY),
-        EMPTY_OBJECT("{}", JsonValue.EMPTY_JSON_OBJECT),
-        ;
+        EMPTY_OBJECT("{}", JsonValue.EMPTY_JSON_OBJECT);
 
         private final String json;
         final JsonValue[] values;
@@ -1081,8 +1077,7 @@ public class JsonParserTest {
         EMPTY_ARRAY("[]", 1, 3),
         SIMPLE_ARRAY("[1,2,3]", 1, 8),
         ARRAY_IN_ARRAY("[[1,2],[3,4]]", 2, 7, Event.START_ARRAY),
-        ARRAY_IN_OBJECT("{\"a\":[1,2],\"b\":[3,4]}", 3, 11, Event.KEY_NAME),
-        ;
+        ARRAY_IN_OBJECT("{\"a\":[1,2],\"b\":[3,4]}", 3, 11, Event.KEY_NAME);
 
         private final String json;
         final int iterations;
@@ -1132,8 +1127,7 @@ public class JsonParserTest {
         SIMPLE_OBJECT("{\"a\":1,\"b\":2}", 1, 14),
         OBJECT_IN_ARRAY(
                 "[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]",
-                2, 15, Event.START_OBJECT),
-        ;
+                2, 15, Event.START_OBJECT);
 
         private final String json;
         final int iterations;
@@ -1187,7 +1181,7 @@ public class JsonParserTest {
             while (iterations-- > 0) {
                 parser.next();
             }
-            return catchThrowable(()->{
+            return catchThrowable(() -> {
                 consumer.accept(parser);
             });
         }

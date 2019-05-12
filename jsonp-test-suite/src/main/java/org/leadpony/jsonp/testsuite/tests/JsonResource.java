@@ -39,18 +39,17 @@ enum JsonResource {
     IMAGE("/org/ietf/rfc/rfc7159/image.json", ValueType.OBJECT),
     ZIP("/org/ietf/rfc/rfc7159/zip.json", ValueType.ARRAY),
 
-    ATOM_API("/com/github/atom-api.json", ValueType.OBJECT),
-    ;
+    ATOM_API("/com/github/atom-api.json", ValueType.OBJECT);
 
     private final String name;
     private final ValueType type;
     private final Charset charset;
 
-    private JsonResource(String name, ValueType type) {
+    JsonResource(String name, ValueType type) {
         this(name, type, StandardCharsets.UTF_8);
     }
 
-    private JsonResource(String name, ValueType type, Charset charset) {
+    JsonResource(String name, ValueType type, Charset charset) {
         this.name = name;
         this.type = type;
         this.charset = charset;

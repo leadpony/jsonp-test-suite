@@ -51,7 +51,7 @@ public class JsonWriterTest {
     @EnumSource(JsonValueTestCase.class)
     public void writeShouldWriteJsonValueAsExpected(JsonValueTestCase test) {
 
-        String actual = write(writer->{
+        String actual = write(writer -> {
             writer.write(test.getJsonValue());
         });
 
@@ -66,8 +66,8 @@ public class JsonWriterTest {
     @MethodSource
     public void writeShouldWriteJsonStructureAsExpected(JsonValueTestCase test) {
 
-        String actual = write(writer->{
-            writer.write((JsonStructure)test.getJsonValue());
+        String actual = write(writer -> {
+            writer.write((JsonStructure) test.getJsonValue());
         });
 
         assertThat(actual).isEqualTo(test.getString());
@@ -81,8 +81,8 @@ public class JsonWriterTest {
     @MethodSource
     public void writeArrayShouldWriteJsonArrayAsExpected(JsonValueTestCase test) {
 
-        String actual = write(writer->{
-            writer.writeArray((JsonArray)test.getJsonValue());
+        String actual = write(writer -> {
+            writer.writeArray((JsonArray) test.getJsonValue());
         });
 
         assertThat(actual).isEqualTo(test.getString());
@@ -96,8 +96,8 @@ public class JsonWriterTest {
     @MethodSource
     public void writeObjectShouldWriteJsonObjectAsExpected(JsonValueTestCase test) {
 
-        String actual = write(writer->{
-            writer.writeObject((JsonObject)test.getJsonValue());
+        String actual = write(writer -> {
+            writer.writeObject((JsonObject) test.getJsonValue());
         });
 
         assertThat(actual).isEqualTo(test.getString());

@@ -47,7 +47,7 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
  */
 public class JsonReaderTest {
 
-    private static final Logger log = LogHelper.getLogger(JsonReaderTest.class);
+    private static final Logger LOG = LogHelper.getLogger(JsonReaderTest.class);
 
     private static JsonReaderFactory factory;
 
@@ -58,7 +58,7 @@ public class JsonReaderTest {
 
     @Test
     public void readArrayShouldReadEmptyArray() {
-        String json ="[]";
+        String json = "[]";
 
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonArray actual = reader.readArray();
@@ -69,7 +69,7 @@ public class JsonReaderTest {
 
     @Test
     public void readArrayShouldReadSimpleArray() {
-        String json ="[true,false,null,365,\"hello\"]";
+        String json = "[true,false,null,365,\"hello\"]";
 
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonArray actual = reader.readArray();
@@ -80,8 +80,7 @@ public class JsonReaderTest {
                 JsonValue.FALSE,
                 JsonValue.NULL,
                 Json.createValue(365),
-                Json.createValue("hello")
-                );
+                Json.createValue("hello"));
     }
 
     @ParameterizedTest
@@ -98,7 +97,7 @@ public class JsonReaderTest {
 
     @Test
     public void readObjectShouldReadEmptyObject() {
-        String json ="{}";
+        String json = "{}";
 
         JsonReader reader = factory.createReader(new StringReader(json));
         JsonObject actual = reader.readObject();
@@ -109,7 +108,7 @@ public class JsonReaderTest {
 
     @Test
     public void readObjectShouldReadSimpleObject() {
-        String json ="{\"a\":true,\"b\":false,\"c\":null,\"d\":365,\"e\":\"hello\"}";
+        String json = "{\"a\":true,\"b\":false,\"c\":null,\"d\":365,\"e\":\"hello\"}";
 
         Map<String, JsonValue> expected = new HashMap<>();
         expected.put("a", JsonValue.TRUE);
@@ -165,15 +164,15 @@ public class JsonReaderTest {
     @ParameterizedTest
     @EnumSource(IllFormedJsonTestCase.class)
     public void readValueShouldThrowExceptionIfIllFormed(IllFormedJsonTestCase test) {
-        Throwable thrown = catchThrowable(()->{
+        Throwable thrown = catchThrowable(() -> {
             try (JsonReader reader = factory.createReader(
                     new StringReader(test.getJson()))) {
                 reader.readValue();
             }
         });
 
-        log.info(test.toString());
-        log.info(thrown.getMessage());
+        LOG.info(test.toString());
+        LOG.info(thrown.getMessage());
 
         assertThat(thrown).isInstanceOf(JsonParsingException.class);
         JsonParsingException actual = (JsonParsingException) thrown;

@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  */
 public interface LogHelper {
 
-    static LogManager logManager = configureLogManager();
+    LogManager LOG_MANAGER = configureLogManager();
 
     static Logger getLogger(Class<?> type) {
         return Logger.getLogger(type.getName());

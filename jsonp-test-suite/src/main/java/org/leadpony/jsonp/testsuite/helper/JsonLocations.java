@@ -24,7 +24,7 @@ import javax.json.stream.JsonLocation;
  *
  * @author leadpony
  */
-public class JsonLocations {
+public final class JsonLocations {
 
     /**
      * A comparator which compares two instances of {@link JsonLocation}.
@@ -91,5 +91,8 @@ public class JsonLocations {
             b.append(getStreamOffset());
             return b.append(']').toString();
         }
+    }
+
+    private JsonLocations() {
     }
 }

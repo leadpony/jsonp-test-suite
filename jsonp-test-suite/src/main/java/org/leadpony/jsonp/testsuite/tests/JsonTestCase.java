@@ -62,25 +62,23 @@ enum JsonTestCase implements JsonSource {
     HUNDRED_SCIENTIFIC_NOTATION_CAPITAL("1E+2", HUNDRED_SCIENTIFIC_NOTATION.value),
 
     HUNDREDTH_SCIENTIFIC_NOTATION_MINUS("1e-2", new BigDecimal("1E-2")),
-    HUNDREDTH_NOTATION_CAPITAL_MINNUS("1E-2", HUNDREDTH_SCIENTIFIC_NOTATION_MINUS.value),
-
-    ;
+    HUNDREDTH_NOTATION_CAPITAL_MINNUS("1E-2", HUNDREDTH_SCIENTIFIC_NOTATION_MINUS.value);
 
     private final String json;
     private final JsonValue value;
 
-    private JsonTestCase() {
+    JsonTestCase() {
         JsonValueTestCase testCase = JsonValueTestCase.valueOf(name());
         this.json = testCase.getString();
         this.value = testCase.getJsonValue();
     }
 
-    private JsonTestCase(String json, JsonValue value) {
+    JsonTestCase(String json, JsonValue value) {
         this.json = json;
         this.value = value;
     }
 
-    private JsonTestCase(String json, BigDecimal value) {
+    JsonTestCase(String json, BigDecimal value) {
         this.json = json;
         this.value = Json.createValue(value);
     }

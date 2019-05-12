@@ -60,15 +60,14 @@ enum IllFormedJsonTestCase {
     OBJECT_MISSING_COMMA("{\"a\":1\"b\":2}", 1, 7, 6),
 
     OBJECT_CLOSED_BY_SQUARE_BRACKET("{\"a\":1]", 1, 7, 6),
-    CLOSING_OBJECT_BRACKET("}", 1, 1, 0),
-    ;
+    CLOSING_OBJECT_BRACKET("}", 1, 1, 0);
 
     private final String json;
     private final long lineNumber;
     private final long columnNumber;
     private final long streamOffset;
 
-    private IllFormedJsonTestCase(String json, long lineNumber, long columnNumber, long streamOffset) {
+    IllFormedJsonTestCase(String json, long lineNumber, long columnNumber, long streamOffset) {
         this.json = json;
         this.lineNumber = lineNumber;
         this.columnNumber = columnNumber;

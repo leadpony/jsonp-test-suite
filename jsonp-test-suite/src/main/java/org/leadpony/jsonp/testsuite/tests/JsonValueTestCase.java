@@ -84,70 +84,70 @@ enum JsonValueTestCase {
     EMPTY_ARRAY(JsonValue.EMPTY_JSON_ARRAY, "[]"),
 
     ARRAY_OF_INTEGER(
-            array(b->b.add(42)),
+            array(b -> b.add(42)),
             "[42]"),
 
     ARRAY_OF_INTEGERS(
-            array(b->b.add(1).add(2).add(4)),
+            array(b -> b.add(1).add(2).add(4)),
             "[1,2,4]"),
 
     ARRAY_OF_STRING(
-            array(b->b.add("hello")),
+            array(b -> b.add("hello")),
             "[\"hello\"]"),
 
     ARRAY_OF_STRINGS(
-            array(b->b.add("hello").add("world")),
+            array(b -> b.add("hello").add("world")),
             "[\"hello\",\"world\"]"),
 
     ARRAY_OF_TRUE(
-            array(b->b.add(true)),
+            array(b -> b.add(true)),
             "[true]"),
 
     ARRAY_OF_FALSE(
-            array(b->b.add(false)),
+            array(b -> b.add(false)),
             "[false]"),
 
     ARRAY_OF_BOOLEANS(
-            array(b->b.add(true).add(false)),
+            array(b -> b.add(true).add(false)),
             "[true,false]"),
 
     ARRAY_OF_NULL(
-            array(b->b.addNull()),
+            array(b -> b.addNull()),
             "[null]"),
 
     ARRAY_OF_NULLS(
-            array(b->b.addNull().addNull()),
+            array(b -> b.addNull().addNull()),
             "[null,null]"),
 
     ARRAY_OF_ARRAY(
-            array(b->b.add(
-                    array(b2->b2.add(1).add(2).add(3)))),
+            array(b -> b.add(
+                    array(b2 -> b2.add(1).add(2).add(3)))),
             "[[1,2,3]]"),
 
     ARRAY_OF_EMPTY_ARRAY(
-            array(b->b.add(JsonValue.EMPTY_JSON_ARRAY)),
+            array(b -> b.add(JsonValue.EMPTY_JSON_ARRAY)),
             "[[]]"),
 
     ARRAY_OF_EMPTY_OBJECT(
-            array(b->b.add(JsonValue.EMPTY_JSON_OBJECT)),
+            array(b -> b.add(JsonValue.EMPTY_JSON_OBJECT)),
             "[{}]"),
 
     ARRAY_OF_ARRAYS(
-            array(b->{
-                b.add(array(b2->b2.add(1).add(2).add(3)));
-                b.add(array(b2->b2.add(4).add(5).add(6)));
+            array(b -> {
+                b.add(array(b2 -> b2.add(1).add(2).add(3)));
+                b.add(array(b2 -> b2.add(4).add(5).add(6)));
             }),
             "[[1,2,3],[4,5,6]]"),
 
     ARRAY_OF_EMPTY_ARRAYS(
-            array(b->{
+            array(b -> {
                 b.add(JsonValue.EMPTY_JSON_ARRAY);
                 b.add(JsonValue.EMPTY_JSON_ARRAY);
             }),
             "[[],[]]"),
 
     ARRAY_OF_EMPTY_OBJECTS(
-            array(b->{
+            array(b -> {
                 b.add(JsonValue.EMPTY_JSON_OBJECT);
                 b.add(JsonValue.EMPTY_JSON_OBJECT);
             }),
@@ -156,42 +156,42 @@ enum JsonValueTestCase {
     EMPTY_OBJECT(JsonValue.EMPTY_JSON_OBJECT, "{}"),
 
     OBJECT_OF_INTEGERS(
-            object(b->{
+            object(b -> {
                 b.add("a", 1);
                 b.add("b", 2);
             }),
             "{\"a\":1,\"b\":2}"),
 
     OBJECT_OF_STRING(
-            object(b->{
+            object(b -> {
                 b.add("a", "hello");
                 b.add("b", "world");
             }),
             "{\"a\":\"hello\",\"b\":\"world\"}"),
 
     OBJECT_OF_ARRAYS(
-            object(b->{
-                b.add("a", array(b2->b2.add(1).add(2)));
-                b.add("b", array(b2->b2.add(3).add(4)));
+            object(b -> {
+                b.add("a", array(b2 -> b2.add(1).add(2)));
+                b.add("b", array(b2 -> b2.add(3).add(4)));
             }),
             "{\"a\":[1,2],\"b\":[3,4]}"),
 
     OBJECT_OF_EMPTY_ARRAYS(
-            object(b->{
+            object(b -> {
                 b.add("a", JsonValue.EMPTY_JSON_ARRAY);
                 b.add("b", JsonValue.EMPTY_JSON_ARRAY);
             }),
             "{\"a\":[],\"b\":[]}"),
 
     OBJECT_OF_OBJECTS(
-            object(b->{
+            object(b -> {
                 b.add("a",
-                        object(b2->{
+                        object(b2 -> {
                             b2.add("a1", 1);
                             b2.add("a2", 2);
                         }));
                 b.add("b",
-                        object(b2->{
+                        object(b2 -> {
                             b2.add("b1", 3);
                             b2.add("b2", 4);
                         }));
@@ -199,13 +199,11 @@ enum JsonValueTestCase {
             "{\"a\":{\"a1\":1,\"a2\":2},\"b\":{\"b1\":3,\"b2\":4}}"),
 
     OBJECT_OF_EMPTY_OBJECTS(
-            object(b->{
+            object(b -> {
                 b.add("a", JsonValue.EMPTY_JSON_OBJECT);
                 b.add("b", JsonValue.EMPTY_JSON_OBJECT);
             }),
-            "{\"a\":{},\"b\":{}}"),
-
-    ;
+            "{\"a\":{},\"b\":{}}");
 
     private final JsonValue value;
     private final String string;
