@@ -364,7 +364,7 @@ public class ValueJsonParserTest {
         final int iterations;
         final String value;
 
-        private StringTestCase(JsonStructure json, int iterations, String value) {
+        StringTestCase(JsonStructure json, int iterations, String value) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
@@ -411,7 +411,7 @@ public class ValueJsonParserTest {
         final int iterations;
         final boolean value;
 
-        private IsIntegralNumberTestCase(JsonStructure json, int iterations, boolean value) {
+        IsIntegralNumberTestCase(JsonStructure json, int iterations, boolean value) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
@@ -420,7 +420,7 @@ public class ValueJsonParserTest {
 
     @ParameterizedTest
     @EnumSource(IsIntegralNumberTestCase.class)
-    public void isIntegralNumberShouldReturnStringAsExpected(IsIntegralNumberTestCase test) {
+    public void isIntegralNumberShouldReturnBooleanAsExpected(IsIntegralNumberTestCase test) {
         boolean actual = extractValue(test.json, test.iterations,
                 JsonParser::isIntegralNumber);
 
@@ -458,7 +458,7 @@ public class ValueJsonParserTest {
         final int iterations;
         final int value;
 
-        private IntTestCase(JsonStructure json, int iterations, int value) {
+        IntTestCase(JsonStructure json, int iterations, int value) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
@@ -467,7 +467,7 @@ public class ValueJsonParserTest {
 
     @ParameterizedTest
     @EnumSource(IntTestCase.class)
-    public void getIntShouldReturnStringAsExpected(IntTestCase test) {
+    public void getIntShouldReturnIntAsExpected(IntTestCase test) {
         int actual = extractValue(test.json, test.iterations,
                 JsonParser::getInt);
 
@@ -505,7 +505,7 @@ public class ValueJsonParserTest {
         final int iterations;
         final long value;
 
-        private LongTestCase(JsonStructure json, int iterations, long value) {
+        LongTestCase(JsonStructure json, int iterations, long value) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
@@ -514,7 +514,7 @@ public class ValueJsonParserTest {
 
     @ParameterizedTest
     @EnumSource(LongTestCase.class)
-    public void getLongShouldReturnStringAsExpected(LongTestCase test) {
+    public void getLongShouldReturnLongAsExpected(LongTestCase test) {
         long actual = extractValue(test.json, test.iterations,
                 JsonParser::getLong);
 
@@ -552,7 +552,7 @@ public class ValueJsonParserTest {
         final int iterations;
         final BigDecimal value;
 
-        private BigDecimalTestCase(JsonStructure json, int iterations, BigDecimal value) {
+        BigDecimalTestCase(JsonStructure json, int iterations, BigDecimal value) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
@@ -561,11 +561,162 @@ public class ValueJsonParserTest {
 
     @ParameterizedTest
     @EnumSource(BigDecimalTestCase.class)
-    public void getBigDecimalShouldReturnStringAsExpected(BigDecimalTestCase test) {
+    public void getBigDecimalShouldReturnBigDecimalAsExpected(BigDecimalTestCase test) {
         BigDecimal actual = extractValue(test.json, test.iterations,
                 JsonParser::getBigDecimal);
 
         assertThat(actual).isEqualTo(test.value);
+    }
+
+    enum ValueTestCase {
+        SIMPLE_ARRAY(
+                array(b ->
+                    b.add("hello").add(42).add(true).add(false).addNull()
+                )),
+
+        STRING_IN_ARRAY(
+                SIMPLE_ARRAY.json,
+                2,
+                Json.createValue("hello")
+                ),
+
+        NUMBER_IN_ARRAY(
+                SIMPLE_ARRAY.json,
+                3,
+                Json.createValue(42)
+                ),
+
+        TRUE_IN_ARRAY(
+                SIMPLE_ARRAY.json,
+                4,
+                JsonValue.TRUE
+                ),
+
+        FALSE_IN_ARRAY(
+                SIMPLE_ARRAY.json,
+                5,
+                JsonValue.FALSE
+                ),
+
+        NULL_IN_ARRAY(
+                SIMPLE_ARRAY.json,
+                6,
+                JsonValue.NULL
+                ),
+
+        SIMPLE_OBJECT(
+                object(b -> b.add("a", "hello")
+                        .add("b", 42)
+                        .add("c", true)
+                        .add("d", false)
+                        .addNull("e")
+                )),
+
+        STRING_IN_OBJECT(
+                SIMPLE_OBJECT.json,
+                3,
+                Json.createValue("hello")
+                ),
+
+        NUMBER_IN_OBJECT(
+                SIMPLE_OBJECT.json,
+                5,
+                Json.createValue(42)
+                ),
+
+        TRUE_IN_OBJECT(
+                SIMPLE_OBJECT.json,
+                7,
+                JsonValue.TRUE
+                ),
+
+        FALSE_IN_OBJECT(
+                SIMPLE_OBJECT.json,
+                9,
+                JsonValue.FALSE
+                ),
+
+        NULL_IN_OBJECT(
+                SIMPLE_OBJECT.json,
+                11,
+                JsonValue.NULL
+                ),
+
+        ARRAY_IN_ARRAY(
+                array(b->b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
+                2,
+                SIMPLE_ARRAY.json
+                ),
+
+        OBJECT_IN_ARRAY(
+                array(b->b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
+                9,
+                SIMPLE_OBJECT.json
+                ),
+        ;
+
+        final JsonStructure json;
+        final int iterations;
+        final JsonValue value;
+
+        ValueTestCase(JsonStructure json) {
+            this.json = json;
+            this.iterations = 1;
+            this.value = json;
+        }
+
+        ValueTestCase(JsonStructure json, int iterations, JsonValue value) {
+            this.json = json;
+            this.iterations = iterations;
+            this.value = value;
+        }
+
+        boolean isArray() {
+            return value.getValueType() == ValueType.ARRAY;
+        }
+
+        boolean isObject() {
+            return value.getValueType() == ValueType.OBJECT;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(ValueTestCase.class)
+    public void getValueShouldReturnJsonValueAsExpected(ValueTestCase test) {
+        JsonValue actual = extractValue(test.json, test.iterations,
+                JsonParser::getValue);
+
+        assertThat(actual).isEqualTo(test.value);
+    }
+
+    public static Stream<ValueTestCase> getArrayShouldReturnArrayAsExpected() {
+        return Stream.of(ValueTestCase.values())
+                .filter(ValueTestCase::isArray);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void getArrayShouldReturnArrayAsExpected(ValueTestCase test) {
+        JsonArray actual = extractValue(test.json, test.iterations,
+                JsonParser::getArray);
+
+        assertThat(actual).isEqualTo(test.value);
+        assertThat(actual.getValueType()).isSameAs(ValueType.ARRAY);
+    }
+
+    public static Stream<ValueTestCase> getObjectShouldReturnObjectAsExpected() {
+        return Stream.of(ValueTestCase.values())
+                .filter(ValueTestCase::isObject);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void getObjectShouldReturnObjectAsExpected(ValueTestCase test) {
+        JsonObject actual = extractValue(test.json, test.iterations,
+                JsonParser::getObject);
+
+        assertThat(actual).isEqualTo(test.value);
+        assertThat(actual.getValueType()).isSameAs(ValueType.OBJECT);
     }
 
     private static <T> T extractValue(JsonStructure value, int iterations, Function<JsonParser, T> mapper) {
