@@ -27,7 +27,6 @@ import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerationException;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -54,19 +53,11 @@ public class JsonWriterIllegalStateTest {
         writer = factory.createWriter(new StringWriter());
     }
 
-    @AfterEach
-    public void tearDown() {
-        if (writer != null) {
-            writer.close();
-        }
-    }
-
     @Test
     public void closeShouldThrowJsonGenerationException() {
         Throwable thrown = catchThrowable(() -> {
             writer.close();
         });
-        writer = null;
         assertThat(thrown).isInstanceOf(JsonGenerationException.class);
         LOG.info(thrown.getMessage());
     }
