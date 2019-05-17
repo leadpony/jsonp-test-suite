@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 /**
+ * JSON resources for benchmarking.
+ *
  * @author leadpony
  */
 public enum JsonResource {

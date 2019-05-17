@@ -24,7 +24,9 @@ import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonReader;
 import javax.json.JsonStructure;
+import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 
@@ -56,6 +58,19 @@ public class JsonWriterTest {
         });
 
         assertThat(actual).isEqualTo(test.getString());
+    }
+
+    @ParameterizedTest
+    @EnumSource(JsonResource.class)
+    public void writeShouldWriteJsonValueAsExpected(JsonResource test) {
+
+        final JsonValue value = readValueFrom(test);
+
+        String actual = write(writer -> {
+            writer.write(value);
+        });
+
+        assertThat(actual).isEqualTo(test.getMinifiedString());
     }
 
     public static Stream<JsonValueTestCase> writeShouldWriteJsonStructureAsExpected() {
@@ -103,11 +118,17 @@ public class JsonWriterTest {
         assertThat(actual).isEqualTo(test.getString());
     }
 
-    private String write(Consumer<JsonWriter> consumer) {
+    private static String write(Consumer<JsonWriter> consumer) {
         StringWriter stringWriter = new StringWriter();
         try (JsonWriter jsonWriter = factory.createWriter(stringWriter)) {
             consumer.accept(jsonWriter);
         }
         return stringWriter.toString();
+    }
+
+    private static JsonValue readValueFrom(JsonResource resource) {
+        try (JsonReader reader = Json.createReader(resource.openStream())) {
+            return reader.readValue();
+        }
     }
 }

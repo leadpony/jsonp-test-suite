@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.leadpony.jsonp.benchmark;
 
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
 
 import javax.json.Json;
 import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
 import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -33,30 +35,39 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 /**
- * A benchmark for {@link JsonValue}.
+ * A benchmark for {@link JsonWriter}.
  *
  * @author leadpony
  */
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-public class JsonValueBenchmark {
+public class JsonWriterBenchmark {
 
-    @Param({"GLOSSARY"})
+    @Param({ "RFC7159_OBJECT", "RFC7159_ARRAY" })
     private JsonResource resource;
 
-    private JsonValue value;
+    private JsonValue jsonValue;
+    private JsonWriterFactory writerFactory;
 
     @Setup
     public void setUp() {
-        JsonReaderFactory factory= Json.createReaderFactory(null);
-        try (JsonReader reader = factory.createReader(resource.createReader())) {
-            this.value = reader.readValue();
+        this.writerFactory = Json.createWriterFactory(null);
+        this.jsonValue = readJsonValue(resource.openStream());
+    }
+
+    private JsonValue readJsonValue(InputStream in) {
+        try (JsonReader reader = Json.createReader(resource.openStream())) {
+            return reader.readValue();
         }
     }
 
     @Benchmark
-    public String valueToString() {
-        return this.value.toString();
+    public String write() {
+        StringWriter stringWriter = new StringWriter();
+        try (JsonWriter writer = writerFactory.createWriter(stringWriter)) {
+            writer.write(this.jsonValue);
+        }
+        return stringWriter.toString();
     }
 }

@@ -33,6 +33,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 
 /**
+ * A benchmark for {@link JsonReader}.
+ *
  * @author leadpony
  */
 @BenchmarkMode(Mode.Throughput)
