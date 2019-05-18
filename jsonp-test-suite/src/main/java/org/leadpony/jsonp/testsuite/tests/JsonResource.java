@@ -22,11 +22,14 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.json.JsonValue.ValueType;
 
 /**
+ * JSON resources.
+ *
  * @author leadpony
  */
 enum JsonResource {
@@ -63,6 +66,11 @@ enum JsonResource {
         return new InputStreamReader(openStream(), getCharset());
     }
 
+    /**
+     * Returns the type of this JSON value.
+     *
+     * @return the type of this JSON value.
+     */
     ValueType getType() {
         return type;
     }
@@ -83,18 +91,24 @@ enum JsonResource {
         return type == ValueType.ARRAY || type == ValueType.OBJECT;
     }
 
-    String getMinifiedString() {
+    /**
+     * Returns the original JSON as a string.
+     *
+     * @return the JSON as a string.
+     */
+    String getJsonAsString() {
+        return getResourceAsString(this.name);
+    }
+
+    /**
+     * Returns the minified version of the JSON as a string.
+     *
+     * @return the minified JSON as a string.
+     */
+    String getMinifiedJsonAsString() {
         String filename = this.name.substring(0, this.name.lastIndexOf('.'));
         String name = filename.concat(".min.json");
-        StringBuilder b = new StringBuilder();
-        InputStream in = getClass().getResourceAsStream(name);
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            b.append(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-        return b.toString();
+        return getResourceAsString(name);
     }
 
     static Stream<JsonResource> getArraysAsStream() {
@@ -107,5 +121,15 @@ enum JsonResource {
 
     static Stream<JsonResource> getStructuresAsStream() {
         return Stream.of(values()).filter(JsonResource::isStructure);
+    }
+
+    private String getResourceAsString(String name) {
+        InputStream in = getClass().getResourceAsStream(name);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

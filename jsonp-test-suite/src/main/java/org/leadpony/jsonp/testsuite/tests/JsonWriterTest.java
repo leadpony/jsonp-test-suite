@@ -70,7 +70,7 @@ public class JsonWriterTest {
             writer.write(value);
         });
 
-        assertThat(actual).isEqualTo(test.getMinifiedString());
+        assertThat(actual).isEqualTo(test.getMinifiedJsonAsString());
     }
 
     public static Stream<JsonValueTestCase> writeShouldWriteJsonStructureAsExpected() {

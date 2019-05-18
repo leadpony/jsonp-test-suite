@@ -92,7 +92,7 @@ public class JsonReaderTest {
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class JsonReaderTest {
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
     @ParameterizedTest
@@ -145,7 +145,7 @@ public class JsonReaderTest {
         }
 
         assertThat(actual).isNotNull();
-        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
     @ParameterizedTest
@@ -158,7 +158,7 @@ public class JsonReaderTest {
 
         assertThat(actual).isNotNull();
         assertThat(actual.getValueType()).isEqualTo(resource.getType());
-        assertThat(actual.toString()).isEqualTo(resource.getMinifiedString());
+        assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
     @ParameterizedTest
