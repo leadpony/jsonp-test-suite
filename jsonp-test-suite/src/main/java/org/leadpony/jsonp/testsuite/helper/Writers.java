@@ -26,6 +26,12 @@ import java.io.Writer;
  */
 public final class Writers {
 
+    /**
+     * Returns a writer which will throw an exception when writing.
+     *
+     * @param writer the original writer.
+     * @return newly created writer.
+     */
     public static Writer throwingWhenWriting(Writer writer) {
         return new FilterWriter(writer) {
             @Override
@@ -45,6 +51,12 @@ public final class Writers {
         };
     }
 
+    /**
+     * Returns a writer which will throw an exception when flushing.
+     *
+     * @param writer the original writer.
+     * @return newly created writer.
+     */
     public static Writer throwingWhenFlushing(Writer writer) {
         return new FilterWriter(writer) {
             @Override
@@ -54,6 +66,12 @@ public final class Writers {
         };
     }
 
+    /**
+     * Returns a writer which will throw an exception when closing.
+     *
+     * @param writer the original writer.
+     * @return newly created writer.
+     */
     public static Writer throwingWhenClosing(Writer writer) {
         return new FilterWriter(writer) {
             @Override

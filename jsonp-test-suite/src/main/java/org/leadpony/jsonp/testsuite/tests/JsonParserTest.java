@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -334,44 +333,6 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
-    enum IllegalStringRetrievalTestCase implements JsonSource {
-        EMPTY("", 0),
-
-        TRUE("true", 1),
-        FALSE("false", 1),
-        NULL("null", 1),
-
-        ARRAY_OPENING("[]", 1),
-        ARRAY_CLOSING("[]", 2),
-
-        OBJECT_OPENING("{}", 1),
-        OBJECT_CLOSING("{}", 2);
-
-        private final String json;
-        final int iterations;
-
-        IllegalStringRetrievalTestCase(String json, int iterations) {
-            this.json = json;
-            this.iterations = iterations;
-        }
-
-        public String getJson() {
-            return json;
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalStringRetrievalTestCase.class)
-    public void getStringShouldThrowIllegalStateException(IllegalStringRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getString);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
-    }
-
     enum BigDecimalRetrievalTestCase implements JsonSource {
         ZERO("0"),
         MINUS_ZERO("-0"),
@@ -465,46 +426,6 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
-    enum IllegalNumberRetrievalTestCase implements JsonSource {
-        EMPTY("", 0),
-
-        TRUE("true", 1),
-        FALSE("false", 1),
-        NULL("null", 1),
-
-        STRING("\"hello\"", 1),
-
-        ARRAY_OPENING("[]", 1),
-        ARRAY_CLOSING("[]", 2),
-
-        OBJECT_OPENING("{}", 1),
-        OBJECT_CLOSING("{}", 2);
-
-        private final String json;
-        final int iterations;
-
-        IllegalNumberRetrievalTestCase(String json, int iterations) {
-            this.json = json;
-            this.iterations = iterations;
-        }
-
-        public String getJson() {
-            return json;
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalNumberRetrievalTestCase.class)
-    public void getBigDecimalShouldThrowIllegalStateException(IllegalNumberRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getBigDecimal);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
-    }
-
     enum IsIntegralTestCase {
         ZERO("0", true),
         MINUS_ZERO("-0", true),
@@ -564,18 +485,6 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(test.isIntegral);
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalNumberRetrievalTestCase.class)
-    public void isIntegralNumberShouldThrowIllegalStateException(IllegalNumberRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::isIntegralNumber);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
     }
 
     enum IntRetrievalTestCase implements JsonSource {
@@ -662,18 +571,6 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(test.value);
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalNumberRetrievalTestCase.class)
-    public void getIntNumberShouldThrowIllegalStateException(IllegalNumberRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getInt);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
     }
 
     enum LongRetrievalTestCase implements JsonSource {
@@ -765,18 +662,6 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(test.value);
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalNumberRetrievalTestCase.class)
-    public void getLongNumberShouldThrowIllegalStateException(IllegalNumberRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getLong);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
     }
 
     enum LocationTestCase {
@@ -927,36 +812,6 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).isEqualTo(test.getValue());
-    }
-
-    enum IllegalValueRetrievalTestCase implements JsonSource {
-        EMPTY("", 0),
-        ARRAY_CLOSING("[]", 2),
-        OBJECT_CLOSING("{}", 2);
-
-        private final String json;
-        final int iterations;
-
-        IllegalValueRetrievalTestCase(String json, int iterations) {
-            this.json = json;
-            this.iterations = iterations;
-        }
-
-        public String getJson() {
-            return json;
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(IllegalValueRetrievalTestCase.class)
-    public void getValueShouldThrowIllegalStateException(IllegalValueRetrievalTestCase test) {
-        Throwable thrown = doIllegalCall(
-                test.getJson(), test.iterations,
-                JsonParser::getValue);
-
-        assertThat(thrown).isInstanceOf(IllegalStateException.class);
-
-        LOG.info(thrown.getMessage());
     }
 
     enum ArrayStreamTestCase implements JsonSource {
@@ -1174,16 +1029,5 @@ public class JsonParserTest {
 
     private JsonParser createJsonParser(String json) {
         return parserFactory.createParser(new StringReader(json));
-    }
-
-    private Throwable doIllegalCall(String json, int iterations, Consumer<JsonParser> consumer) {
-        try (JsonParser parser = createJsonParser(json)) {
-            while (iterations-- > 0) {
-                parser.next();
-            }
-            return catchThrowable(() -> {
-                consumer.accept(parser);
-            });
-        }
     }
 }
