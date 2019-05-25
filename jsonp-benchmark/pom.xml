@@ -100,6 +100,15 @@
                 <provider.classifier></provider.classifier>
             </properties>
         </profile>
+        <profile>
+            <id>with-joy</id>
+            <properties>
+                <provider.groupId>org.leadpony.joy</provider.groupId>
+                <provider.artifactId>joy</provider.artifactId>
+                <provider.version>1.0.0-SNAPSHOT</provider.version>
+                <provider.classifier></provider.classifier>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
