@@ -17,19 +17,19 @@ package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.leadpony.jsonp.testsuite.helper.JsonBuilderHelper.array;
-import static org.leadpony.jsonp.testsuite.helper.JsonBuilderHelper.object;
 
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonException;
-import javax.json.JsonObject;
 import javax.json.JsonPointer;
+import javax.json.JsonStructure;
 import javax.json.JsonValue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
@@ -40,20 +40,6 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
 public class JsonPointerTest {
 
     private static final Logger LOG = LogHelper.getLogger(JsonPointerTest.class);
-
-    private static final JsonObject RFC6901_OBJECT = object(
-        b -> {
-            b.add("foo", array(b2 -> b2.add("bar").add("baz")));
-            b.add("", 0);
-            b.add("a/b", 1);
-            b.add("c%d", 2);
-            b.add("e^f", 3);
-            b.add("g|h", 4);
-            b.add("i\\\\j", 5);
-            b.add("k\\\"l", 6);
-            b.add(" ", 7);
-            b.add("m~n", 8);
-        });
 
     enum JsonPointerTestCase {
         // examples in RFC 6901
@@ -105,44 +91,112 @@ public class JsonPointerTest {
         }
     }
 
-    enum RetrievalTestCase {
-        WHOLE("", RFC6901_OBJECT),
-        FOO("/foo", array(b -> b.add("bar").add("baz"))),
-        FOO_0("/foo/0", Json.createValue("bar")),
-        SLASH("/", Json.createValue(0)),
-        AB("/a~1b", Json.createValue(1)),
-        CD("/c%d", Json.createValue(2)),
-        EF("/e^f", Json.createValue(3)),
-        GH("/g|h", Json.createValue(4)),
-        IJ("/i\\\\j", Json.createValue(5)),
-        KL("/k\\\"l", Json.createValue(6)),
-        SPACE("/ ", Json.createValue(7)),
-        MN("/m~0n", Json.createValue(8));
+    static class EvaluationTestCase {
 
+        final JsonStructure json;
         final String pointer;
-        final JsonValue pointed;
+        final JsonValue value;
 
-        RetrievalTestCase(String pointer, JsonValue pointed) {
+        EvaluationTestCase(JsonStructure json, String pointer, JsonValue value) {
+            this.json = json;
             this.pointer = pointer;
-            this.pointed = pointed;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return pointer;
+        }
+    }
+
+    public static Stream<EvaluationTestCase> getValueShouldReturnValueAsExpeced() {
+        return TestCaseResource.JSON_POINTER.getObjectStream()
+            .flatMap(object -> {
+                JsonStructure json = (JsonStructure) object.get("json");
+                return object.getJsonArray("tests")
+                    .stream()
+                    .map(JsonValue::asJsonObject)
+                    .map(test -> {
+                        String pointer = test.getString("pointer");
+                        JsonValue value = test.get("value");
+                        return new EvaluationTestCase(json, pointer, value);
+                    });
+            });
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void getValueShouldReturnValueAsExpeced(EvaluationTestCase test) {
+        JsonPointer pointer = Json.createPointer(test.pointer);
+
+        if (test.value != null) {
+            JsonValue actual = pointer.getValue(test.json);
+            assertThat(actual).isNotNull().isEqualTo(test.value);
+        } else {
+            Throwable thrown = catchThrowable(() -> {
+                pointer.getValue(test.json);
+            });
+            assertThat(thrown).isInstanceOf(JsonException.class);
+            LOG.info(thrown.getMessage());
         }
     }
 
     @ParameterizedTest
-    @EnumSource(RetrievalTestCase.class)
-    public void getValueShouldReturnValueAsExpeced(RetrievalTestCase test) {
+    @MethodSource("getValueShouldReturnValueAsExpeced")
+    public void containsValueShouldReturnTrueAsExpeced(EvaluationTestCase test) {
         JsonPointer pointer = Json.createPointer(test.pointer);
-        JsonValue actual = pointer.getValue(RFC6901_OBJECT);
+        boolean actual = pointer.containsValue(test.json);
 
-        assertThat(actual).isEqualTo(test.pointed);
+        assertThat(actual).isEqualTo(test.value != null);
+    }
+
+    static class RemovalTestCase {
+
+        final JsonStructure json;
+        final String pointer;
+        final JsonValue result;
+
+        RemovalTestCase(JsonStructure json, String pointer, JsonValue result) {
+            this.json = json;
+            this.pointer = pointer;
+            this.result = result;
+        }
+
+        @Override
+        public String toString() {
+            return pointer;
+        }
+    }
+
+    public static Stream<RemovalTestCase> removeShouldRemoveValueAsExpeced() {
+        return TestCaseResource.JSON_POINTER_REMOVE.getObjectStream()
+            .flatMap(object -> {
+                JsonStructure json = (JsonStructure) object.get("json");
+                return object.getJsonArray("tests")
+                    .stream()
+                    .map(JsonValue::asJsonObject)
+                    .map(test -> {
+                        String pointer = test.getString("pointer");
+                        JsonValue result = test.get("result");
+                        return new RemovalTestCase(json, pointer, result);
+                    });
+            });
     }
 
     @ParameterizedTest
-    @EnumSource(RetrievalTestCase.class)
-    public void containsValueShouldReturnTrueAsExpeced(RetrievalTestCase test) {
+    @MethodSource
+    public void removeShouldRemoveValueAsExpeced(RemovalTestCase test) {
         JsonPointer pointer = Json.createPointer(test.pointer);
-        boolean actual = pointer.containsValue(RFC6901_OBJECT);
 
-        assertThat(actual).isTrue();
+        if (test.result != null) {
+            JsonValue actual = pointer.remove(test.json);
+            assertThat(actual).isEqualTo(test.result);
+        } else {
+            Throwable thrown = catchThrowable(() -> {
+                pointer.remove(test.json);
+            });
+            assertThat(thrown).isInstanceOf(JsonException.class);
+            LOG.info(thrown.getMessage());
+        }
     }
 }
