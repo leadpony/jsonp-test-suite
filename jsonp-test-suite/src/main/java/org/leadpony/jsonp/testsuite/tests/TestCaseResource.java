@@ -24,13 +24,15 @@ import javax.json.JsonReader;
 import javax.json.JsonValue;
 
 /**
- * JSON resources which describe test cases.
+ * JSON resources describing test cases.
  *
  * @author leadpony
  */
 enum TestCaseResource {
     JSON_POINTER("/org/leadpony/jsonp/testsuite/tests/json-pointer.json"),
-    JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/tests/json-pointer-remove.json");
+    JSON_POINTER_ADD("/org/leadpony/jsonp/testsuite/tests/json-pointer-add.json"),
+    JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/tests/json-pointer-remove.json"),
+    JSON_POINTER_REPLACE("/org/leadpony/jsonp/testsuite/tests/json-pointer-replace.json");
 
     private final String name;
 

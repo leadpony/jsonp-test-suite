@@ -1,0 +1,367 @@
+[
+    {
+        "description": "empty object",
+        "json": {},
+        "tests": [
+            {
+                "pointer": "/key1",
+                "value": "hello",
+                "result": {
+                    "key1": "hello"
+                }
+            },
+            {
+                "pointer": "/key1",
+                "value": 365,
+                "result": {
+                    "key1": 365
+                }
+            },
+            {
+                "pointer": "/key1",
+                "value": true,
+                "result": {
+                    "key1": true
+                }
+            },
+            {
+                "pointer": "/key1",
+                "value": false,
+                "result": {
+                    "key1": false
+                }
+            },
+            {
+                "pointer": "/key1",
+                "value": null,
+                "result": {
+                    "key1": null
+                }
+            },
+            {
+                "description": "add an array",
+                "pointer": "/key1",
+                "value": ["foo", "bar"],
+                "result": {
+                    "key1": ["foo", "bar"]
+                }
+            },
+            {
+                "description": "add an object",
+                "pointer": "/key1",
+                "value": {"a": 1, "b": 2, "c": 3},
+                "result": {
+                    "key1": {"a": 1, "b": 2, "c": 3}
+                }
+            }
+        ]
+    },
+    {
+        "description": "shallow object",
+        "json": {
+            "a": 1,
+            "b": 2
+        },
+        "tests": [
+            {
+                "description": "replace an existing property",
+                "pointer": "/a",
+                "value": 3,
+                "result": {
+                    "a": 3,
+                    "b": 2
+                }
+            },
+            {
+                "pointer": "/b",
+                "value": 3,
+                "result": {
+                    "a": 1,
+                    "b": 3
+                }
+            },
+            {
+                "description": "add a new property",
+                "pointer": "/c",
+                "value": 3,
+                "result": {
+                    "a": 1,
+                    "b": 2,
+                    "c": 3
+                }
+            },
+            {
+                "pointer": "",
+                "value": {
+                    "c": 3,
+                    "d": 4
+                },
+                "result": {
+                    "c": 3,
+                    "d": 4
+                }
+            },
+            {
+                "pointer": "",
+                "value": [3, 4]
+            },
+            {
+                "pointer": "",
+                "value": "hello"
+            }
+        ]
+    },
+    {
+        "description": "deep object",
+        "json": {
+            "a": [1, 2],
+            "b": {
+                "x": 100,
+                "y": 200
+            }
+        },
+        "tests": [
+            {
+                "pointer": "/a/0",
+                "value": 3,
+                "result": {
+                    "a": [3, 1, 2],
+                    "b": {
+                        "x": 100,
+                        "y": 200
+                    }
+                }
+            },
+            {
+                "pointer": "/a/1",
+                "value": 3,
+                "result": {
+                    "a": [1, 3, 2],
+                    "b": {
+                        "x": 100,
+                        "y": 200
+                    }
+                }
+            },
+            {
+                "pointer": "/a/2",
+                "value": 3,
+                "result": {
+                    "a": [1, 2, 3],
+                    "b": {
+                        "x": 100,
+                        "y": 200
+                    }
+                }
+            },
+            {
+                "pointer": "/b/x",
+                "value": 300,
+                "result": {
+                    "a": [1, 2],
+                    "b": {
+                        "x": 300,
+                        "y": 200
+                    }
+                }
+            },
+            {
+                "pointer": "/b/y",
+                "value": 300,
+                "result": {
+                    "a": [1, 2],
+                    "b": {
+                        "x": 100,
+                        "y": 300
+                    }
+                }
+            },
+            {
+                "pointer": "/b/z",
+                "value": 300,
+                "result": {
+                    "a": [1, 2],
+                    "b": {
+                        "x": 100,
+                        "y": 200,
+                        "z": 300
+                    }
+                }
+            },
+            {
+                "pointer": "/c/x",
+                "value": 300
+            }
+        ]
+    },
+    {
+        "description": "empty array",
+        "json": [],
+        "tests": [
+            {
+                "pointer": "/0",
+                "value": "hello",
+                "result": ["hello"]
+            },
+            {
+                "pointer": "/0",
+                "value": 365,
+                "result": [365]
+            },
+            {
+                "pointer": "/0",
+                "value": true,
+                "result": [true]
+            },
+            {
+                "pointer": "/0",
+                "value": false,
+                "result": [false]
+            },
+            {
+                "pointer": "/0",
+                "value": null,
+                "result": [null]
+            },
+            {
+                "pointer": "/0",
+                "value": [1, 2, 3],
+                "result": [[1, 2, 3]]
+            },
+            {
+                "pointer": "/0",
+                "value": {"a": 1, "b": 2, "c": 3},
+                "result": [{"a": 1, "b": 2, "c": 3}]
+            },
+            {
+                "pointer": "/-",
+                "value": "hello",
+                "result": ["hello"]
+            }
+        ]
+    },
+    {
+        "description": "shallow array",
+        "json": [1, 2],
+        "tests": [
+            {
+                "pointer": "/0",
+                "value": 3,
+                "result": [3, 1, 2]
+            },
+            {
+                "pointer": "/1",
+                "value": 3,
+                "result": [1, 3, 2]
+            },
+            {
+                "pointer": "/2",
+                "value": 3,
+                "result": [1, 2, 3]
+            },
+            {
+                "pointer": "/-",
+                "value": 3,
+                "result": [1, 2, 3]
+            },
+            {
+                "pointer": "/-1",
+                "value": 3
+            },
+            {
+                "pointer": "/3",
+                "value": 3
+            },
+            {
+                "description": "add a key",
+                "pointer": "/foo",
+                "value": 3
+            },
+            {
+                "pointer": "",
+                "value": [3, 4],
+                "result": [3, 4]
+            },
+            {
+                "pointer": "",
+                "value": {
+                    "a": 3,
+                    "b": 4
+                }
+            },
+            {
+                "pointer": "",
+                "value": "hello"
+            }
+        ]
+    },
+    {
+        "description": "deep array",
+        "json": [
+            [1, 2],
+            { "a": 100, "b": 200 }
+        ],
+        "tests": [
+            {
+                "pointer": "/0/0",
+                "value": 3,
+                "result": [
+                    [3, 1, 2],
+                    { "a": 100, "b": 200 }
+                ]
+            },
+            {
+                "pointer": "/0/1",
+                "value": 3,
+                "result": [
+                    [1, 3, 2],
+                    { "a": 100, "b": 200 }
+                ]
+            },
+            {
+                "pointer": "/0/2",
+                "value": 3,
+                "result": [
+                    [1, 2, 3],
+                    { "a": 100, "b": 200 }
+                ]
+            },
+            {
+                "pointer": "/0/-",
+                "value": 3,
+                "result": [
+                    [1, 2, 3],
+                    { "a": 100, "b": 200 }
+                ]
+            },
+            {
+                "pointer": "/1/a",
+                "value": 300,
+                "result": [
+                    [1, 2],
+                    { "a": 300, "b": 200 }
+                ]
+            },
+            {
+                "pointer": "/1/b",
+                "value": 300,
+                "result": [
+                    [1, 2],
+                    { "a": 100, "b": 300 }
+                ]
+            },
+            {
+                "pointer": "/1/c",
+                "value": 300,
+                "result": [
+                    [1, 2],
+                    { "a": 100, "b": 200, "c": 300 }
+                ]
+            },
+            {
+                "pointer": "/2/a",
+                "value": 300
+            }
+        ]
+    }
+]
