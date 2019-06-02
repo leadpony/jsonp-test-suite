@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonException;
+import javax.json.JsonObject;
 import javax.json.JsonPatch;
 import javax.json.JsonStructure;
 
@@ -41,21 +42,21 @@ public class JsonPatchTest {
 
     static class PatchTestCase {
 
+        final String title;
         final JsonStructure json;
         final JsonArray patch;
         final JsonStructure result;
-        final String description;
 
-        PatchTestCase(JsonStructure json, JsonArray patch, JsonStructure result, String description) {
-            this.json = json;
-            this.patch = patch;
-            this.result = result;
-            this.description = description;
+        PatchTestCase(JsonObject object) {
+            this.title = object.getString("title");
+            this.json = (JsonStructure) object.get("json");
+            this.patch = object.getJsonArray("patch");
+            this.result = (JsonStructure) object.get("result");
         }
 
         @Override
         public String toString() {
-            return description;
+            return title;
         }
     }
 
@@ -65,11 +66,7 @@ public class JsonPatchTest {
             TestCaseResource.JSON_PATCH)
             .flatMap(TestCaseResource::getObjectStream)
             .filter(object -> !object.getBoolean("skip", false))
-            .map(object -> new PatchTestCase(
-                (JsonStructure) object.get("json"),
-                object.get("patch").asJsonArray(),
-                (JsonStructure) object.get("result"),
-                object.getString("description")));
+            .map(PatchTestCase::new);
     }
 
     @ParameterizedTest
