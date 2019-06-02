@@ -1,0 +1,210 @@
+[
+    {
+        "description": "Adding an Object Member",
+        "json": { 
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "add", "path": "/baz", "value": "qux" }
+        ],
+        "result": {
+            "baz": "qux",
+            "foo": "bar"
+        }
+    },
+    {
+        "description": "Adding an Array Element",
+        "json": { 
+            "foo": [ "bar", "baz" ] 
+        },
+        "patch": [
+            { "op": "add", "path": "/foo/1", "value": "qux" }
+        ],
+        "result": {
+            "foo": [ "bar", "qux", "baz" ] 
+        }
+    },
+    {
+        "description": "Removing an Object Member",
+        "json": { 
+            "baz": "qux",
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "remove", "path": "/baz" }
+        ],
+        "result": {
+            "foo": "bar"
+        }
+    },
+    {
+        "description": "Removing an Array Element",
+        "json": {
+            "foo": [ "bar", "qux", "baz" ]
+        },
+        "patch": [
+            { "op": "remove", "path": "/foo/1" }
+        ],
+        "result": {
+            "foo": [ "bar", "baz" ]
+        }
+    },
+    {
+        "description": "Replacing a Value",
+        "json": {
+            "baz": "qux",
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "replace", "path": "/baz", "value": "boo" }
+        ],
+        "result": {
+            "baz": "boo",
+            "foo": "bar"
+        }
+    },
+    {
+        "description": "Moving a Value",
+        "json": {
+            "foo": {
+                "bar": "baz",
+                "waldo": "fred"
+            },
+            "qux": {
+                "corge": "grault"
+            }
+        },
+        "patch": [
+            { "op": "move", "from": "/foo/waldo", "path": "/qux/thud" }
+        ],
+        "result": {
+            "foo": {
+                "bar": "baz"
+            },
+            "qux": {
+                "corge": "grault",
+                "thud": "fred"
+            }
+        }
+    },
+    {
+        "description": "Moving an Array Element",
+        "json": {
+            "foo": [ "all", "grass", "cows", "eat" ]
+        },
+        "patch": [
+            { "op": "move", "from": "/foo/1", "path": "/foo/3" }
+        ],
+        "result": {
+            "foo": [ "all", "cows", "eat", "grass" ]
+        }
+    },
+    {
+        "description": "Testing a Value: Success",
+        "json": {
+            "baz": "qux",
+            "foo": [ "a", 2, "c" ]
+        },
+        "patch": [
+            { "op": "test", "path": "/baz", "value": "qux" },
+            { "op": "test", "path": "/foo/1", "value": 2 }
+        ],
+        "result": {
+            "baz": "qux",
+            "foo": [ "a", 2, "c" ]
+        }
+    },
+    {
+        "description": "Testing a Value: Error",
+        "json": {
+            "baz": "qux"
+        },
+        "patch": [
+            { "op": "test", "path": "/baz", "value": "bar" }
+        ]
+    },
+    {
+        "description": "Adding a Nested Member Object",
+        "json": {
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "add", "path": "/child", "value": { "grandchild": { } } }
+        ],
+        "result": {
+            "foo": "bar",
+            "child": {
+                "grandchild": {}
+            }
+        }
+    },
+    {
+        "description": "Ignoring Unrecognized Elements",
+        "json": {
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "add", "path": "/baz", "value": "qux", "xyz": 123 }
+        ],
+        "result": {
+            "foo": "bar",
+            "baz": "qux"
+        }
+    },
+    {
+        "description": "Adding to a Nonexistent Target",
+        "json": {
+            "foo": "bar"
+        },
+        "patch": [
+            { "op": "add", "path": "/baz/bat", "value": "qux" }
+        ]
+    },
+    {
+        "description": "Invalid JSON Patch Document",
+        "json": {
+            "foo": "bar",
+            "baz": "qux"
+        },
+        "patch": [
+            { "op": "add", "path": "/baz", "value": "qux", "op": "remove" }
+        ],
+        "skip": true
+    },
+    {
+        "description": "~ Escape Ordering",
+        "json": {
+            "/": 9,
+            "~1": 10
+        },
+        "patch": [
+            {"op": "test", "path": "/~01", "value": 10}
+        ],
+        "result": {
+            "/": 9,
+            "~1": 10
+        }
+    },
+    {
+        "description": "Comparing Strings and Numbers",
+        "json": {
+            "/": 9,
+            "~1": 10
+        },
+        "patch": [
+            {"op": "test", "path": "/~01", "value": "10"}
+        ]
+    },
+    {
+        "description": "Adding an Array Value",
+        "json": {
+            "foo": ["bar"]
+        },
+        "patch": [
+            { "op": "add", "path": "/foo/-", "value": ["abc", "def"] }
+        ],
+        "result": {
+            "foo": ["bar", ["abc", "def"]]
+        }
+    }
+]

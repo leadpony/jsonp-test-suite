@@ -35,7 +35,8 @@ public interface LogHelper {
 
     static LogManager configureLogManager() {
         LogManager manager = LogManager.getLogManager();
-        try (InputStream ins = LogHelper.class.getResourceAsStream("logging.properties")) {
+        try (InputStream ins = LogHelper.class
+            .getResourceAsStream("/org/leadpony/jsonp/testsuite/logging.properties")) {
             manager.readConfiguration(ins);
         } catch (IOException e) {
             e.printStackTrace();

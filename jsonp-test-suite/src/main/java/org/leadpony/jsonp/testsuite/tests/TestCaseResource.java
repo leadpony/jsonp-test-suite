@@ -29,10 +29,12 @@ import javax.json.JsonValue;
  * @author leadpony
  */
 enum TestCaseResource {
-    JSON_POINTER("/org/leadpony/jsonp/testsuite/tests/json-pointer.json"),
-    JSON_POINTER_ADD("/org/leadpony/jsonp/testsuite/tests/json-pointer-add.json"),
-    JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/tests/json-pointer-remove.json"),
-    JSON_POINTER_REPLACE("/org/leadpony/jsonp/testsuite/tests/json-pointer-replace.json");
+    JSON_POINTER("/org/leadpony/jsonp/testsuite/json-pointer.json"),
+    JSON_POINTER_ADD("/org/leadpony/jsonp/testsuite/json-pointer-add.json"),
+    JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/json-pointer-remove.json"),
+    JSON_POINTER_REPLACE("/org/leadpony/jsonp/testsuite/json-pointer-replace.json"),
+    JSON_PATCH("/org/leadpony/jsonp/testsuite/json-patch.json"),
+    RFC6902_EXAMPLES("/org/ietf/rfc/rfc6902/examples.json");
 
     private final String name;
 

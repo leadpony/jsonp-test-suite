@@ -1,0 +1,55 @@
+[
+    {
+        "description": "Moving a Value from parent",
+        "json": {
+            "a": {
+                "b": {
+                    "c": {
+                        "x": 1,
+                        "y": 2
+                    }
+                }
+            }
+        },
+        "patch": [
+            { "op": "move", "from": "/a/b", "path": "/a/b/c/z" }
+        ]
+    },
+    {
+        "description": "Copying a Value",
+        "json": {
+            "foo": {
+                "bar": "baz",
+                "waldo": "fred"
+            },
+            "qux": {
+                "corge": "grault"
+            }
+        },
+        "patch": [
+            { "op": "copy", "from": "/foo/waldo", "path": "/qux/thud" }
+        ],
+        "result": {
+            "foo": {
+                "bar": "baz",
+                "waldo": "fred"
+            },
+            "qux": {
+                "corge": "grault",
+                "thud": "fred"
+            }
+        }
+    },
+    {
+        "description": "Copying an Array Element",
+        "json": {
+            "foo": [ "all", "grass", "cows", "eat" ]
+        },
+        "patch": [
+            { "op": "copy", "from": "/foo/1", "path": "/foo/3" }
+        ],
+        "result": {
+            "foo": [ "all", "grass", "cows", "grass", "eat" ]
+        }
+    }
+]
