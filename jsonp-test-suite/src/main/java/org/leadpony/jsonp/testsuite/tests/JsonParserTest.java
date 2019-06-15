@@ -63,6 +63,11 @@ public class JsonParserTest {
         parserFactory = Json.createParserFactory(null);
     }
 
+    /**
+     * Test cases for {@code JsonParser#hasNext()}.
+     *
+     * @author leadpony
+     */
     enum TerminationTestCase {
         LITERAL("365", 1, false),
         ARRAY("[1,2,3]", 5, false),
@@ -93,6 +98,12 @@ public class JsonParserTest {
         parser.close();
     }
 
+    /**
+     * Test cases for {@code JsonParser#hasNext()} when unexpected end of JSON has
+     * occurred.
+     *
+     * @author leadpony
+     */
     enum UnexpectedTerminationTestCase {
         ARRAY_MISSING_END("[1,2,3", 4, false),
         ARRAY_MISSING_ITEM("[1,2,", 3, true),
@@ -128,7 +139,7 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "", "    " })
+    @ValueSource(strings = {"", "    "})
     @Ambiguous
     public void hasNextShouldReturnFalseIfInputIsBlank(String json) {
         JsonParser parser = createJsonParser(json);
@@ -136,6 +147,11 @@ public class JsonParserTest {
         parser.close();
     }
 
+    /**
+     * Test cases for {@code JsonParser#next()}.
+     *
+     * @author leadpony
+     */
     enum ParserEventTestCase {
         TRUE("true", Event.VALUE_TRUE),
         FALSE("false", Event.VALUE_FALSE),
@@ -145,31 +161,31 @@ public class JsonParserTest {
         NUMBER("3.14", Event.VALUE_NUMBER),
 
         EMPTY_ARRAY("[]",
-                Event.START_ARRAY, Event.END_ARRAY),
+            Event.START_ARRAY, Event.END_ARRAY),
         ARRAY_OF_ITEM("[42]",
-                Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
+            Event.START_ARRAY, Event.VALUE_NUMBER, Event.END_ARRAY),
         ARRAY_OF_MULTIPLE_ITEMS("[true,false,null,\"abc\",42]",
-                Event.START_ARRAY, Event.VALUE_TRUE, Event.VALUE_FALSE,
-                Event.VALUE_NULL, Event.VALUE_STRING, Event.VALUE_NUMBER, Event.END_ARRAY),
+            Event.START_ARRAY, Event.VALUE_TRUE, Event.VALUE_FALSE,
+            Event.VALUE_NULL, Event.VALUE_STRING, Event.VALUE_NUMBER, Event.END_ARRAY),
         ARRAY_OF_ARRAY("[[]]",
-                Event.START_ARRAY, Event.START_ARRAY, Event.END_ARRAY, Event.END_ARRAY),
+            Event.START_ARRAY, Event.START_ARRAY, Event.END_ARRAY, Event.END_ARRAY),
         ARRAY_OF_OBJECT("[{}]",
-                Event.START_ARRAY, Event.START_OBJECT, Event.END_OBJECT, Event.END_ARRAY),
+            Event.START_ARRAY, Event.START_OBJECT, Event.END_OBJECT, Event.END_ARRAY),
 
         EMPTY_OBJECT("{}",
-                Event.START_OBJECT, Event.END_OBJECT),
+            Event.START_OBJECT, Event.END_OBJECT),
         OBJECT_OF_SINGLE_PROPERTY("{\"a\":42}",
-                Event.START_OBJECT, Event.KEY_NAME, Event.VALUE_NUMBER,
-                Event.END_OBJECT),
+            Event.START_OBJECT, Event.KEY_NAME, Event.VALUE_NUMBER,
+            Event.END_OBJECT),
         OBJECT_OF_MULTIPLE_PROPERTIES("{\"a\":true,\"b\":false,\"c\":null,\"d\":\"abc\",\"e\":42}", Event.START_OBJECT,
-                Event.KEY_NAME, Event.VALUE_TRUE, Event.KEY_NAME, Event.VALUE_FALSE, Event.KEY_NAME, Event.VALUE_NULL,
-                Event.KEY_NAME, Event.VALUE_STRING, Event.KEY_NAME, Event.VALUE_NUMBER, Event.END_OBJECT),
+            Event.KEY_NAME, Event.VALUE_TRUE, Event.KEY_NAME, Event.VALUE_FALSE, Event.KEY_NAME, Event.VALUE_NULL,
+            Event.KEY_NAME, Event.VALUE_STRING, Event.KEY_NAME, Event.VALUE_NUMBER, Event.END_OBJECT),
         OBJECT_OF_ARRAY_PROPERTY("{\"a\":[]}",
-                Event.START_OBJECT, Event.KEY_NAME, Event.START_ARRAY, Event.END_ARRAY,
-                Event.END_OBJECT),
+            Event.START_OBJECT, Event.KEY_NAME, Event.START_ARRAY, Event.END_ARRAY,
+            Event.END_OBJECT),
         OBJECT_OF_OBJECT_PROPERTY("{\"a\":{}}",
-                Event.START_OBJECT, Event.KEY_NAME, Event.START_OBJECT,
-                Event.END_OBJECT, Event.END_OBJECT);
+            Event.START_OBJECT, Event.KEY_NAME, Event.START_OBJECT,
+            Event.END_OBJECT, Event.END_OBJECT);
 
         private final String json;
         private final Event[] events;
@@ -212,6 +228,11 @@ public class JsonParserTest {
         LOG.info(thrown.getMessage());
     }
 
+    /**
+     * Test cases for {@code JsonParser#getString()}.
+     *
+     * @author leadpony
+     */
     enum StringRetrievalTestCase implements JsonSource {
         EMPTY_STRING("\"\"", ""),
         BLANK_STRING("\" \"", " "),
@@ -220,7 +241,7 @@ public class JsonParserTest {
         SINGLE_WORD("\"hello\"", "hello"),
 
         SENTENCE("\"The quick brown fox jumps over the lazy dog\"",
-                "The quick brown fox jumps over the lazy dog"),
+            "The quick brown fox jumps over the lazy dog"),
 
         STARTING_WITH_SPACE("\" hello\"", " hello"),
         ENDING_WITH_SPACE("\"hello \"", "hello "),
@@ -333,6 +354,11 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    /**
+     * Test cases for {@code JsonParser#getBigDecimal()}.
+     *
+     * @author leadpony
+     */
     enum BigDecimalRetrievalTestCase implements JsonSource {
         ZERO("0"),
         MINUS_ZERO("-0"),
@@ -426,6 +452,11 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    /**
+     * Test cases for {@code JsonParser#isIntegralNumber()}.
+     *
+     * @author leadpony
+     */
     enum IsIntegralTestCase {
         ZERO("0", true),
         MINUS_ZERO("-0", true),
@@ -487,6 +518,11 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.isIntegral);
     }
 
+    /**
+     * Test cases for {@code JsonParser#getInt()}.
+     *
+     * @author leadpony
+     */
     enum IntRetrievalTestCase implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
@@ -573,6 +609,11 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    /**
+     * Test cases for {@code JsonParser#getLong()}.
+     *
+     * @author leadpony
+     */
     enum LongRetrievalTestCase implements JsonSource {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
@@ -664,59 +705,64 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    /**
+     * Test cases for {@code JsonParser#getLocation()}.
+     *
+     * @author leadpony
+     */
     enum LocationTestCase {
 
         SIMPLE_VALUE("42", at(1, 3, 2)),
 
         ARRAY_IN_ONE_LINE("[\"hello\",42,true]",
-                at(1, 2, 1), // [
-                at(1, 9, 8), // "hello"
-                at(1, 12, 11), // 42
-                at(1, 17, 16), // true
-                at(1, 18, 17) // ]
+            at(1, 2, 1), // [
+            at(1, 9, 8), // "hello"
+            at(1, 12, 11), // 42
+            at(1, 17, 16), // true
+            at(1, 18, 17) // ]
         ),
 
         ARRAY_IN_MULTIPLE_LINES("[\n" + "    \"hello\",\n" + "    42,\n" + "    true\n" + "]",
-                at(1, 2, 1), // [
-                at(2, 12, 13), // "hello"
-                at(3, 7, 21), // 42
-                at(4, 9, 31), // true
-                at(5, 2, 33) // ]
+            at(1, 2, 1), // [
+            at(2, 12, 13), // "hello"
+            at(3, 7, 21), // 42
+            at(4, 9, 31), // true
+            at(5, 2, 33) // ]
         ),
 
         ARRAY_IN_MULTIPLE_LINES_CRLF("[\r\n" + "    \"hello\",\r\n" + "    42,\r\n" + "    true\r\n" + "]",
-                at(1, 2, 1), // [
-                at(2, 12, 14), // "hello"
-                at(3, 7, 23), // 42
-                at(4, 9, 34), // true
-                at(5, 2, 37) // ]
+            at(1, 2, 1), // [
+            at(2, 12, 14), // "hello"
+            at(3, 7, 23), // 42
+            at(4, 9, 34), // true
+            at(5, 2, 37) // ]
         ),
 
         OBJECT_IN_ONE_LINE("{\"first\":\"hello\",\"second\":42}",
-                at(1, 2, 1), // {
-                at(1, 9, 8), // "first"
-                at(1, 17, 16), // "hello"
-                at(1, 26, 25), // "second"
-                at(1, 29, 28), // 42
-                at(1, 30, 29) // }
+            at(1, 2, 1), // {
+            at(1, 9, 8), // "first"
+            at(1, 17, 16), // "hello"
+            at(1, 26, 25), // "second"
+            at(1, 29, 28), // 42
+            at(1, 30, 29) // }
         ),
 
         OBJECT_IN_MULTIPLE_LINES("{\n" + "    \"first\":\"hello\",\n" + "    \"second\":42\n" + "}",
-                at(1, 2, 1), // {
-                at(2, 12, 13), // "first"
-                at(2, 20, 21), // "hello"
-                at(3, 13, 35), // "second"
-                at(3, 16, 38), // 42
-                at(4, 2, 40) // }
+            at(1, 2, 1), // {
+            at(2, 12, 13), // "first"
+            at(2, 20, 21), // "hello"
+            at(3, 13, 35), // "second"
+            at(3, 16, 38), // 42
+            at(4, 2, 40) // }
         ),
 
         OBJECT_IN_MULTIPLE_LINES_CRLF("{\r\n" + "    \"first\":\"hello\",\r\n" + "    \"second\":42\r\n" + "}",
-                at(1, 2, 1), // {
-                at(2, 12, 14), // "first"
-                at(2, 20, 22), // "hello"
-                at(3, 13, 37), // "second"
-                at(3, 16, 40), // 42
-                at(4, 2, 43) // }
+            at(1, 2, 1), // {
+            at(2, 12, 14), // "first"
+            at(2, 20, 22), // "hello"
+            at(3, 13, 37), // "second"
+            at(3, 16, 40), // 42
+            at(4, 2, 43) // }
         ),;
 
         final String json;
@@ -746,7 +792,7 @@ public class JsonParserTest {
         parser.close();
 
         assertThat(actual).usingElementComparator(JsonLocations.COMPARATOR)
-                .containsExactlyElementsOf(test.locations);
+            .containsExactlyElementsOf(test.locations);
     }
 
     @ParameterizedTest
@@ -814,17 +860,22 @@ public class JsonParserTest {
         assertThat(actual).isEqualTo(test.getValue());
     }
 
+    /**
+     * Test cases for {@code JsonParser#getArrayStream()}.
+     *
+     * @author leadpony
+     */
     enum ArrayStreamTestCase implements JsonSource {
         EMPTY_ARRAY("[]"),
         SIMPLE_ARRAY("[42,\"hello\", true,false,null]",
-                Json.createValue(42),
-                Json.createValue("hello"),
-                JsonValue.TRUE,
-                JsonValue.FALSE,
-                JsonValue.NULL),
+            Json.createValue(42),
+            Json.createValue("hello"),
+            JsonValue.TRUE,
+            JsonValue.FALSE,
+            JsonValue.NULL),
         NESTED_ARRAY("[[],{}]",
-                JsonValue.EMPTY_JSON_ARRAY,
-                JsonValue.EMPTY_JSON_OBJECT);
+            JsonValue.EMPTY_JSON_ARRAY,
+            JsonValue.EMPTY_JSON_OBJECT);
 
         private final String json;
         final JsonValue[] values;
@@ -851,19 +902,24 @@ public class JsonParserTest {
         parser.close();
     }
 
+    /**
+     * Test cases for {@code JsonParser#getObjectStream()}.
+     *
+     * @author leadpony
+     */
     enum ObjectStreamTestCase implements JsonSource {
         EMPTY_OBJECT("{}"),
 
         SIMPLE_OBJECT("{\"a\":42,\"b\":\"hello\",\"c\":true,\"d\":false,\"e\":null}",
-                entry("a", Json.createValue(42)),
-                entry("b", Json.createValue("hello")),
-                entry("c", JsonValue.TRUE),
-                entry("d", JsonValue.FALSE),
-                entry("e", JsonValue.NULL)),
+            entry("a", Json.createValue(42)),
+            entry("b", Json.createValue("hello")),
+            entry("c", JsonValue.TRUE),
+            entry("d", JsonValue.FALSE),
+            entry("e", JsonValue.NULL)),
 
         NESTED_OBJECT("{\"a\":[],\"b\":{}}",
-                entry("a", JsonValue.EMPTY_JSON_ARRAY),
-                entry("b", JsonValue.EMPTY_JSON_OBJECT));
+            entry("a", JsonValue.EMPTY_JSON_ARRAY),
+            entry("b", JsonValue.EMPTY_JSON_OBJECT));
 
         private final String json;
         final Map.Entry<String, JsonValue>[] values;
@@ -895,6 +951,11 @@ public class JsonParserTest {
         parser.close();
     }
 
+    /**
+     * Test cases for {@code JsonParser#getValueStream()}.
+     *
+     * @author leadpony
+     */
     enum ValueStreamTestCase implements JsonSource {
         NUMBER("42", Json.createValue(42)),
         STRING("\"hello\"", Json.createValue("hello")),
@@ -928,6 +989,11 @@ public class JsonParserTest {
         parser.close();
     }
 
+    /**
+     * Test cases for {@code JsonParser#skipArray()}.
+     *
+     * @author leadpony
+     */
     enum SkipArrayTestCase implements JsonSource {
         EMPTY_ARRAY("[]", 1, 3),
         SIMPLE_ARRAY("[1,2,3]", 1, 8),
@@ -977,12 +1043,17 @@ public class JsonParserTest {
         assertThat(event).isSameAs(test.event);
     }
 
+    /**
+     * Test cases for {@code JsonParser#skipObject()}.
+     *
+     * @author leadpony
+     */
     enum SkipObjectTestCase implements JsonSource {
         EMPTY_OBJECT("{}", 1, 3),
         SIMPLE_OBJECT("{\"a\":1,\"b\":2}", 1, 14),
         OBJECT_IN_ARRAY(
-                "[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]",
-                2, 15, Event.START_OBJECT);
+            "[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]",
+            2, 15, Event.START_OBJECT);
 
         private final String json;
         final int iterations;

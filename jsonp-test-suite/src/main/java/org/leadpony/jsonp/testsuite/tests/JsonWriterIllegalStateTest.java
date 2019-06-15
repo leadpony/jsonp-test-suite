@@ -62,6 +62,12 @@ public class JsonWriterIllegalStateTest {
         LOG.info(thrown.getMessage());
     }
 
+    /**
+     * A type for testing that the JSON writer throws {@link IllegalStateException}
+     * when it is in illegal state.
+     *
+     * @author leadpony
+     */
     abstract class IllegalStateTest {
 
         @Test
@@ -101,6 +107,11 @@ public class JsonWriterIllegalStateTest {
         }
     }
 
+    /**
+     * After closing the writer.
+     *
+     * @author leadpony
+     */
     @Nested
     public class AfterClosing extends IllegalStateTest {
 
@@ -111,6 +122,11 @@ public class JsonWriterIllegalStateTest {
         }
     }
 
+    /**
+     * After {@link JsonWriter#write(JsonValue)} was called.
+     *
+     * @author leadpony
+     */
     @Nested
     public class AfterWritingValue extends IllegalStateTest {
 
@@ -120,6 +136,11 @@ public class JsonWriterIllegalStateTest {
         }
     }
 
+    /**
+     * After {@link JsonWriter#write(javax.json.JsonStructure)} was called.
+     *
+     * @author leadpony
+     */
     @Nested
     public class AfterWritingStructure extends IllegalStateTest {
 
@@ -129,6 +150,11 @@ public class JsonWriterIllegalStateTest {
         }
     }
 
+    /**
+     * After {@link JsonWriter#writeArray(javax.json.JsonArray)} was called.
+     *
+     * @author leadpony
+     */
     @Nested
     public class AfterWritingArray extends IllegalStateTest {
 
@@ -138,6 +164,11 @@ public class JsonWriterIllegalStateTest {
         }
     }
 
+    /**
+     * After {@link JsonWriter#writeObject(javax.json.JsonObject)} was called.
+     *
+     * @author leadpony
+     */
     @Nested
     public class AfterWritingObject extends IllegalStateTest {
 

@@ -37,11 +37,11 @@ public class CharsetDetectionTest {
     static final Charset UTF_32BE = Charset.forName("UTF-32BE");
     static final Charset UTF_32LE = Charset.forName("UTF-32LE");
 
-    private static final byte[] UTF_8_BOM = { (byte) 0xef, (byte) 0xbb, (byte) 0xbf };
-    private static final byte[] UTF_16BE_BOM = { (byte) 0xfe, (byte) 0xff };
-    private static final byte[] UTF_16LE_BOM = { (byte) 0xff, (byte) 0xfe };
-    private static final byte[] UTF_32BE_BOM = { 0x00, 0x00, (byte) 0xfe, (byte) 0xff };
-    private static final byte[] UTF_32LE_BOM = { (byte) 0xff, (byte) 0xfe, 0x00, 0x00 };
+    private static final byte[] UTF_8_BOM = {(byte) 0xef, (byte) 0xbb, (byte) 0xbf};
+    private static final byte[] UTF_16BE_BOM = {(byte) 0xfe, (byte) 0xff};
+    private static final byte[] UTF_16LE_BOM = {(byte) 0xff, (byte) 0xfe};
+    private static final byte[] UTF_32BE_BOM = {0x00, 0x00, (byte) 0xfe, (byte) 0xff};
+    private static final byte[] UTF_32LE_BOM = {(byte) 0xff, (byte) 0xfe, 0x00, 0x00};
 
     private static JsonParserFactory parserFactory;
 

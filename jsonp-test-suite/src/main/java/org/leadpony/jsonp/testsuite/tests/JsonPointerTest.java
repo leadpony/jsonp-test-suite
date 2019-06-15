@@ -41,6 +41,11 @@ public class JsonPointerTest {
 
     private static final Logger LOG = LogHelper.getLogger(JsonPointerTest.class);
 
+    /**
+     * Test cases for JSON pointer creation.
+     *
+     * @author leadpony
+     */
     enum JsonPointerTestCase {
         // examples in RFC 6901
         WHOLE("", true),
@@ -91,6 +96,11 @@ public class JsonPointerTest {
         }
     }
 
+    /**
+     * Test cases for {@code add} and {@code replace} operations.
+     *
+     * @author leadpony
+     */
     static class AddOrReplaceTestCase {
 
         final JsonStructure json;
@@ -169,6 +179,11 @@ public class JsonPointerTest {
         }
     }
 
+    /**
+     * Test cases for {@code remove} operation.
+     *
+     * @author leadpony
+     */
     static class RemovalTestCase {
 
         final JsonStructure json;
@@ -219,6 +234,11 @@ public class JsonPointerTest {
         }
     }
 
+    /**
+     * Test cases for JSON pointer evaluation.
+     *
+     * @author leadpony
+     */
     static class EvaluationTestCase {
 
         final JsonStructure json;

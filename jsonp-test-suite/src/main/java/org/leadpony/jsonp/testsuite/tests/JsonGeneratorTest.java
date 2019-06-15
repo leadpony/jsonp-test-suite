@@ -43,6 +43,11 @@ public class JsonGeneratorTest {
         factory = Json.createGeneratorFactory(null);
     }
 
+    /**
+     * Test cases for boolean values.
+     *
+     * @author leadpony
+     */
     enum BooleanTestCase {
         TRUE(true, "true"),
         FALSE(false, "false");
@@ -77,6 +82,11 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo("null");
     }
 
+    /**
+     * Test cases for string value.
+     *
+     * @author leadpony
+     */
     enum StringTestCase {
         EMPTY_STRING("", "\"\""),
         BLANK_STRING(" ", "\" \""),
@@ -106,6 +116,11 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo(test.expected);
     }
 
+    /**
+     * Test cases for integer value.
+     *
+     * @author leadpony
+     */
     enum IntTestCase {
         ZERO(0, "0"),
         ONE(1, "1"),
@@ -143,6 +158,11 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo(test.expected);
     }
 
+    /**
+     * Test cases for long value.
+     *
+     * @author leadpony
+     */
     enum LongTestCase {
         ZERO(0L, "0"),
         ONE(1L, "1"),

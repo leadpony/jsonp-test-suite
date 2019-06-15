@@ -45,6 +45,11 @@ public class JsonParserIllegalStateTest {
         parserFactory = Json.createParserFactory(null);
     }
 
+    /**
+     * Tests cases for retrieving string value.
+     *
+     * @author leadpony
+     */
     enum IllegalStringRetrievalTestCase implements JsonSource {
         EMPTY("", 0),
 
@@ -83,6 +88,11 @@ public class JsonParserIllegalStateTest {
         LOG.info(thrown.getMessage());
     }
 
+    /**
+     * Tests cases for retrieving numeric value.
+     *
+     * @author leadpony
+     */
     enum IllegalNumberRetrievalTestCase implements JsonSource {
         EMPTY("", 0),
 
@@ -159,6 +169,11 @@ public class JsonParserIllegalStateTest {
         LOG.info(thrown.getMessage());
     }
 
+    /**
+     * Test cases for retrieving JSON value.
+     *
+     * @author leadpony
+     */
     enum IllegalValueRetrievalTestCase implements JsonSource {
         EMPTY("", 0),
         ARRAY_CLOSING("[]", 2),

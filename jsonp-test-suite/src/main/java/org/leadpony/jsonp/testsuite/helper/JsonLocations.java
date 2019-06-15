@@ -56,6 +56,11 @@ public final class JsonLocations {
         return new JsonLocationImpl(lineNumber, columnNumber, streamOffset);
     }
 
+    /**
+     * An implementation class of {@link JsonLocation}.
+     *
+     * @author leadpony
+     */
     private static class JsonLocationImpl implements JsonLocation {
 
         private final long lineNmber;

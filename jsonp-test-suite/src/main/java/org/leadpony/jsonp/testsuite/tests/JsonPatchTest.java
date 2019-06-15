@@ -40,6 +40,11 @@ public class JsonPatchTest {
 
     private static final Logger LOG = LogHelper.getLogger(JsonPatchTest.class);
 
+    /**
+     * Test cases for JSON patch.
+     *
+     * @author leadpony
+     */
     static class PatchTestCase {
 
         final String title;

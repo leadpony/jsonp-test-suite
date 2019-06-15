@@ -61,11 +61,11 @@ public class JsonGenerationExceptionTest {
     public void tearDown() {
     }
 
-    interface ThrowingTest {
-
-        JsonGenerator getGenerator();
-    }
-
+    /**
+     * A supplier of {@link JsonGenerator}.
+     *
+     * @author leadpony
+     */
     class GeneratorSupplier implements Supplier<JsonGenerator> {
 
         @Override
@@ -74,6 +74,11 @@ public class JsonGenerationExceptionTest {
         }
     }
 
+    /**
+     * A type to test writing various kinds of values.
+     *
+     * @author leadpony
+     */
     interface WritingValueTest extends Supplier<JsonGenerator> {
 
         @Test
@@ -167,6 +172,11 @@ public class JsonGenerationExceptionTest {
         }
     }
 
+    /**
+     * A type to test writing name.
+     *
+     * @author leadpony
+     */
     interface WritingNameTest extends Supplier<JsonGenerator> {
 
         @Test
@@ -197,6 +207,11 @@ public class JsonGenerationExceptionTest {
         }
     }
 
+    /**
+     * A type to test writing end of collection.
+     *
+     * @author leadpony
+     */
     interface WritingEndTest extends Supplier<JsonGenerator> {
 
         @Test
@@ -209,9 +224,19 @@ public class JsonGenerationExceptionTest {
         }
     }
 
+    /**
+     * A test containing all tests writing values.
+     *
+     * @author leadpony
+     */
     interface AllWritingTest extends WritingValueTest, WritingNameTest, WritingEndTest {
     }
 
+    /**
+     * A type to test {@code JsonGenerator#close()}.
+     *
+     * @author leadpony
+     */
     interface ClosingTest extends Supplier<JsonGenerator> {
 
         @Test
@@ -224,13 +249,23 @@ public class JsonGenerationExceptionTest {
         }
     }
 
+    /**
+     * When the JSON generator is in initial state.
+     *
+     * @author leadpony
+     */
     @Nested
     public class WhenInitial extends GeneratorSupplier
-            implements WritingNameTest, WritingEndTest, ClosingTest {
+        implements WritingNameTest, WritingEndTest, ClosingTest {
 
+        /**
+         * After {@code JsonGenerator#write(JsonValue)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingJsonValue extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -238,9 +273,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(String)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingString extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -248,9 +288,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(BigInteger)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingBigInteger extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -258,9 +303,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(BigDecimal)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingBigDecimal extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -268,9 +318,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(int)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingInt extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -278,9 +333,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(long)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingLong extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -288,9 +348,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(double)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingDouble extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -298,9 +363,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#write(boolean)} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingBoolean extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -308,9 +378,14 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#writeNull()} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingNull extends GeneratorSupplier
-                implements AllWritingTest {
+            implements AllWritingTest {
 
             @BeforeEach
             public void setUp() {
@@ -318,27 +393,42 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#writeStartArray()} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingStartArray extends GeneratorSupplier
-                implements WritingNameTest, ClosingTest {
+            implements WritingNameTest, ClosingTest {
 
             @BeforeEach
             public void setUp() {
                 get().writeStartArray();
             }
 
+            /**
+             * After writing the first item.
+             *
+             * @author leadpony
+             */
             @Nested
             public class AfterWritingFirstItem extends GeneratorSupplier
-                    implements WritingNameTest, ClosingTest {
+                implements WritingNameTest, ClosingTest {
 
                 @BeforeEach
                 public void setUp() {
                     get().write(123);
                 }
 
+                /**
+                 * After {@code JsonGenerator#writeEnd()} was called.
+                 *
+                 * @author leadpony
+                 */
                 @Nested
                 public class AfterWritingEnd extends GeneratorSupplier
-                        implements AllWritingTest {
+                    implements AllWritingTest {
 
                     @BeforeEach
                     public void setUp() {
@@ -347,9 +437,14 @@ public class JsonGenerationExceptionTest {
                 }
             }
 
+            /**
+             * After {@code JsonGenerator#writeEnd()} was called without items.
+             *
+             * @author leadpony
+             */
             @Nested
             public class AfterWritingEnd extends GeneratorSupplier
-                    implements AllWritingTest {
+                implements AllWritingTest {
 
                 @BeforeEach
                 public void setUp() {
@@ -358,36 +453,56 @@ public class JsonGenerationExceptionTest {
             }
         }
 
+        /**
+         * After {@code JsonGenerator#writeStartObject()} was called.
+         *
+         * @author leadpony
+         */
         @Nested
         public class AfterWritingStartObject extends GeneratorSupplier
-                implements WritingValueTest, ClosingTest {
+            implements WritingValueTest, ClosingTest {
 
             @BeforeEach
             public void setUp() {
                 get().writeStartObject();
             }
 
+            /**
+             * After writing a key of the first property.
+             *
+             * @author leadpony
+             */
             @Nested
             public class AfterWritingKey extends GeneratorSupplier
-                    implements WritingNameTest, WritingEndTest, ClosingTest {
+                implements WritingNameTest, WritingEndTest, ClosingTest {
 
                 @BeforeEach
                 public void setUp() {
                     get().writeKey("key");
                 }
 
+                /**
+                 * After writing a value of the first property.
+                 *
+                 * @author leadpony
+                 */
                 @Nested
                 public class AfterWritingValue extends GeneratorSupplier
-                        implements WritingValueTest, ClosingTest {
+                    implements WritingValueTest, ClosingTest {
 
                     @BeforeEach
                     public void setUp() {
                         get().write("value");
                     }
 
+                    /**
+                     * After {@code JsonGenerator#writeEnd} was called.
+                     *
+                     * @author leadpony
+                     */
                     @Nested
                     public class AfterWritingEnd extends GeneratorSupplier
-                            implements AllWritingTest {
+                        implements AllWritingTest {
 
                         @BeforeEach
                         public void setUp() {
@@ -397,18 +512,28 @@ public class JsonGenerationExceptionTest {
                 }
             }
 
+            /**
+             * After writing the first pair of key and value.
+             *
+             * @author leadpony
+             */
             @Nested
             public class AfterWritingKeyValue extends GeneratorSupplier
-                    implements WritingValueTest, ClosingTest {
+                implements WritingValueTest, ClosingTest {
 
                 @BeforeEach
                 public void setUp() {
                     get().write("key", "value");
                 }
 
+                /**
+                 * After {@code JsonGenerator#writeEnd} was called.
+                 *
+                 * @author leadpony
+                 */
                 @Nested
                 public class AfterWritingEnd extends GeneratorSupplier
-                        implements AllWritingTest {
+                    implements AllWritingTest {
 
                     @BeforeEach
                     public void setUp() {
@@ -417,9 +542,14 @@ public class JsonGenerationExceptionTest {
                 }
             }
 
+            /**
+             * After {@code JsonGenerator#writeEnd} was called without any properties.
+             *
+             * @author leadpony
+             */
             @Nested
             public class AfterWritingEnd extends GeneratorSupplier
-                    implements AllWritingTest {
+                implements AllWritingTest {
 
                 @BeforeEach
                 public void setUp() {
