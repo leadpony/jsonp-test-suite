@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.StringWriter;
@@ -100,7 +101,11 @@ public class JsonWriterIOExceptionTest {
     public void closeShouldThrowJsonException() {
         Writer writer = Writers.throwingWhenClosing(new StringWriter());
         JsonWriter jsonWriter = factory.createWriter(writer);
-        jsonWriter.write(JsonValue.TRUE);
+
+        assertThatCode(() -> {
+            jsonWriter.write(JsonValue.TRUE);
+        }).doesNotThrowAnyException();
+
         Throwable thrown = catchThrowable(() -> {
             jsonWriter.close();
         });

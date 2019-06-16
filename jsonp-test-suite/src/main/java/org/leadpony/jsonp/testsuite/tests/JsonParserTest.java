@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.leadpony.jsonp.testsuite.helper.JsonLocations.at;
 
@@ -983,9 +984,12 @@ public class JsonParserTest {
     @EnumSource(ValueStreamTestCase.class)
     public void getValueStreamShouldReturnsValuesAsStream(ValueStreamTestCase test) {
         JsonParser parser = createJsonParser(test.getJson());
-        Stream<JsonValue> actual = parser.getValueStream();
 
-        assertThat(actual).containsExactly(test.values);
+        assertThatCode(() -> {
+            Stream<JsonValue> actual = parser.getValueStream();
+            assertThat(actual).containsExactly(test.values);
+        }).doesNotThrowAnyException();
+
         parser.close();
     }
 

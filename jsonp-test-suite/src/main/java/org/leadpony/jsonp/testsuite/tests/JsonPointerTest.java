@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.logging.Logger;
@@ -276,9 +277,10 @@ public class JsonPointerTest {
     @MethodSource
     public void containsValueShouldReturnTrueAsExpeced(EvaluationTestCase test) {
         JsonPointer pointer = Json.createPointer(test.pointer);
-        boolean actual = pointer.containsValue(test.json);
-
-        assertThat(actual).isEqualTo(test.value != null);
+        assertThatCode(() -> {
+            boolean actual = pointer.containsValue(test.json);
+            assertThat(actual).isEqualTo(test.value != null);
+        }).doesNotThrowAnyException();
     }
 
     @ParameterizedTest

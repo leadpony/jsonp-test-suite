@@ -1,0 +1,313 @@
+[
+    {
+        "description": "same empty object",
+        "source": {},
+        "target": {},
+        "patch": []
+    },
+    {
+        "description": "same empty array",
+        "source": [],
+        "target": [],
+        "patch": []
+    },
+    {
+        "description": "add properties",
+        "source": {},
+        "target": {
+            "a": 1,
+            "b": 2
+        },
+        "patch": [
+            { "op": "add", "path": "/a", "value": 1 },
+            { "op": "add", "path": "/b", "value": 2 }
+        ]
+    },
+    {
+        "description": "remove properties",
+        "source": {
+            "a": 1,
+            "b": 2
+        },
+        "target": {},
+        "patch": [
+            { "op": "remove", "path": "/a" },
+            { "op": "remove", "path": "/b" }
+        ]
+    },
+    {
+        "description": "add, remove, replace properties",
+        "source": {
+            "a": 1,
+            "c": 3
+        },
+        "target": {
+            "a": 101,
+            "b": 2
+        },
+        "patch": [
+            { "op": "replace", "path": "/a", "value": 101 },
+            { "op": "remove", "path": "/c" },
+            { "op": "add", "path": "/b", "value": 2 }
+        ]
+    },
+    {
+        "description": "add at last",
+        "source": [1, 2],
+        "target": [1, 2, 3],
+        "patch": [
+            { "op": "add", "path": "/2", "value": 3 }
+        ]
+    },
+    {
+        "description": "add at middle",
+        "source": [1, 3],
+        "target": [1, 2, 3],
+        "patch": [
+            { "op": "add", "path": "/1", "value": 2 }
+        ]
+    },
+    {
+        "description": "add at first",
+        "source": [2, 3],
+        "target": [1, 2, 3],
+        "patch": [
+            { "op": "add", "path": "/0", "value": 1 }
+        ]
+    },
+    {
+        "description": "add multiple",
+        "source": [1, 4],
+        "target": [1, 2, 3, 4],
+        "patch": [
+            { "op": "add", "path": "/1", "value": 2 },
+            { "op": "add", "path": "/2", "value": 3 }
+        ]
+    },
+    {
+        "description": "remove from last",
+        "source": [1, 2, 3],
+        "target": [1, 2],
+        "patch": [
+            { "op": "remove", "path": "/2" }
+        ]
+    },
+    {
+        "description": "remove from middle",
+        "source": [1, 2, 3],
+        "target": [1, 3],
+        "patch": [
+            { "op": "remove", "path": "/1" }
+        ]
+    },
+    {
+        "description": "remove from first",
+        "source": [1, 2, 3],
+        "target": [2, 3],
+        "patch": [
+            { "op": "remove", "path": "/0" }
+        ]
+    },
+    {
+        "description": "remove multiple",
+        "source": [1, 2, 3, 4],
+        "target": [1, 4],
+        "patch": [
+            { "op": "remove", "path": "/2" },
+            { "op": "remove", "path": "/1" }
+        ]
+    },
+    {
+        "description": "replace at last",
+        "source": [1, 2, 3, 4],
+        "target": [1, 2, 3, 99],
+        "patch": [
+            { "op": "replace", "path": "/3", "value": 99 }
+        ]
+    },
+    {
+        "description": "replace at middle",
+        "source": [1, 2, 3, 4],
+        "target": [1, 2, 99, 4],
+        "patch": [
+            { "op": "replace", "path": "/2", "value": 99 }
+        ]
+    },
+    {
+        "description": "replace at middle",
+        "source": [1, 2, 3, 4],
+        "target": [1, 99, 3, 4],
+        "patch": [
+            { "op": "replace", "path": "/1", "value": 99 }
+        ]
+    },
+    {
+        "description": "replace at first",
+        "source": [1, 2, 3, 4],
+        "target": [99, 2, 3, 4],
+        "patch": [
+            { "op": "replace", "path": "/0", "value": 99 }
+        ]
+    },
+    {
+        "description": "replace multiple",
+        "source": [1, 2, 3, 4],
+        "target": [1, 99, 98, 4],
+        "patch": [
+            { "op": "replace", "path": "/2", "value": 98 },
+            { "op": "replace", "path": "/1", "value": 99 }
+        ]
+    },
+    {
+        "description": "add, remove, replace",
+        "source": [1, 2, 3, 4, 5, 6],
+        "target": [1, 7, 3, 4, 8, 5],
+        "patch": [
+            { "op": "remove", "path": "/5" },
+            { "op": "replace", "path": "/1", "value": 7 },
+            { "op": "add", "path": "/4", "value": 8 }
+        ]
+    },
+    {
+        "description": "swap first and last",
+        "source": [1, 2, 3],
+        "target": [3, 2, 1],
+        "patch": [
+            { "op": "replace", "path": "/2", "value": 1 },
+            { "op": "replace", "path": "/0", "value": 3 }
+        ]
+    },
+    {
+        "description": "reverse",
+        "source": [1, 2, 3, 4],
+        "target": [4, 3, 2, 1],
+        "patch": [
+            { "op": "replace", "path": "/3", "value": 1 },
+            { "op": "replace", "path": "/2", "value": 2 },
+            { "op": "replace", "path": "/1", "value": 3 },
+            { "op": "replace", "path": "/0", "value": 4 }
+        ]
+    },
+    {
+        "description": "object in object",
+        "source": {
+            "a": 1,
+            "b": {
+                "c": 3,
+                "d": 4
+            }
+        },
+        "target": {
+            "a": 1,
+            "b": {
+                "d": "hello",
+                "e": 5
+            }
+        },
+        "patch": [
+            { "op": "remove", "path": "/b/c" },
+            { "op": "replace", "path": "/b/d", "value": "hello" },
+            { "op": "add", "path": "/b/e", "value": 5 }
+        ]
+    },
+    {
+        "description": "array in object",
+        "source": {
+            "a": 1,
+            "b": [1, 2, 3, 4, 5, 6]
+        },
+        "target": {
+            "a": 1,
+            "b": [1, "hello", 3, 4, "world", 5]
+        },
+        "patch": [
+            { "op": "remove", "path": "/b/5" },
+            { "op": "replace", "path": "/b/1", "value": "hello" },
+            { "op": "add", "path": "/b/4", "value": "world" }
+        ]
+    },
+    {
+        "description": "object in array",
+        "source": [
+            1,
+            {
+                "a": 1,
+                "b": 2
+            },
+            3
+        ],
+        "target": [
+            1,
+            {
+                "b": "hello",
+                "c": 3
+            },
+            3
+        ],
+        "patch": [
+            { "op": "remove", "path": "/1/a" },
+            { "op": "replace", "path": "/1/b", "value": "hello" },
+            { "op": "add", "path": "/1/c", "value": 3 }
+        ]
+    },
+    {
+        "description": "array in array",
+        "source": [
+            1,
+            [1, 2, 3, 4, 5, 6],
+            3
+        ],
+        "target": [
+            1,
+            [1, "hello", 3, 4, "world", 5],
+            3
+        ],
+        "patch": [
+            { "op": "remove", "path": "/1/5" },
+            { "op": "replace", "path": "/1/1", "value": "hello" },
+            { "op": "add", "path": "/1/4", "value": "world" }
+        ]
+    },
+    {
+        "description": "replace object with array",
+        "source": {
+            "a": {
+                "b": 2,
+                "c": 3
+            }
+        },
+        "target": {
+            "a": [1, 2, 3]
+        },
+        "patch": [
+            { "op": "replace", "path": "/a", "value": [1, 2, 3] }
+        ]
+    },
+    {
+        "description": "replace array with object",
+        "source": {
+            "a": [1, 2, 3]
+        },
+        "target": {
+            "a": {
+                "b": 2,
+                "c": 3
+            }
+        },
+        "patch": [
+            { "op": "replace", "path": "/a", "value": { "b": 2, "c": 3 } }
+        ]
+    },
+    {
+        "description": "property name containing slash",
+        "source": {
+            "a/b": 1
+        },
+        "target": {
+            "a/b": 2
+        },
+        "patch": [
+            { "op": "replace", "path": "/a~1b", "value": 2 }
+        ]
+    }
+]

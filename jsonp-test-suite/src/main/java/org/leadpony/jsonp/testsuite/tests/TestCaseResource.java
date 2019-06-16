@@ -34,6 +34,7 @@ enum TestCaseResource {
     JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/json-pointer-remove.json"),
     JSON_POINTER_REPLACE("/org/leadpony/jsonp/testsuite/json-pointer-replace.json"),
     JSON_PATCH("/org/leadpony/jsonp/testsuite/json-patch.json"),
+    JSON_PATCH_DIFF("/org/leadpony/jsonp/testsuite/json-patch-diff.json"),
     RFC6902_EXAMPLES("/org/ietf/rfc/rfc6902/examples.json");
 
     private final String name;

@@ -15,6 +15,8 @@
  */
 package org.leadpony.jsonp.testsuite.tests;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -112,20 +114,24 @@ public class CharsetDetectionTest {
 
     private void testParser(JsonTestCase test, Charset charset) {
         InputStream in = createEncodedStream(test.getJson(), charset);
-        JsonParser parser = parserFactory.createParser(in);
-        while (parser.hasNext()) {
-            parser.next();
-        }
-        parser.close();
+        assertThatCode(() -> {
+            JsonParser parser = parserFactory.createParser(in);
+            while (parser.hasNext()) {
+                parser.next();
+            }
+            parser.close();
+        }).doesNotThrowAnyException();
     }
 
     private void testParser(JsonTestCase test, Charset charset, byte[] bom) {
         InputStream in = createEncodedStream(test.getJson(), charset, bom);
-        JsonParser parser = parserFactory.createParser(in);
-        while (parser.hasNext()) {
-            parser.next();
-        }
-        parser.close();
+        assertThatCode(() -> {
+            JsonParser parser = parserFactory.createParser(in);
+            while (parser.hasNext()) {
+                parser.next();
+            }
+            parser.close();
+        }).doesNotThrowAnyException();
     }
 
     private InputStream createEncodedStream(String json, Charset charset) {

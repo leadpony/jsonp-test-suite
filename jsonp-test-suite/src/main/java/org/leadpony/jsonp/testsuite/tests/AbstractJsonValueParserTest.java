@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -828,8 +830,10 @@ public abstract class AbstractJsonValueParserTest {
             parser.next();
         }
 
-        Stream<JsonValue> actual = parser.getArrayStream();
-        assertThat(actual).containsExactly(test.expected);
+        assertThatCode(() -> {
+            Stream<JsonValue> actual = parser.getArrayStream();
+            assertThat(actual).containsExactly(test.expected);
+        }).doesNotThrowAnyException();
 
         parser.close();
     }
@@ -915,8 +919,10 @@ public abstract class AbstractJsonValueParserTest {
             parser.next();
         }
 
-        Stream<Map.Entry<String, JsonValue>> actual = parser.getObjectStream();
-        assertThat(actual).containsExactly(test.expected);
+        assertThatCode(() -> {
+            Stream<Map.Entry<String, JsonValue>> actual = parser.getObjectStream();
+            assertThat(actual).containsExactly(test.expected);
+        }).doesNotThrowAnyException();
 
         parser.close();
     }
@@ -1044,12 +1050,16 @@ public abstract class AbstractJsonValueParserTest {
     }
 
     private <T> T extractValue(JsonStructure value, int iterations, Function<JsonParser, T> mapper) {
+        AtomicReference<T> result = new AtomicReference<>();
         try (JsonParser parser = createParser(value)) {
             while (iterations-- > 0) {
                 parser.next();
             }
-            return mapper.apply(parser);
+            assertThatCode(() -> {
+                result.set(mapper.apply(parser));
+            }).doesNotThrowAnyException();
         }
+        return result.get();
     }
 
     protected abstract JsonParser createParser(JsonStructure value);
