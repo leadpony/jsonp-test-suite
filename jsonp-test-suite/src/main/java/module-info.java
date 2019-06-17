@@ -18,13 +18,12 @@
  */
 module org.leadpony.jsonp.testsuite {
 
-    requires java.base;
     requires java.json;
     requires java.logging;
     requires org.assertj.core;
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
-    requires java.naming;
+    requires org.opentest4j;
 
     opens org.leadpony.jsonp.testsuite.tests;
 }

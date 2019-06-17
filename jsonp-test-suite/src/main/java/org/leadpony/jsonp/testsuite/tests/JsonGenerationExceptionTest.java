@@ -16,7 +16,9 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -482,6 +484,16 @@ public class JsonGenerationExceptionTest {
                 }
 
                 /**
+                 * Johnzon fails this test.
+                 */
+                @Test
+                public void writeShouldStringValue() {
+                    assertThatCode(() -> {
+                        get().write("value");
+                    }).doesNotThrowAnyException();
+                }
+
+                /**
                  * After writing a value of the first property.
                  *
                  * @author leadpony
@@ -492,7 +504,12 @@ public class JsonGenerationExceptionTest {
 
                     @BeforeEach
                     public void setUp() {
-                        get().write("value");
+                        try {
+                            get().write("value");
+                        } catch (JsonGenerationException e) {
+                            // Johnzon throws this.
+                            assumeFalse(false);
+                        }
                     }
 
                     /**
@@ -506,7 +523,12 @@ public class JsonGenerationExceptionTest {
 
                         @BeforeEach
                         public void setUp() {
-                            get().writeEnd();
+                            try {
+                                get().writeEnd();
+                            } catch (JsonGenerationException e) {
+                                // Johnzon throws this.
+                                assumeFalse(false);
+                            }
                         }
                     }
                 }
