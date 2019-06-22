@@ -5,13 +5,14 @@
 
     <groupId>org.leadpony.jsonp-test-suite</groupId>
     <artifactId>jsonp-test-suite</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>JSON-P Test Suite</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>9</maven.compiler.release>
         <jsonp.version>1.1.5</jsonp.version>
         <junit.version>5.4.2</junit.version>
@@ -90,8 +91,24 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                    <configuration>
+                        <locales>en</locales>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -105,7 +122,13 @@
                     <configuration>
                         <testClassesDirectory>${project.build.outputDirectory}</testClassesDirectory>
                         <excludedGroups>ambiguous</excludedGroups>
+                        <reportsDirectory>${project.build.directory}/surefire-reports/${jsonp.provider}</reportsDirectory>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.0.0-M3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -125,6 +148,41 @@
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>surefire-report-ri</id>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                        <configuration>
+                            <title>Surefire Report (Reference Implementation)</title>
+                            <reportsDirectories>${project.build.directory}/surefire-reports/ri</reportsDirectories>
+                            <outputName>surefire-report-ri</outputName>
+                            <linkXRef>false</linkXRef>
+                        </configuration>
+                    </reportSet>
+                    <reportSet>
+                        <id>surefire-report-johnzon</id>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                        <configuration>
+                            <title>Surefire Report (Apache Johnzon)</title>
+                            <reportsDirectories>${project.build.directory}/surefire-reports/johnzon</reportsDirectories>
+                            <outputName>surefire-report-johnzon</outputName>
+                            <linkXRef>false</linkXRef>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <profiles>
         <profile>
@@ -147,6 +205,9 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
+            <properties>
+                <jsonp.provider>ri</jsonp.provider>
+            </properties>
         </profile>
         <profile>
             <id>test-with-johnzon</id>
@@ -158,7 +219,21 @@
                     <scope>test</scope>
                 </dependency>
             </dependencies>
+            <properties>
+                <jsonp.provider>johnzon</jsonp.provider>
+            </properties>
         </profile>
     </profiles>
+
+    <url>https://github.com/leadpony/jsonp-test-suite</url>
+    <inceptionYear>2019</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
 </project>
