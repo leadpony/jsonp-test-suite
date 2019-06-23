@@ -1,0 +1,184 @@
+[
+    {
+        "original": {
+            "a": 1
+        },
+        "tests": [
+            {
+                "description": "replace all with array",
+                "patch": [1, 2, 3],
+                "result": [1, 2, 3]
+            },
+            {
+                "description": "replace all with string",
+                "patch": "hello",
+                "result": "hello"
+            },
+            {
+                "description": "replace all with number",
+                "patch": 42,
+                "result": 42
+            },
+            {
+                "description": "replace all with boolean",
+                "patch": true,
+                "result": true
+            },
+            {
+                "description": "replace all with null",
+                "patch": null,
+                "result": null
+            }
+        ]
+    },
+    {
+        "original": {
+            "a": 1
+        },
+        "tests": [
+            {
+                "description": "replace with array",
+                "patch": {
+                    "a": [1, 2, 3]
+                },
+                "result": {
+                    "a": [1, 2, 3]
+                }
+            },
+            {
+                "description": "replace with empty array",
+                "patch": {
+                    "a": []
+                },
+                "result": {
+                    "a": []
+                }
+            },
+            {
+                "description": "replace with array containing null",
+                "patch": {
+                    "a": [1, 2, null]
+                },
+                "result": {
+                    "a": [1, 2, null]
+                }
+            },
+            {
+                "description": "replace with object",
+                "patch": {
+                    "a": {
+                        "b": 2,
+                        "c": 3
+                    }
+                },
+                "result": {
+                    "a": {
+                        "b": 2,
+                        "c": 3
+                    }
+                }
+            },
+            {
+                "description": "replace with empty object",
+                "patch": {
+                    "a": {}
+                },
+                "result": {
+                    "a": {}
+                }
+            },
+            {
+                "description": "replace with object containing null",
+                "patch": {
+                    "a": {
+                        "b": 2,
+                        "c": null
+                    }
+                },
+                "result": {
+                    "a": {
+                        "b": 2
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "original": {
+            "a": 1
+        },
+        "tests": [
+            {
+                "description": "add array",
+                "patch": {
+                    "b": [1, 2, 3]
+                },
+                "result": {
+                    "a": 1,
+                    "b": [1, 2, 3]
+                }
+            },
+            {
+                "description": "add empty array",
+                "patch": {
+                    "b": []
+                },
+                "result": {
+                    "a": 1,
+                    "b": []
+                }
+            },
+            {
+                "description": "add array containing null",
+                "patch": {
+                    "b": [1, 2, null]
+                },
+                "result": {
+                    "a": 1,
+                    "b": [1, 2, null]
+                }
+            },
+            {
+                "description": "add object",
+                "patch": {
+                    "b": {
+                        "c": 3,
+                        "d": 4
+                    }
+                },
+                "result": {
+                    "a": 1,
+                    "b": {
+                        "c": 3,
+                        "d": 4
+                    }
+                }
+            },
+            {
+                "description": "add empty object",
+                "patch": {
+                    "b": {}
+                },
+                "result": {
+                    "a": 1,
+                    "b": {}
+                }
+            },
+            {
+                "description": "add object containing null",
+                "patch": {
+                    "b": {
+                        "c": 3,
+                        "d": null
+                    }
+                },
+                "result": {
+                    "a": 1,
+                    "b": {
+                        "c": 3
+                    }
+                }
+            }
+        ]
+    }
+]
