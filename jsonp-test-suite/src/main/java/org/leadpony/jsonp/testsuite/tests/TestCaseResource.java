@@ -36,6 +36,7 @@ enum TestCaseResource {
     JSON_PATCH("/org/leadpony/jsonp/testsuite/json-patch.json"),
     JSON_PATCH_DIFF("/org/leadpony/jsonp/testsuite/json-patch-diff.json"),
     JSON_MERGE_PATCH("/org/leadpony/jsonp/testsuite/json-merge-patch.json"),
+    JSON_MERGE_DIFF("/org/leadpony/jsonp/testsuite/json-merge-diff.json"),
     RFC6902_EXAMPLES("/org/ietf/rfc/rfc6902/examples.json"),
     RFC7396_EXAMPLES("/org/ietf/rfc/rfc7396/examples.json");
 

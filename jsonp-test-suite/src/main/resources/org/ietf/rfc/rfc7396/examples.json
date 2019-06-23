@@ -1,6 +1,6 @@
 [
     {
-        "original": {
+        "source": {
             "a": "b",
             "c": {
                 "d": "e",
@@ -16,7 +16,7 @@
                         "f": null
                     }
                 },
-                "result": {
+                "target": {
                     "a": "z",
                     "c": {
                         "d": "e"
@@ -26,7 +26,7 @@
         ]
     },
     {
-        "original": {
+        "source": {
             "title": "Goodbye!",
             "author" : {
                 "givenName" : "John",
@@ -46,7 +46,7 @@
                     },
                     "tags": [ "example" ]
                 },
-                "result": {
+                "target": {
                     "title": "Hello!",
                     "author" : {
                         "givenName" : "John"

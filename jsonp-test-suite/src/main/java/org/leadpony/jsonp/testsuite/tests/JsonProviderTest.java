@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import javax.json.JsonMergePatch;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -288,6 +289,58 @@ public class JsonProviderTest {
         LOG.info(thrown.getMessage());
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     }
+
+    /**
+     * @author leadpony
+     */
+    static class DiffMergeTestCase {
+
+        final String description;
+        final JsonValue source;
+        final JsonValue patch;
+        final JsonValue target;
+
+        DiffMergeTestCase(String description, JsonValue source, JsonValue patch, JsonValue target) {
+            this.description = description;
+            this.source = source;
+            this.patch = patch;
+            this.target = target;
+        }
+
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
+
+    public static Stream<DiffMergeTestCase> createMergeDiffShouldReturnMergePatchAsExpected() {
+        return Stream.of(
+            TestCaseResource.RFC7396_EXAMPLES,
+            TestCaseResource.JSON_MERGE_DIFF)
+            .flatMap(TestCaseResource::getObjectStream)
+            .flatMap((JsonObject object) -> {
+                JsonValue original = object.get("source");
+                return object.getJsonArray("tests")
+                    .stream()
+                    .map(JsonValue::asJsonObject)
+                    .map((JsonObject test) -> new DiffMergeTestCase(
+                        test.getString("description"),
+                        original,
+                        test.get("patch"),
+                        test.get("target")
+                        )
+                    );
+            });
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void createMergeDiffShouldReturnMergePatchAsExpected(DiffMergeTestCase test) {
+        JsonMergePatch patch = provider.createMergeDiff(test.source, test.target);
+        assertThat(patch.toJsonValue()).isEqualTo(test.patch);
+    }
+
+    /* Helper methods */
 
     private static List<Object> collection(Consumer<List<Object>> consumer) {
         List<Object> list = new ArrayList<>();

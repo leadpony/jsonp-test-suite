@@ -38,15 +38,15 @@ public class JsonMergePatchTest {
     static class MergePatchTestCase {
 
         final String description;
-        final JsonValue original;
+        final JsonValue source;
         final JsonValue patch;
-        final JsonValue result;
+        final JsonValue target;
 
-        MergePatchTestCase(String description, JsonValue original, JsonValue patch, JsonValue result) {
+        MergePatchTestCase(String description, JsonValue source, JsonValue patch, JsonValue target) {
             this.description = description;
-            this.original = original;
+            this.source = source;
             this.patch = patch;
-            this.result = result;
+            this.target = target;
         }
 
         @Override
@@ -61,7 +61,7 @@ public class JsonMergePatchTest {
             TestCaseResource.JSON_MERGE_PATCH)
             .flatMap(TestCaseResource::getObjectStream)
             .flatMap((JsonObject object) -> {
-                JsonValue original = object.get("original");
+                JsonValue original = object.get("source");
                 return object.getJsonArray("tests")
                     .stream()
                     .map(JsonValue::asJsonObject)
@@ -69,7 +69,7 @@ public class JsonMergePatchTest {
                         test.getString("description"),
                         original,
                         test.get("patch"),
-                        test.get("result")
+                        test.get("target")
                         )
                     );
             });
@@ -79,8 +79,8 @@ public class JsonMergePatchTest {
     @MethodSource("getMergePatchTestCases")
     public void applyShouldApplyPatchAsExpected(MergePatchTestCase test) {
         JsonMergePatch patch = Json.createMergePatch(test.patch);
-        JsonValue actual = patch.apply(test.original);
-        assertThat(actual).isEqualTo(test.result);
+        JsonValue actual = patch.apply(test.source);
+        assertThat(actual).isEqualTo(test.target);
     }
 
     @ParameterizedTest

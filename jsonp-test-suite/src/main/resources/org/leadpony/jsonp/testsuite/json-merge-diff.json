@@ -135,8 +135,7 @@
                 "description": "replace with object containing null",
                 "patch": {
                     "a": {
-                        "b": 2,
-                        "c": null
+                        "b": 2
                     }
                 },
                 "target": {
@@ -212,8 +211,7 @@
                 "description": "add object containing null",
                 "patch": {
                     "b": {
-                        "c": 3,
-                        "d": null
+                        "c": 3
                     }
                 },
                 "target": {
