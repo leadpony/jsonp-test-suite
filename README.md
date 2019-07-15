@@ -1,5 +1,6 @@
 # JSON-P Test Suite
 [![Build Status](https://travis-ci.org/leadpony/jsonp-test-suite.svg?branch=master)](https://travis-ci.org/leadpony/jsonp-test-suite)
+[![Release](https://jitpack.io/v/org.leadpony/jsonp-test-suite.svg)](https://jitpack.io/#org.leadpony/jsonp-test-suite)
 
 This project provides a set of tests and benchmarks for implementations of [Java API for JSON Processing (JSR 374)].
 
