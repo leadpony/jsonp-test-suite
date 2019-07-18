@@ -200,6 +200,70 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo(test.expected);
     }
 
+    /**
+     * Test cases for double value.
+     *
+     * @author leadpony
+     */
+    enum DoubleTestCase {
+        ZERO(0.0, "0.0"),
+        E(Math.E, "2.718281828459045"),
+        PI(Math.PI, "3.141592653589793"),
+        MAX_VALUE(Double.MAX_VALUE, "1.7976931348623157E308"),
+        MIN_VALUE(Double.MIN_VALUE, "4.9E-324");
+
+        final double value;
+        final String expected;
+
+        DoubleTestCase(double value, String expected) {
+            this.value = value;
+            this.expected = expected;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(DoubleTestCase.class)
+    public void writeShouldWriteDouble(DoubleTestCase test) {
+
+        String actual = generate(g -> {
+            g.write(test.value);
+        });
+
+        assertThat(actual).isEqualTo(test.expected);
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum NamedDoubleTestCase {
+        ZERO("abc", 0.0, "{\"abc\":0.0}"),
+        E("", Math.E, "{\"\":2.718281828459045}"),
+        PI("a\"bc", Math.PI, "{\"a\\\"bc\":3.141592653589793}");
+
+        final String name;
+        final double value;
+        final String expected;
+
+        NamedDoubleTestCase(String name, double value, String expected) {
+            this.name = name;
+            this.value = value;
+            this.expected = expected;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(NamedDoubleTestCase.class)
+    public void writeShouldWriteDouble(NamedDoubleTestCase test) {
+
+        String actual = generate(g -> {
+            g.writeStartObject();
+            g.write(test.name, test.value);
+            g.writeEnd();
+        });
+
+        assertThat(actual).isEqualTo(test.expected);
+    }
+
     @ParameterizedTest
     @EnumSource(JsonValueTestCase.class)
     public void writeShouldWriteJsonValue(JsonValueTestCase test) {
