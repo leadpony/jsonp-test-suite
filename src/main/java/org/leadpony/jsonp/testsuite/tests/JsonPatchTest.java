@@ -17,6 +17,7 @@ package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -101,16 +102,19 @@ public class JsonPatchTest {
     @ParameterizedTest
     @MethodSource
     public void applyShouldThrowJsonExceptionIfMalformed(PatchTestCase test) {
-        JsonPatch patch = Json.createPatch(test.patch);
+        try {
+            JsonPatch patch = Json.createPatch(test.patch);
+            Throwable thrown = catchThrowable(() -> {
+                patch.apply(test.json);
+            });
 
-        Throwable thrown = catchThrowable(() -> {
-            patch.apply(test.json);
-        });
+            LOG.info(thrown.getMessage());
 
-        LOG.info(thrown.getMessage());
-
-        assertThat(thrown)
-            .isNotNull()
-            .isInstanceOf(JsonException.class);
+            assertThat(thrown)
+                .isNotNull()
+                .isInstanceOf(JsonException.class);
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 }
