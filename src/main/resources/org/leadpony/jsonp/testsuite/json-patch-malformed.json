@@ -1,0 +1,42 @@
+[
+    {
+        "title": "operation is missing",
+        "json": {
+            "firstName": "John",
+            "lastName": "Doe"
+        },
+        "patch": [
+            { "op_": "replace", "path": "/firstName", "value": "Jane" }
+        ]
+    },
+    {
+        "title": "path is missing",
+        "json": {
+            "firstName": "John",
+            "lastName": "Doe"
+        },
+        "patch": [
+            { "op": "replace", "path_": "/firstName", "value": "Jane" }
+        ]
+    },
+    {
+        "title": "value is missing",
+        "json": {
+            "firstName": "John",
+            "lastName": "Doe"
+        },
+        "patch": [
+            { "op": "replace", "path": "/firstName", "value_": "Jane" }
+        ]
+    },
+    {
+        "title": "unknown operation",
+        "json": {
+            "firstName": "John",
+            "lastName": "Doe"
+        },
+        "patch": [
+            { "op": "unknown" }
+        ]
+    }
+]

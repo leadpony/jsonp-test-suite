@@ -34,7 +34,6 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
  * @author leadpony
- *
  */
 public class JsonPatchTest {
 
@@ -91,5 +90,27 @@ public class JsonPatchTest {
                 .isInstanceOf(JsonException.class);
             LOG.info(thrown.getMessage());
         }
+    }
+
+    public static Stream<PatchTestCase> applyShouldThrowJsonExceptionIfMalformed() {
+        return TestCaseResource.JSON_PATCH_MALFORMED
+                .getObjectStream()
+                .map(PatchTestCase::new);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void applyShouldThrowJsonExceptionIfMalformed(PatchTestCase test) {
+        JsonPatch patch = Json.createPatch(test.patch);
+
+        Throwable thrown = catchThrowable(() -> {
+            patch.apply(test.json);
+        });
+
+        LOG.info(thrown.getMessage());
+
+        assertThat(thrown)
+            .isNotNull()
+            .isInstanceOf(JsonException.class);
     }
 }

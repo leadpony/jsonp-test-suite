@@ -34,6 +34,7 @@ enum TestCaseResource {
     JSON_POINTER_REMOVE("/org/leadpony/jsonp/testsuite/json-pointer-remove.json"),
     JSON_POINTER_REPLACE("/org/leadpony/jsonp/testsuite/json-pointer-replace.json"),
     JSON_PATCH("/org/leadpony/jsonp/testsuite/json-patch.json"),
+    JSON_PATCH_MALFORMED("/org/leadpony/jsonp/testsuite/json-patch-malformed.json"),
     JSON_PATCH_DIFF("/org/leadpony/jsonp/testsuite/json-patch-diff.json"),
     JSON_MERGE_PATCH("/org/leadpony/jsonp/testsuite/json-merge-patch.json"),
     JSON_MERGE_DIFF("/org/leadpony/jsonp/testsuite/json-merge-diff.json"),
