@@ -37,6 +37,7 @@ import javax.json.stream.JsonParser.Event;
 import javax.json.Json;
 import javax.json.JsonValue;
 import javax.json.stream.JsonParserFactory;
+import javax.json.stream.JsonParsingException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -70,18 +71,16 @@ public class JsonParserTest {
      * @author leadpony
      */
     enum TerminationTestCase {
-        LITERAL("365", 1, false),
-        ARRAY("[1,2,3]", 5, false),
-        OBJECT("{\"a\":1}", 4, false);
+        LITERAL("365", 1),
+        ARRAY("[1,2,3]", 5),
+        OBJECT("{\"a\":1}", 4);
 
         final String json;
         final int iterations;
-        final boolean result;
 
-        TerminationTestCase(String json, int iterations, boolean result) {
+        TerminationTestCase(String json, int iterations) {
             this.json = json;
             this.iterations = iterations;
-            this.result = result;
         }
     }
 
@@ -95,47 +94,7 @@ public class JsonParserTest {
             assertThat(parser.hasNext()).isTrue();
             parser.next();
         }
-        assertThat(parser.hasNext()).isEqualTo(test.result);
-        parser.close();
-    }
-
-    /**
-     * Test cases for {@code JsonParser#hasNext()} when unexpected end of JSON has
-     * occurred.
-     *
-     * @author leadpony
-     */
-    enum UnexpectedTerminationTestCase {
-        ARRAY_MISSING_END("[1,2,3", 4, false),
-        ARRAY_MISSING_ITEM("[1,2,", 3, true),
-        OBJECT_MISSING_END("{\"a\":1", 3, false),
-        OBJECT_MISSING_VALUE("{\"a\":", 2, true),
-        OBJECT_MISSING_COLON("{\"a\"", 2, false),
-        OBJECT_MISSING_KEY("{", 1, false);
-
-        final String json;
-        final int iterations;
-        final boolean result;
-
-        UnexpectedTerminationTestCase(String json, int iterations, boolean result) {
-            this.json = json;
-            this.iterations = iterations;
-            this.result = result;
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(UnexpectedTerminationTestCase.class)
-    @Ambiguous
-    public void hasNextShouldReturnFalseWhenTerminated(UnexpectedTerminationTestCase test) {
-        JsonParser parser = createJsonParser(test.json);
-
-        int remaining = test.iterations;
-        while (remaining-- > 0) {
-            assertThat(parser.hasNext()).isTrue();
-            parser.next();
-        }
-        assertThat(parser.hasNext()).isEqualTo(test.result);
+        assertThat(parser.hasNext()).isEqualTo(false);
         parser.close();
     }
 
@@ -146,6 +105,76 @@ public class JsonParserTest {
         JsonParser parser = createJsonParser(json);
         assertThat(parser.hasNext()).isEqualTo(false);
         parser.close();
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum HasNextExceptionTestCase {
+        VALUE_AFTER_ARRAY("[1,2] 3", 4),
+        VALUE_AFTER_OBJECT("{\"a\":1} 2}", 4),
+        VALUE_AFTER_VALUE("1 2", 1),
+        END_AFTER_ARRAY_START("[", 1),
+        END_AFTER_FIRST_ITEM("[1", 2),
+        END_AFTER_SECOND_ITEM("[1,2", 3),
+        EOI_AFTER_OBJECT_START("{", 1),
+        EOI_AFTER_FIRST_PROPERTY_KEY("{\"a\"", 2),
+        EOI_AFTER_FIRST_PROPERTY_VALUE("{\"a\":1", 3),
+        EOI_AFTER_SECOND_PROPERTY_KEY("{\"a\":1,\"b\"", 4),
+        EOI_AFTER_SECOND_PROPERTY_VALUE("{\"a\":1,\"b\":2", 5),
+
+        END_AFTER_ITEM_SEPARATOR("[1,", 2, true),
+        EOI_AFTER_COLON("{\"a\":", 2, true),
+        EOI_AFTER_PROPERTY_SEPARATOR("{\"a\":1,", 3, true),
+
+        EMPTY("", 0, false),
+        BLANK("    ", 0, false);
+
+        final String json;
+        final int iterations;
+        final boolean throwing;
+        final boolean expected;
+
+        // separator
+        HasNextExceptionTestCase(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+            this.throwing = true;
+            this.expected = true;
+        }
+
+        HasNextExceptionTestCase(String json, int iterations, boolean expected) {
+            this.json = json;
+            this.iterations = iterations;
+            this.throwing = false;
+            this.expected = expected;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(HasNextExceptionTestCase.class)
+    public void hasNextShouldThrowJsonParsingException(HasNextExceptionTestCase test) {
+        JsonParser parser = createJsonParser(test.json);
+        int iterations = test.iterations;
+        while (iterations-- > 0) {
+            parser.next();
+        }
+
+        Throwable thrown = catchThrowable(() -> {
+            boolean actual = parser.hasNext();
+            assertThat(actual).isEqualTo(test.expected);
+        });
+        parser.close();
+
+        if (thrown != null) {
+            LOG.info(thrown.getMessage());
+        }
+
+        if (test.throwing) {
+            assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+        } else {
+            assertThat(thrown).isNull();
+        }
     }
 
     /**

@@ -16,6 +16,7 @@
 package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,10 +70,14 @@ public class JsonBuilderFactoryTest {
     @ParameterizedTest
     @EnumSource(CollectionTestCase.class)
     public void createArrayBuilderShouldCreateBuilderFilledWithCollection(CollectionTestCase test) {
-        JsonArrayBuilder builder = factory.createArrayBuilder(test.collection);
-        JsonArray actual = builder.build();
+        try {
+            JsonArrayBuilder builder = factory.createArrayBuilder(test.collection);
+            JsonArray actual = builder.build();
 
-        assertThat(actual).isEqualTo(test.expected);
+            assertThat(actual).isEqualTo(test.expected);
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 
     /**
