@@ -6,11 +6,51 @@ This project provides a set of tests for implementations of [Java API for JSON P
 
 ## JSON-P Test Suite
 
-### Test Results
+### Latest Test Results
 
 [JSON-P Test Suite Reports] shows the latest test results of the following JSON-P implementations.
 * [Reference Implementation]
 * [Apache Johnzon]
+
+### Using as a Test Dependency
+
+The jar-packaged artifact of this test suite is available from [JitPack] repository.
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>org.leadpony</groupId>
+        <artifactId>jsonp-test-suite</artifactId>
+        <version>0.10.0</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+The test suite can be run by using Maven Surefire Plugin.
+
+```xml
+<plguins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+            <dependenciesToScan>
+                <dependency>org.leadpony:jsonp-test-suite</dependency>
+            </dependenciesToScan>
+            <excludes>
+                <exclude />
+            </excludes>
+        </configuration>
+    </plugin>
+</plguins>
+```
 
 ### How to Build
 
@@ -44,4 +84,5 @@ Copyright &copy; 2019 JSON-P Test Suite Authors. This software is licensed under
 [Reference Implementation]: https://eclipse-ee4j.github.io/jsonp/
 [Apache Maven]: https://maven.apache.org/
 [Apache Johnzon]: https://johnzon.apache.org/
-[JSON-P Test Suite Reports]: https://leadpony.github.io/jsonp-test-suite/test-suite/project-reports.html
+[JSON-P Test Suite Reports]: https://leadpony.github.io/jsonp-test-suite/project-reports.html
+[JitPack]: https://jitpack.io/#org.leadpony/jsonp-test-suite
