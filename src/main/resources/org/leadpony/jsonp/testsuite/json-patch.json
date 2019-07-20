@@ -1,6 +1,6 @@
 [
     {
-        "title": "Moving a Value from Parent",
+        "title": "moving a value from parent",
         "json": {
             "a": {
                 "b": {
@@ -16,7 +16,23 @@
         ]
     },
     {
-        "title": "Copying a Value",
+        "title": "moving to the same path",
+        "json": {
+            "a": {
+                "b": 123
+            }
+        },
+        "patch": [
+            { "op": "move", "from": "/a/b", "path": "/a/b" }
+        ],
+        "result": {
+            "a": {
+                "b": 123
+            }
+        }
+    },
+    {
+        "title": "copying a value",
         "json": {
             "foo": {
                 "bar": "baz",
@@ -41,7 +57,7 @@
         }
     },
     {
-        "title": "Copying an Array Element",
+        "title": "copying an array element",
         "json": {
             "foo": [ "all", "grass", "cows", "eat" ]
         },
@@ -53,7 +69,7 @@
         }
     },
     {
-        "title": "Copying a Value from Parent",
+        "title": "copying a value from parent",
         "json": {
             "a": {
                 "b": {

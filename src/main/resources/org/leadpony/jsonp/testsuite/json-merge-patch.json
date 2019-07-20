@@ -246,5 +246,25 @@
                 }
             }
         ]
+    },
+    {
+        "source": {},
+        "tests": [
+            {
+                "description": "single property is null",
+                "patch": {
+                    "a": {
+                        "b": {
+                            "c": null
+                        }
+                    }
+                },
+                "target": {
+                    "a": {
+                        "b": {}
+                    }
+                }
+            }
+        ]
     }
 ]

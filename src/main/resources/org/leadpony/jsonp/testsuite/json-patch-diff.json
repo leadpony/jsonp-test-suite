@@ -12,6 +12,18 @@
         "patch": []
     },
     {
+        "description": "same object",
+        "source": {"a": "b"},
+        "target": {"a": "b"},
+        "patch": []
+    },
+    {
+        "description": "same array",
+        "source": [1, 2, 3],
+        "target": [1, 2, 3],
+        "patch": []
+    },
+    {
         "description": "add properties",
         "source": {},
         "target": {

@@ -79,17 +79,18 @@ public class JsonPatchTest {
     public void applyShouldApplyOperationsAsExpected(PatchTestCase test) {
         JsonPatch patch = Json.createPatch(test.patch);
 
-        if (test.result != null) {
+        Throwable thrown = catchThrowable(() -> {
             JsonStructure actual = patch.apply(test.json);
             assertThat(actual).isEqualTo(test.result);
+        });
+
+        if (test.result != null) {
+            assertThat(thrown).isNull();
         } else {
-            Throwable thrown = catchThrowable(() -> {
-                patch.apply(test.json);
-            });
+            LOG.info(thrown.getMessage());
             assertThat(thrown)
                 .isNotNull()
                 .isInstanceOf(JsonException.class);
-            LOG.info(thrown.getMessage());
         }
     }
 

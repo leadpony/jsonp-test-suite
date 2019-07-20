@@ -275,159 +275,178 @@ public class JsonGeneratorTest {
         assertThat(actual).isEqualTo(test.getString());
     }
 
-    @Test
-    public void generatorShouldWriteEmptyArray() {
+    /**
+     * @author leadpony
+     */
+    enum GeneratorTestCase {
+        EMPTY_ARRAY(
+            g -> {
+                g.writeStartArray();
+                g.writeEnd();
+            },
+            "[]"
+            ),
 
-        String actual = generate(g -> {
-            g.writeStartArray();
-            g.writeEnd();
+        SINGLE_ITEM_ARRAY(
+            g -> {
+                g.writeStartArray();
+                g.write(true);
+                g.writeEnd();
+            },
+            "[true]"
+            ),
+
+        MULTIPLE_ITEMS_ARRAY(
+            g -> {
+                g.writeStartArray();
+                g.write(true);
+                g.write(false);
+                g.writeEnd();
+            },
+            "[true,false]"
+            ),
+
+        ARRAY_OF_ARRAY(
+            g -> {
+                g.writeStartArray();
+                g.writeStartArray();
+                g.write(1);
+                g.write(2);
+                g.writeEnd();
+                g.writeStartArray();
+                g.write(3);
+                g.write(4);
+                g.writeEnd();
+                g.writeEnd();
+            },
+            "[[1,2],[3,4]]"
+            ),
+
+        ARRAY_OF_OBJECT(
+            g -> {
+                g.writeStartArray();
+                g.writeStartObject();
+                g.write("a", 1);
+                g.write("b", 2);
+                g.writeEnd();
+                g.writeStartObject();
+                g.write("c", 3);
+                g.write("d", 4);
+                g.writeEnd();
+                g.writeEnd();
+            },
+            "[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]"
+            ),
+
+        EMPTY_OBJECT(
+            g -> {
+                g.writeStartObject();
+                g.writeEnd();
+            },
+            "{}"
+            ),
+
+
+        SINGLE_PROPERTY_OBJECT(
+            g -> {
+                g.writeStartObject();
+                g.write("a", 365);
+                g.writeEnd();
+            },
+            "{\"a\":365}"
+            ),
+
+        MULTIPLE_PROPERTIES_OBJECT(
+            g -> {
+                g.writeStartObject();
+                g.write("a", 365);
+                g.write("b", "hello");
+                g.writeEnd();
+            },
+            "{\"a\":365,\"b\":\"hello\"}"
+            ),
+
+        OBJECT_OF_ARRAY(
+            g -> {
+                g.writeStartObject();
+                g.writeStartArray("a");
+                g.write(1);
+                g.write(2);
+                g.writeEnd();
+                g.writeStartArray("b");
+                g.write(3);
+                g.write(4);
+                g.writeEnd();
+                g.writeEnd();
+            },
+            "{\"a\":[1,2],\"b\":[3,4]}"
+            ),
+
+        OBJECT_OF_OBJECT(
+            g -> {
+                g.writeStartObject();
+                g.writeStartObject("a");
+                g.write("a1", 1);
+                g.write("a2", 2);
+                g.writeEnd();
+                g.writeStartObject("b");
+                g.write("b1", 3);
+                g.write("b2", 4);
+                g.writeEnd();
+                g.writeEnd();
+            },
+            "{\"a\":{\"a1\":1,\"a2\":2},\"b\":{\"b1\":3,\"b2\":4}}"
+            ),
+
+        KEY_VALUE_AFTER_ARRAY(
+            g -> {
+                g.writeStartObject();
+                g.writeKey("a");
+                g.writeStartArray();
+                g.write(1);
+                g.write(2);
+                g.writeEnd();
+                g.write("c", 3);
+                g.writeEnd();
+            },
+            "{\"a\":[1,2],\"c\":3}"
+            ),
+
+        KEY_VALUE_AFTER_OBJECT(
+            g -> {
+                g.writeStartObject();
+                g.writeKey("a");
+                g.writeStartObject();
+                g.write("b", 1);
+                g.writeEnd();
+                g.write("c", 2);
+                g.writeEnd();
+            },
+            "{\"a\":{\"b\":1},\"c\":2}"
+            );
+
+        final Consumer<JsonGenerator> consumer;
+        final String expected;
+
+        GeneratorTestCase(Consumer<JsonGenerator> consumer, String expected) {
+            this.consumer = consumer;
+            this.expected = expected;
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(GeneratorTestCase.class)
+    public void writeShouldGenerateJson(GeneratorTestCase test) {
+        StringWriter writer = new StringWriter();
+        try (JsonGenerator g = factory.createGenerator(writer)) {
+            test.consumer.accept(g);
             g.flush();
-        });
+        }
 
-        assertThat(actual).isEqualTo("[]");
+        assertThat(writer.toString()).isEqualTo(test.expected);
     }
 
-    @Test
-    public void generatorShouldWriteSingleItemArray() {
-
-        String actual = generate(g -> {
-            g.writeStartArray();
-            g.write(true);
-            g.writeEnd();
-            g.flush();
-        });
-
-        assertThat(actual).isEqualTo("[true]");
-    }
-
-    @Test
-    public void generatorShouldWriteMultipleItemsArray() {
-
-        String actual = generate(g -> {
-            g.writeStartArray();
-            g.write(true);
-            g.write(false);
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("[true,false]");
-    }
-
-    @Test
-    public void generatorShouldWriteArrayContainingArray() {
-
-        String actual = generate(g -> {
-            g.writeStartArray();
-            g.writeStartArray();
-            g.write(1);
-            g.write(2);
-            g.writeEnd();
-            g.writeStartArray();
-            g.write(3);
-            g.write(4);
-            g.writeEnd();
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("[[1,2],[3,4]]");
-    }
-
-    @Test
-    public void generatorShouldWriteArrayContainingObject() {
-
-        String actual = generate(g -> {
-            g.writeStartArray();
-            g.writeStartObject();
-            g.write("a", 1);
-            g.write("b", 2);
-            g.writeEnd();
-            g.writeStartObject();
-            g.write("c", 3);
-            g.write("d", 4);
-            g.writeEnd();
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("[{\"a\":1,\"b\":2},{\"c\":3,\"d\":4}]");
-    }
-
-    @Test
-    public void generatorShouldWriteEmptyObject() {
-
-        String actual = generate(g -> {
-            g.writeStartObject();
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("{}");
-    }
-
-    @Test
-    public void generatorShouldWriteSinglePropertyObject() {
-
-        String actual = generate(g -> {
-            g.writeStartObject();
-            g.write("a", 365);
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("{\"a\":365}");
-    }
-
-    @Test
-    public void generatorShouldWriteMultiplePropertiesObject() {
-
-        String actual = generate(g -> {
-            g.writeStartObject();
-            g.write("a", 365);
-            g.write("b", "hello");
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo("{\"a\":365,\"b\":\"hello\"}");
-    }
-
-    @Test
-    public void generatorShouldWriteObjectContainingArray() {
-
-        String actual = generate(g -> {
-            g.writeStartObject();
-            g.writeStartArray("a");
-            g.write(1);
-            g.write(2);
-            g.writeEnd();
-            g.writeStartArray("b");
-            g.write(3);
-            g.write(4);
-            g.writeEnd();
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo(
-                "{\"a\":[1,2],\"b\":[3,4]}");
-    }
-
-    @Test
-    public void generatorShouldWriteObjectContainingObject() {
-
-        String actual = generate(g -> {
-            g.writeStartObject();
-            g.writeStartObject("a");
-            g.write("a1", 1);
-            g.write("a2", 2);
-            g.writeEnd();
-            g.writeStartObject("b");
-            g.write("b1", 3);
-            g.write("b2", 4);
-            g.writeEnd();
-            g.writeEnd();
-        });
-
-        assertThat(actual).isEqualTo(
-                "{\"a\":{\"a1\":1,\"a2\":2},\"b\":{\"b1\":3,\"b2\":4}}");
-    }
-
-    private String generate(Consumer<JsonGenerator> consumer) {
+    private static String generate(Consumer<JsonGenerator> consumer) {
         StringWriter writer = new StringWriter();
         try (JsonGenerator g = factory.createGenerator(writer)) {
             consumer.accept(g);
