@@ -38,6 +38,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
@@ -95,6 +96,18 @@ public class JsonReaderTest {
         assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"{}", "\"hello\"", "42", "true", "false", "null"})
+    public void readArrayShouldThrowJsonParsingException(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+
+        Throwable thrown = catchThrowable(() -> {
+            reader.readArray();
+        });
+
+        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+    }
+
     @Test
     public void readObjectShouldReadEmptyObject() {
         String json = "{}";
@@ -137,6 +150,18 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"[]", "\"hello\"", "42", "true", "false", "null"})
+    public void readObjectShouldThrowJsonParsingException(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+
+        Throwable thrown = catchThrowable(() -> {
+            reader.readObject();
+        });
+
+        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+    }
+
+    @ParameterizedTest
     @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonResource#getStructuresAsStream")
     public void readShouldReadStructureAsExpected(JsonResource resource) {
         JsonStructure actual;
@@ -146,6 +171,18 @@ public class JsonReaderTest {
 
         assertThat(actual).isNotNull();
         assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"\"hello\"", "42", "true", "false", "null"})
+    public void readShouldThrowJsonParsingException(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+
+        Throwable thrown = catchThrowable(() -> {
+            reader.read();
+        });
+
+        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
     }
 
     @ParameterizedTest
