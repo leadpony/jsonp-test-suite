@@ -39,6 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.leadpony.jsonp.testsuite.helper.Ambiguous;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
@@ -56,6 +57,10 @@ public class JsonReaderTest {
     public static void setUpOnce() {
         factory = Json.createReaderFactory(null);
     }
+
+    /*
+     * Tests for readArray()
+     */
 
     @Test
     public void readArrayShouldReadEmptyArray() {
@@ -107,6 +112,22 @@ public class JsonReaderTest {
 
         assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "[1,2],3",
+        "[1,2][3,4]"
+    })
+    @Ambiguous
+    public void readArrayShouldReadArrayIgnoringGarbage(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonArray array = reader.readArray();
+        assertThat(array).isNotNull();
+    }
+
+    /*
+     * Tests for readObject()
+     */
 
     @Test
     public void readObjectShouldReadEmptyObject() {
@@ -162,6 +183,22 @@ public class JsonReaderTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {
+        "{\"a\":1},2",
+        "{\"a\":1}{\"b\":2}"
+    })
+    @Ambiguous
+    public void readObjectShouldReadObjectIgnoringGarbage(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonObject object = reader.readObject();
+        assertThat(object).isNotNull();
+    }
+
+    /*
+     * Tests for read()
+     */
+
+    @ParameterizedTest
     @MethodSource("org.leadpony.jsonp.testsuite.tests.JsonResource#getStructuresAsStream")
     public void readShouldReadStructureAsExpected(JsonResource resource) {
         JsonStructure actual;
@@ -184,6 +221,24 @@ public class JsonReaderTest {
 
         assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
     }
+
+    @Test
+    public void readShouldThrowJsonParsingExceptionIfInputIsEmptyReader() {
+        String json = "";
+        JsonReader reader = factory.createReader(new StringReader(json));
+
+        Throwable thrown = catchThrowable(() -> {
+            reader.read();
+        });
+
+        LOG.info(thrown.getMessage());
+
+        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+    }
+
+    /*
+     * Tests for readValue()
+     */
 
     @ParameterizedTest
     @EnumSource(JsonResource.class)
@@ -217,5 +272,18 @@ public class JsonReaderTest {
         assertThat(location.getLineNumber()).isEqualTo(test.getLineNumber());
         assertThat(location.getColumnNumber()).isEqualTo(test.getColumnNumber());
         assertThat(location.getStreamOffset()).isEqualTo(test.getStreamOffset());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "1 2",
+        "\"hello\" \"world\"",
+        "true false"
+    })
+    @Ambiguous
+    public void readValueShouldReadValueIgnoringGarbage(String json) {
+        JsonReader reader = factory.createReader(new StringReader(json));
+        JsonValue value = reader.readValue();
+        assertThat(value).isNotNull();
     }
 }

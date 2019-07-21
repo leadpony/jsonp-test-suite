@@ -297,6 +297,7 @@ public class JsonParserTest {
         CONTAINING_CARIAGE_RETURN("\"hello\\rworld\"", "hello\rworld"),
         CONTAINING_TAB("\"hello\\tworld\"", "hello\tworld"),
 
+        NUL("\"\\u0000\"", "\u0000"),
         INFINITE("\"\\u221E\"", "∞"),
         PI("\"\\u03c0\"", "π"),
         // surrogate pair
