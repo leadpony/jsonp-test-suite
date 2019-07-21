@@ -626,27 +626,32 @@ public abstract class AbstractJsonValueParserTest {
         STRING_IN_ARRAY(
             SIMPLE_ARRAY.json,
             2,
-            Json.createValue("hello")),
+            Json.createValue("hello"),
+            Event.VALUE_NUMBER),
 
         NUMBER_IN_ARRAY(
             SIMPLE_ARRAY.json,
             3,
-            Json.createValue(42)),
+            Json.createValue(42),
+            Event.VALUE_TRUE),
 
         TRUE_IN_ARRAY(
             SIMPLE_ARRAY.json,
             4,
-            JsonValue.TRUE),
+            JsonValue.TRUE,
+            Event.VALUE_FALSE),
 
         FALSE_IN_ARRAY(
             SIMPLE_ARRAY.json,
             5,
-            JsonValue.FALSE),
+            JsonValue.FALSE,
+            Event.VALUE_NULL),
 
         NULL_IN_ARRAY(
             SIMPLE_ARRAY.json,
             6,
-            JsonValue.NULL),
+            JsonValue.NULL,
+            Event.END_ARRAY),
 
         SIMPLE_OBJECT(
             object(b -> b.add("a", "hello")
@@ -658,52 +663,62 @@ public abstract class AbstractJsonValueParserTest {
         STRING_IN_OBJECT(
             SIMPLE_OBJECT.json,
             3,
-            Json.createValue("hello")),
+            Json.createValue("hello"),
+            Event.KEY_NAME),
 
         NUMBER_IN_OBJECT(
             SIMPLE_OBJECT.json,
             5,
-            Json.createValue(42)),
+            Json.createValue(42),
+            Event.KEY_NAME),
 
         TRUE_IN_OBJECT(
             SIMPLE_OBJECT.json,
             7,
-            JsonValue.TRUE),
+            JsonValue.TRUE,
+            Event.KEY_NAME),
 
         FALSE_IN_OBJECT(
             SIMPLE_OBJECT.json,
             9,
-            JsonValue.FALSE),
+            JsonValue.FALSE,
+            Event.KEY_NAME),
 
         NULL_IN_OBJECT(
             SIMPLE_OBJECT.json,
             11,
-            JsonValue.NULL),
+            JsonValue.NULL,
+            Event.END_OBJECT),
 
         ARRAY_IN_ARRAY(
             array(b -> b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
             2,
-            SIMPLE_ARRAY.json),
+            SIMPLE_ARRAY.json,
+            Event.START_OBJECT),
 
         OBJECT_IN_ARRAY(
             array(b -> b.add(SIMPLE_ARRAY.json).add(SIMPLE_OBJECT.json)),
             9,
-            SIMPLE_OBJECT.json);
+            SIMPLE_OBJECT.json,
+            Event.END_ARRAY);
 
         final JsonStructure json;
         final int iterations;
         final JsonValue value;
+        final Event event;
 
         ValueTestCase(JsonStructure json) {
             this.json = json;
             this.iterations = 1;
             this.value = json;
+            this.event = null;
         }
 
-        ValueTestCase(JsonStructure json, int iterations, JsonValue value) {
+        ValueTestCase(JsonStructure json, int iterations, JsonValue value, Event event) {
             this.json = json;
             this.iterations = iterations;
             this.value = value;
+            this.event = event;
         }
 
         boolean isArray() {
@@ -724,6 +739,15 @@ public abstract class AbstractJsonValueParserTest {
         assertThat(actual).isEqualTo(test.value);
     }
 
+    @ParameterizedTest
+    @EnumSource(ValueTestCase.class)
+    public void getValueShouldMoveToNextEventAsExpected(ValueTestCase test) {
+        Event actual = getEventAfterValue(test.json, test.iterations,
+            JsonParser::getValue);
+
+        assertThat(actual).isEqualTo(test.event);
+    }
+
     public static Stream<ValueTestCase> getArrayShouldReturnArrayAsExpected() {
         return Stream.of(ValueTestCase.values())
             .filter(ValueTestCase::isArray);
@@ -739,6 +763,15 @@ public abstract class AbstractJsonValueParserTest {
         assertThat(actual.getValueType()).isSameAs(ValueType.ARRAY);
     }
 
+    @ParameterizedTest
+    @MethodSource("getArrayShouldReturnArrayAsExpected")
+    public void getArrayShouldMoveToNextEventAsExpected(ValueTestCase test) {
+        Event actual = getEventAfterValue(test.json, test.iterations,
+            JsonParser::getArray);
+
+        assertThat(actual).isEqualTo(test.event);
+    }
+
     public static Stream<ValueTestCase> getObjectShouldReturnObjectAsExpected() {
         return Stream.of(ValueTestCase.values())
             .filter(ValueTestCase::isObject);
@@ -752,6 +785,15 @@ public abstract class AbstractJsonValueParserTest {
 
         assertThat(actual).isEqualTo(test.value);
         assertThat(actual.getValueType()).isSameAs(ValueType.OBJECT);
+    }
+
+    @ParameterizedTest
+    @MethodSource("getObjectShouldReturnObjectAsExpected")
+    public void getObjectShouldMoveToNextEventAsExpected(ValueTestCase test) {
+        Event actual = getEventAfterValue(test.json, test.iterations,
+            JsonParser::getObject);
+
+        assertThat(actual).isEqualTo(test.event);
     }
 
     /**
@@ -1060,6 +1102,24 @@ public abstract class AbstractJsonValueParserTest {
             }).doesNotThrowAnyException();
         }
         return result.get();
+    }
+
+    private Event getEventAfterValue(JsonStructure value, int iterations, Function<JsonParser, ?> mapper) {
+        try (JsonParser parser = createParser(value)) {
+            while (iterations-- > 0) {
+                parser.next();
+            }
+
+            assertThatCode(() -> {
+                mapper.apply(parser);
+            }).doesNotThrowAnyException();
+
+            if (parser.hasNext()) {
+                return parser.next();
+            } else {
+                return null;
+            }
+        }
     }
 
     protected abstract JsonParser createParser(JsonStructure value);

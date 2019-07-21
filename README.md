@@ -28,7 +28,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>0.10.0</version>
+        <version>0.12.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
