@@ -3,5 +3,6 @@
 mvn clean
 mvn test -P test-with-ri
 mvn test -P test-with-johnzon
+mvn test -P test-with-joy
 mvn site -Dline.separator=$'\n'
 cp -r target/site/* docs/

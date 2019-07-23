@@ -11,6 +11,7 @@ This project provides a set of tests for implementations of [Java API for JSON P
 [JSON-P Test Suite Reports] shows the latest test results of the following JSON-P implementations.
 * [Reference Implementation]
 * [Apache Johnzon]
+* [Joy]
 
 ### Using as a Test Dependency
 
@@ -28,7 +29,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>0.13.0</version>
+        <version>1.0.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -82,7 +83,8 @@ Copyright &copy; 2019 JSON-P Test Suite Authors. This software is licensed under
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
 [Java API for JSON Processing (JSR 374)]: https://eclipse-ee4j.github.io/jsonp/
 [Reference Implementation]: https://eclipse-ee4j.github.io/jsonp/
-[Apache Maven]: https://maven.apache.org/
 [Apache Johnzon]: https://johnzon.apache.org/
+[Joy]: https://github.com/leadpony/joy
+[Apache Maven]: https://maven.apache.org/
 [JSON-P Test Suite Reports]: https://leadpony.github.io/jsonp-test-suite/project-reports.html
 [JitPack]: https://jitpack.io/#org.leadpony/jsonp-test-suite

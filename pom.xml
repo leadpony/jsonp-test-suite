@@ -5,7 +5,7 @@
 
     <groupId>org.leadpony</groupId>
     <artifactId>jsonp-test-suite</artifactId>
-    <version>0.13.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>JSON-P Test Suite</name>
@@ -180,6 +180,18 @@
                             <linkXRef>false</linkXRef>
                         </configuration>
                     </reportSet>
+                    <reportSet>
+                        <id>surefire-report-joy</id>
+                        <reports>
+                            <report>report-only</report>
+                        </reports>
+                        <configuration>
+                            <title>Surefire Report (Joy)</title>
+                            <reportsDirectories>${project.build.directory}/surefire-reports/joy</reportsDirectories>
+                            <outputName>surefire-report-joy</outputName>
+                            <linkXRef>false</linkXRef>
+                        </configuration>
+                    </reportSet>
                 </reportSets>
             </plugin>
         </plugins>
@@ -222,6 +234,20 @@
             </dependencies>
             <properties>
                 <jsonp.provider>johnzon</jsonp.provider>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-with-joy</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.leadpony.joy</groupId>
+                    <artifactId>joy</artifactId>
+                    <version>1.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <properties>
+                <jsonp.provider>joy</jsonp.provider>
             </properties>
         </profile>
     </profiles>
