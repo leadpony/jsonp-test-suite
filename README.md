@@ -4,16 +4,20 @@
 
 This project provides a set of tests for implementations of [Java API for JSON Processing (JSR 374)].
 
-## JSON-P Test Suite
+## Project Goal
 
-### Latest Test Results
+* Provides comprehensive test suite which is fairly available for all JSON-P implementations.
+* Contributes to the quality of JSON-P implementations.
+* Compensates the ambiguities existing in the API specification.
+
+## Latest Test Results
 
 [JSON-P Test Suite Reports] shows the latest test results of the following JSON-P implementations.
-* [Reference Implementation]
+* [Jakarta JSON Processing] (Reference Implementation)
 * [Apache Johnzon]
 * [Joy]
 
-### Using as a Test Dependency
+## Using as a Test Dependency
 
 The jar-packaged artifact of this test suite is available from [JitPack] repository.
 
@@ -29,7 +33,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -53,7 +57,7 @@ The test suite can be run by using Maven Surefire Plugin.
 </plguins>
 ```
 
-### How to Build
+## Building from Source
 
 The following tools are required to build and run the artifacts.
 * JDK 9 or higher
@@ -65,16 +69,22 @@ The commands below build and install the test suite into your local Maven reposi
 mvn clean install
 ```
 
-When testing with the Reference Implementation:
+When testing with *Jakarta JSON Processing*:
 
 ```bash
-mvn test -P test-with-ri
+mvn test -P test-with-jakarta
 ```
 
-When testing with [Apache Johnzon]:
+When testing with *Apache Johnzon*:
 
 ```bash
 mvn test -P test-with-johnzon
+```
+
+When testing with *Joy*:
+
+```bash
+mvn test -P test-with-joy
 ```
 
 ## Copyright Notice
@@ -82,7 +92,7 @@ Copyright &copy; 2019 JSON-P Test Suite Authors. This software is licensed under
 
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
 [Java API for JSON Processing (JSR 374)]: https://eclipse-ee4j.github.io/jsonp/
-[Reference Implementation]: https://eclipse-ee4j.github.io/jsonp/
+[Jakarta JSON Processing]: https://eclipse-ee4j.github.io/jsonp/
 [Apache Johnzon]: https://johnzon.apache.org/
 [Joy]: https://github.com/leadpony/joy
 [Apache Maven]: https://maven.apache.org/

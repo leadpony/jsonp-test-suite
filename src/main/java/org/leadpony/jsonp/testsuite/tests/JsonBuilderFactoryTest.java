@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -33,7 +34,7 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -41,13 +42,6 @@ import org.junit.jupiter.params.provider.EnumSource;
  * @author leadpony
  */
 public class JsonBuilderFactoryTest {
-
-    private JsonBuilderFactory factory;
-
-    @BeforeEach
-    public void setUp() {
-        this.factory = Json.createBuilderFactory(Collections.emptyMap());
-    }
 
     /**
      * @author leadpony
@@ -70,6 +64,7 @@ public class JsonBuilderFactoryTest {
     @ParameterizedTest
     @EnumSource(CollectionTestCase.class)
     public void createArrayBuilderShouldCreateBuilderFilledWithCollection(CollectionTestCase test) {
+        JsonBuilderFactory factory = createFactory();
         try {
             JsonArrayBuilder builder = factory.createArrayBuilder(test.collection);
             JsonArray actual = builder.build();
@@ -113,10 +108,40 @@ public class JsonBuilderFactoryTest {
     @ParameterizedTest
     @EnumSource(MapTestCase.class)
     public void createArrayBuilderShouldCreateBuilderFilledWithMap(MapTestCase test) {
+        JsonBuilderFactory factory = createFactory();
         JsonObjectBuilder builder = factory.createObjectBuilder(test.map);
         JsonObject actual = builder.build();
 
         assertThat(actual).isEqualTo(test.expected);
+    }
+
+    @Test
+    public void getConfigInUseShouldReturnEmptyMap() {
+        Map<String, Object> config = new HashMap<>();
+        JsonBuilderFactory factory = createFactory(config);
+
+        Map<String, ?> actual = factory.getConfigInUse();
+
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void getConfigInUseShouldNotContainUnknownProperty() {
+        Map<String, Object> config = new HashMap<>();
+        config.put("unknown", Boolean.TRUE);
+        JsonBuilderFactory factory = createFactory(config);
+
+        Map<String, ?> actual = factory.getConfigInUse();
+
+        assertThat(actual).doesNotContainKey("unknown");
+    }
+
+    private static JsonBuilderFactory createFactory() {
+        return Json.createBuilderFactory(Collections.emptyMap());
+    }
+
+    private static JsonBuilderFactory createFactory(Map<String, ?> config) {
+        return Json.createBuilderFactory(config);
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {
