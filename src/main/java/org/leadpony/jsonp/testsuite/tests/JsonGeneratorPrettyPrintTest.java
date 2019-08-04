@@ -64,7 +64,7 @@ public class JsonGeneratorPrettyPrintTest {
         }
 
         String actual = writer.toString().trim();
-        String expected = test.getJsonAsString();
+        String expected = test.getJsonIndentedWithSpacesAsString(4);
         assertThat(actual).isEqualTo(expected);
     }
 

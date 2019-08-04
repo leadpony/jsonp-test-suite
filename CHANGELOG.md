@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.0 - 2019-08-04
+### Added
+- JSON examples with various kinds of indentations.
+
 ## 1.1.0 - 2019-07-28
 ### Added
 - Tests for `getConfigInUse()` method.
-- Tests for `JsonParser.skipArray()` and `JsonParser.skipObject()` against unclosed array and object.
+- Tests for `JsonParser.skipArray()` and `JsonParser.skipObject()` against JSON array and object not properly closed.
 
 ## 1.0.0 - 2019-07-23
 ### Added

@@ -33,7 +33,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -49,6 +49,7 @@ The test suite can be run by using Maven Surefire Plugin.
             <dependenciesToScan>
                 <dependency>org.leadpony:jsonp-test-suite</dependency>
             </dependenciesToScan>
+            <excludedGroups>ambiguous</excludedGroups>
             <excludes>
                 <exclude />
             </excludes>

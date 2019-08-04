@@ -32,7 +32,7 @@ import javax.json.JsonValue.ValueType;
  *
  * @author leadpony
  */
-enum JsonResource {
+public enum JsonResource {
     GLOSSARY("/org/json/example/glossary.json", ValueType.OBJECT),
     MENU("/org/json/example/menu.json", ValueType.OBJECT),
     MENU2("/org/json/example/menu2.json", ValueType.OBJECT),
@@ -58,11 +58,11 @@ enum JsonResource {
         this.charset = charset;
     }
 
-    InputStream openStream() {
+    public InputStream openStream() {
         return getClass().getResourceAsStream(name);
     }
 
-    Reader createReader() {
+    public Reader createReader() {
         return new InputStreamReader(openStream(), getCharset());
     }
 
@@ -71,23 +71,43 @@ enum JsonResource {
      *
      * @return the type of this JSON value.
      */
-    ValueType getType() {
+    public ValueType getType() {
         return type;
     }
 
-    Charset getCharset() {
+    /**
+     * Returns the character set of this JSON resource.
+     *
+     * @return the character set.
+     */
+    public Charset getCharset() {
         return charset;
     }
 
-    boolean isArray() {
+    /**
+     * Checks if this JSON is an array or not.
+     *
+     * @return {@code true} if this JSON is an array, {@code false} otherwise.
+     */
+    public boolean isArray() {
         return type == ValueType.ARRAY;
     }
 
-    boolean isObject() {
+    /**
+     * Checks if this JSON is an object or not.
+     *
+     * @return {@code true} if this JSON is an object, {@code false} otherwise.
+     */
+    public boolean isObject() {
         return type == ValueType.OBJECT;
     }
 
-    boolean isStructure() {
+    /**
+     * Checks if this JSON is an array or object.
+     *
+     * @return {@code true} if this JSON is an array or object, {@code false} otherwise.
+     */
+    public boolean isStructure() {
         return type == ValueType.ARRAY || type == ValueType.OBJECT;
     }
 
@@ -96,8 +116,38 @@ enum JsonResource {
      *
      * @return the JSON as a string.
      */
-    String getJsonAsString() {
+    public String getJsonAsString() {
         return getResourceAsString(this.name);
+    }
+
+    /**
+     * Returns the indented version of the JSON as a string.
+     * Tab is used for every indentation.
+     *
+     * @param spaces the number of spaces used as an indentation.
+     * @return the indented JSON as a string.
+     */
+    public String getJsonIndentedWithTabAsString() {
+        String name = new StringBuilder(getNameWithoutExtension())
+                .append(".tab.json")
+                .toString();
+        return getResourceAsString(name);
+    }
+
+    /**
+     * Returns the indented version of the JSON as a string.
+     * Spaces are used for every indentation.
+     *
+     * @param spaces the number of spaces used as an indentation.
+     * @return the indented JSON as a string.
+     */
+    public String getJsonIndentedWithSpacesAsString(int spaces) {
+        String name = new StringBuilder(getNameWithoutExtension())
+                .append(".sp")
+                .append(spaces)
+                .append(".json")
+                .toString();
+        return getResourceAsString(name);
     }
 
     /**
@@ -105,22 +155,27 @@ enum JsonResource {
      *
      * @return the minified JSON as a string.
      */
-    String getMinifiedJsonAsString() {
-        String filename = this.name.substring(0, this.name.lastIndexOf('.'));
-        String name = filename.concat(".min.json");
+    public String getMinifiedJsonAsString() {
+        String name = new StringBuilder(getNameWithoutExtension())
+            .append(".min.json")
+            .toString();
         return getResourceAsString(name);
     }
 
-    static Stream<JsonResource> getArraysAsStream() {
+    public static Stream<JsonResource> getArraysAsStream() {
         return Stream.of(values()).filter(JsonResource::isArray);
     }
 
-    static Stream<JsonResource> getObjectsAsStream() {
+    public static Stream<JsonResource> getObjectsAsStream() {
         return Stream.of(values()).filter(JsonResource::isObject);
     }
 
-    static Stream<JsonResource> getStructuresAsStream() {
+    public static Stream<JsonResource> getStructuresAsStream() {
         return Stream.of(values()).filter(JsonResource::isStructure);
+    }
+
+    private String getNameWithoutExtension() {
+        return this.name.substring(0, this.name.lastIndexOf('.'));
     }
 
     private String getResourceAsString(String name) {
