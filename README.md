@@ -12,10 +12,12 @@ This project provides a set of tests for implementations of [Java API for JSON P
 
 ## Latest Test Results
 
-[JSON-P Test Suite Reports] shows the latest test results of the following JSON-P implementations.
+The following JSON-P implementations are tested by this test suite.
 * [Jakarta JSON Processing] (Reference Implementation)
 * [Apache Johnzon]
 * [Joy]
+
+The latest test results are presented in [JSON-P Test Suite Reports].
 
 ## Using as a Test Dependency
 
