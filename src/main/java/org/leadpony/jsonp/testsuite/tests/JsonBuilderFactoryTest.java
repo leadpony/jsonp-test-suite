@@ -47,10 +47,48 @@ public class JsonBuilderFactoryTest {
      * @author leadpony
      */
     enum CollectionTestCase {
-        EMPTY(Collections.emptyList(), JsonValue.EMPTY_JSON_ARRAY),
+        EMPTY(
+            Collections.emptyList(),
+            JsonValue.EMPTY_JSON_ARRAY),
         LIST(
-            Arrays.asList("hello", 365, 3.14, true, null),
-            array(b -> b.add("hello").add(365).add(3.14).add(true).addNull()));
+            collection("hello", 365, 3.14, true, null),
+            array(b -> b.add("hello").add(365).add(3.14).add(true).addNull())),
+        MAX_INTEGER(
+            collection(Integer.MAX_VALUE),
+            array(b -> b.add(Integer.MAX_VALUE))
+            ),
+        MIN_INTEGER(
+            collection(Integer.MIN_VALUE),
+            array(b -> b.add(Integer.MIN_VALUE))
+            ),
+        MAX_LONG(
+            collection(Long.MAX_VALUE),
+            array(b -> b.add(Long.MAX_VALUE))
+            ),
+        MIN_LONG(
+            collection(Long.MIN_VALUE),
+            array(b -> b.add(Long.MIN_VALUE))
+            ),
+        MAX_DOUBLE(
+            collection(Double.MAX_VALUE),
+            array(b -> b.add(Double.MAX_VALUE))
+            ),
+        MIN_DOUBLE(
+            collection(Double.MIN_VALUE),
+            array(b -> b.add(Double.MIN_VALUE))
+            ),
+        JSON_VALUE_TRUE(
+            collection(JsonValue.TRUE),
+            array(b -> b.add(JsonValue.TRUE))
+            ),
+        JSON_VALUE_FALSE(
+            collection(JsonValue.FALSE),
+            array(b -> b.add(JsonValue.FALSE))
+            ),
+        JSON_VALUE_NULL(
+            collection(JsonValue.NULL),
+            array(b -> b.add(JsonValue.NULL))
+            );
 
         final Collection<?> collection;
         final JsonArray expected;
@@ -58,6 +96,10 @@ public class JsonBuilderFactoryTest {
         CollectionTestCase(Collection<?> collection, JsonArray expected) {
             this.collection = collection;
             this.expected = expected;
+        }
+
+        private static Collection<?> collection(Object... objects) {
+            return Arrays.asList(objects);
         }
     }
 
@@ -78,23 +120,61 @@ public class JsonBuilderFactoryTest {
     /**
      * @author leadpony
      */
-    @SuppressWarnings("serial")
     enum MapTestCase {
-        EMPTY(Collections.emptyMap(), JsonValue.EMPTY_JSON_OBJECT),
-        MAP(new LinkedHashMap<String, Object>() {{
-                put("a", "hello");
-                put("b", 365);
-                put("c", 3.14);
-                put("d", true);
-                put("e", null);
-            }},
+        EMPTY(
+            Collections.emptyMap(),
+            JsonValue.EMPTY_JSON_OBJECT),
+        MAP(
+            map(m -> {
+                m.put("a", "hello");
+                m.put("b", 365);
+                m.put("c", 3.14);
+                m.put("d", true);
+                m.put("e", null);
+            }),
             object(b -> {
                 b.add("a", "hello")
                  .add("b", 365)
                  .add("c", 3.14)
                  .add("d", true)
                  .addNull("e");
-            }));
+            })),
+        MAX_INTEGER(
+            map(m -> m.put("a", Integer.MAX_VALUE)),
+            object(b -> b.add("a", Integer.MAX_VALUE))
+            ),
+        MIN_INTEGER(
+            map(m -> m.put("a", Integer.MIN_VALUE)),
+            object(b -> b.add("a", Integer.MIN_VALUE))
+            ),
+        MAX_LONG(
+            map(m -> m.put("a", Long.MAX_VALUE)),
+            object(b -> b.add("a", Long.MAX_VALUE))
+            ),
+        MIN_LONG(
+            map(m -> m.put("a", Long.MIN_VALUE)),
+            object(b -> b.add("a", Long.MIN_VALUE))
+            ),
+        MAX_DOUBLE(
+            map(m -> m.put("a", Double.MAX_VALUE)),
+            object(b -> b.add("a", Double.MAX_VALUE))
+            ),
+        MIN_DOUBLE(
+            map(m -> m.put("a", Double.MIN_VALUE)),
+            object(b -> b.add("a", Double.MIN_VALUE))
+            ),
+        JSON_VALUE_TRUE(
+            map(m -> m.put("a", JsonValue.TRUE)),
+            object(b -> b.add("a", JsonValue.TRUE))
+            ),
+        JSON_VALUE_FALSE(
+            map(m -> m.put("a", JsonValue.FALSE)),
+            object(b -> b.add("a", JsonValue.FALSE))
+            ),
+        JSON_VALUE_NULL(
+            map(m -> m.put("a", JsonValue.NULL)),
+            object(b -> b.add("a", JsonValue.NULL))
+            );
 
         final Map<String, Object> map;
         final JsonObject expected;
@@ -103,16 +183,26 @@ public class JsonBuilderFactoryTest {
             this.map = map;
             this.expected = expected;
         }
+
+        private static Map<String, Object> map(Consumer<Map<String, Object>> consumer) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            consumer.accept(map);
+            return map;
+        }
     }
 
     @ParameterizedTest
     @EnumSource(MapTestCase.class)
-    public void createArrayBuilderShouldCreateBuilderFilledWithMap(MapTestCase test) {
+    public void createObjectBuilderShouldCreateBuilderFilledWithMap(MapTestCase test) {
         JsonBuilderFactory factory = createFactory();
-        JsonObjectBuilder builder = factory.createObjectBuilder(test.map);
-        JsonObject actual = builder.build();
+        try {
+            JsonObjectBuilder builder = factory.createObjectBuilder(test.map);
+            JsonObject actual = builder.build();
 
-        assertThat(actual).isEqualTo(test.expected);
+            assertThat(actual).isEqualTo(test.expected);
+        } catch (Exception e) {
+            fail(e);
+        }
     }
 
     @Test
