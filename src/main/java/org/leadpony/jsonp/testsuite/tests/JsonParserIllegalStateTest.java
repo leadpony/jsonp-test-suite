@@ -29,6 +29,7 @@ import javax.json.stream.JsonParserFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
@@ -50,7 +51,7 @@ public class JsonParserIllegalStateTest {
      *
      * @author leadpony
      */
-    enum IllegalStringRetrievalTestCase implements JsonSource {
+    enum IllegalStringRetrievalTestCase implements JsonSupplier {
         EMPTY("", 0),
 
         TRUE("true", 1),
@@ -93,7 +94,7 @@ public class JsonParserIllegalStateTest {
      *
      * @author leadpony
      */
-    enum IllegalNumberRetrievalTestCase implements JsonSource {
+    enum IllegalNumberRetrievalTestCase implements JsonSupplier {
         EMPTY("", 0),
 
         TRUE("true", 1),
@@ -174,7 +175,7 @@ public class JsonParserIllegalStateTest {
      *
      * @author leadpony
      */
-    enum IllegalValueRetrievalTestCase implements JsonSource {
+    enum IllegalValueRetrievalTestCase implements JsonSupplier {
         EMPTY("", 0),
         ARRAY_CLOSING("[]", 2),
         OBJECT_CLOSING("{}", 2);

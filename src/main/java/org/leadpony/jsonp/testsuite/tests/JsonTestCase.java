@@ -20,10 +20,12 @@ import java.math.BigDecimal;
 import javax.json.Json;
 import javax.json.JsonValue;
 
+import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
+
 /**
  * @author leadpony
  */
-enum JsonTestCase implements JsonSource {
+enum JsonTestCase implements JsonSupplier {
     TRUE,
     FALSE,
     NULL,

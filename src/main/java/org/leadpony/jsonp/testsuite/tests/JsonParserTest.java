@@ -47,6 +47,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.helper.Ambiguous;
 import org.leadpony.jsonp.testsuite.helper.JsonLocations;
+import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
 
 /**
@@ -263,7 +264,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum StringRetrievalTestCase implements JsonSource {
+    enum StringRetrievalTestCase implements JsonSupplier {
         EMPTY_STRING("\"\"", ""),
         BLANK_STRING("\" \"", " "),
         TWO_SPACES("\"  \"", "  "),
@@ -390,7 +391,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum BigDecimalRetrievalTestCase implements JsonSource {
+    enum BigDecimalRetrievalTestCase implements JsonSupplier {
         ZERO("0"),
         MINUS_ZERO("-0"),
         ONE("1"),
@@ -554,7 +555,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum IntRetrievalTestCase implements JsonSource {
+    enum IntRetrievalTestCase implements JsonSupplier {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -645,7 +646,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum LongRetrievalTestCase implements JsonSource {
+    enum LongRetrievalTestCase implements JsonSupplier {
         ZERO("0", 0),
         MINUS_ZERO("-0", 0),
         ONE("1", 1),
@@ -896,7 +897,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum ArrayStreamTestCase implements JsonSource {
+    enum ArrayStreamTestCase implements JsonSupplier {
         EMPTY_ARRAY("[]"),
         SIMPLE_ARRAY("[42,\"hello\", true,false,null]",
             Json.createValue(42),
@@ -938,7 +939,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum ObjectStreamTestCase implements JsonSource {
+    enum ObjectStreamTestCase implements JsonSupplier {
         EMPTY_OBJECT("{}"),
 
         SIMPLE_OBJECT("{\"a\":42,\"b\":\"hello\",\"c\":true,\"d\":false,\"e\":null}",
@@ -987,7 +988,7 @@ public class JsonParserTest {
      *
      * @author leadpony
      */
-    enum ValueStreamTestCase implements JsonSource {
+    enum ValueStreamTestCase implements JsonSupplier {
         NUMBER("42", Json.createValue(42)),
         STRING("\"hello\"", Json.createValue("hello")),
         TRUE("true", JsonValue.TRUE),

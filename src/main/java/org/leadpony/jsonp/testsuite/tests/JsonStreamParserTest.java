@@ -15,27 +15,23 @@
  */
 package org.leadpony.jsonp.testsuite.tests;
 
+import java.io.StringReader;
+
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonStructure;
-import javax.json.JsonValue.ValueType;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
 /**
  * @author leadpony
  */
-public class JsonValueParserTest extends AbstractJsonValueParserTest {
+public class JsonStreamParserTest extends AbstractJsonValueParserTest {
 
     private static final JsonParserFactory PARSER_FACTORY = Json.createParserFactory(null);
 
     @Override
     protected JsonParser createParser(JsonStructure value) {
-        if (value.getValueType() == ValueType.ARRAY) {
-            return PARSER_FACTORY.createParser((JsonArray) value);
-        } else {
-            return PARSER_FACTORY.createParser((JsonObject) value);
-        }
+        StringReader reader = new StringReader(value.toString());
+        return PARSER_FACTORY.createParser(reader);
     }
 }

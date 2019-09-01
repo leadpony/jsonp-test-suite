@@ -18,6 +18,7 @@ package org.leadpony.jsonp.testsuite.tests;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.util.AbstractMap;
@@ -46,6 +47,7 @@ import javax.json.stream.JsonParser.Event;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.jsonp.testsuite.helper.Ambiguous;
 
 /**
  * Tests for {@link JsonParser} which parses in-memory JSON structures.
@@ -998,7 +1000,44 @@ public abstract class AbstractJsonValueParserTest {
         SECOND_ARRAY_IN_OBJECT(
             ARRAY_IN_OBJECT.value,
             9,
-            Event.END_OBJECT);
+            Event.END_OBJECT),
+
+        SKIP_NESTED_ARRAY(
+            array(b -> {
+                b.add(array(b2 -> {
+                    b2.add(1);
+                    b2.add(2);
+                    b2.add(array(b3 -> b3.add(3).add(4)));
+                }));
+                b.add(array(b2 -> {
+                    b2.add(5);
+                    b2.add(6);
+                }));
+            }),
+            2,
+            Event.START_ARRAY
+            ),
+
+        SKIP_NESTED_OBJECT(
+            array(b -> {
+                b.add(array(b2 -> {
+                    b2.add(1);
+                    b2.add(2);
+                    b2.add(object(b3 -> b3.add("a", 3)));
+                }));
+                b.add(array(b2 -> {
+                    b2.add(4);
+                    b2.add(5);
+                }));
+            }),
+            2,
+            Event.START_ARRAY
+            ),
+
+        EMPTY_ARRAY(
+            JsonValue.EMPTY_JSON_ARRAY,
+            1,
+            null);
 
         final JsonStructure value;
         final int iterations;
@@ -1022,6 +1061,65 @@ public abstract class AbstractJsonValueParserTest {
         }
 
         parser.skipArray();
+
+        Event actual = parser.hasNext() ? parser.next() : null;
+
+        parser.close();
+
+        assertThat(actual).isEqualTo(test.expected);
+    }
+
+    /**
+     * @author leadpony
+     */
+    public enum SkipHalfwayArrayTestCase {
+        ARRAY(
+            array(b -> b.add(1).add(2).add(3)),
+            3,
+            null),
+
+        ARRAY_END(
+            array(b -> b.add(1).add(2).add(3)),
+            5,
+            null),
+
+        IN_OBJECT(
+            array(b -> {
+                b.add(1);
+                b.add(object(b2 -> b2.add("a", 2)));
+                b.add(3);
+            }),
+            4,
+            null
+            );
+
+        final JsonStructure value;
+        final int iterations;
+        final Event expected;
+
+        SkipHalfwayArrayTestCase(JsonStructure value, int iterations, Event expected) {
+            this.value = value;
+            this.iterations = iterations;
+            this.expected = expected;
+        }
+    }
+
+    @Ambiguous
+    @ParameterizedTest
+    @EnumSource(SkipHalfwayArrayTestCase.class)
+    public void skipArrayShouldSkipHalfwayArrayAsExpected(SkipHalfwayArrayTestCase test) {
+        JsonParser parser = createParser(test.value);
+
+        int iterations = test.iterations;
+        while (iterations-- > 0) {
+            parser.next();
+        }
+
+        try {
+            parser.skipArray();
+        } catch (Exception e) {
+            fail(e);
+        }
 
         Event actual = parser.hasNext() ? parser.next() : null;
 
@@ -1059,7 +1157,38 @@ public abstract class AbstractJsonValueParserTest {
         SECOND_OBJECT_IN_OBJECT(
             OBJECT_IN_OBJECT.value,
             10,
-            Event.END_OBJECT);
+            Event.END_OBJECT),
+
+        SKIP_NESTED_ARRAY(
+            object(b -> {
+                b.add("a", object(b2 -> {
+                    b2.add("b", array(b3 -> {
+                        b3.add(1).add(2);
+                    }));
+                }));
+                b.add("c", 3);
+            }),
+            3,
+            Event.KEY_NAME
+            ),
+
+        SKIP_NESTED_OBJECT(
+            object(b -> {
+                b.add("a", object(b2 -> {
+                    b2.add("b", object(b3 -> {
+                        b3.add("c", 1);
+                    }));
+                }));
+                b.add("d", 2);
+            }),
+            3,
+            Event.KEY_NAME
+            ),
+
+        EMPTY_OBJECT(
+            JsonValue.EMPTY_JSON_OBJECT,
+            1,
+            null);
 
         final JsonStructure value;
         final int iterations;
@@ -1083,6 +1212,63 @@ public abstract class AbstractJsonValueParserTest {
         }
 
         parser.skipObject();
+
+        Event actual = parser.hasNext() ? parser.next() : null;
+
+        parser.close();
+
+        assertThat(actual).isEqualTo(test.expected);
+    }
+
+    /**
+     * @author leadpony
+     */
+    public enum SkipHalfwayObjectTestCase {
+        OBJECT(
+            object(b -> b.add("a", 365).add("b", "hello")),
+            2,
+            null),
+
+        OBJECT_END(
+            object(b -> b.add("a", 365).add("b", "hello")),
+            6,
+            null),
+
+        IN_ARRAY(
+            object(b -> {
+                b.add("a", array(b2 -> b2.add(1).add(2)));
+            }),
+            4,
+            null
+            );
+
+        final JsonStructure value;
+        final int iterations;
+        final Event expected;
+
+        SkipHalfwayObjectTestCase(JsonStructure value, int iterations, Event expected) {
+            this.value = value;
+            this.iterations = iterations;
+            this.expected = expected;
+        }
+    }
+
+    @Ambiguous
+    @ParameterizedTest
+    @EnumSource(SkipHalfwayObjectTestCase.class)
+    public void skipObjectShouldSkipHalfwayObjectAsExpected(SkipHalfwayObjectTestCase test) {
+        JsonParser parser = createParser(test.value);
+
+        int iterations = test.iterations;
+        while (iterations-- > 0) {
+            parser.next();
+        }
+
+        try {
+            parser.skipObject();
+        } catch (Exception e) {
+            fail(e);
+        }
 
         Event actual = parser.hasNext() ? parser.next() : null;
 

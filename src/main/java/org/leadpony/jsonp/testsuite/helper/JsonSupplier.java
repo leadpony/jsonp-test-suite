@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.leadpony.jsonp.testsuite.tests;
+package org.leadpony.jsonp.testsuite.helper;
 
 import javax.json.JsonValue;
 
 /**
  * @author leadpony
  */
-interface JsonSource {
+public interface JsonSupplier {
 
+    /**
+     * Supplies JSON as a string.
+     *
+     * @return JSON as a string.
+     */
     String getJson();
 
     default JsonValue getValue() {
