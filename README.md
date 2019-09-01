@@ -4,7 +4,7 @@
 
 This project provides a set of tests for implementations of [Java API for JSON Processing (JSR 374)].
 
-## Project Goal
+## Project Goals
 
 * Provides comprehensive test suite which is fairly available for all JSON-P implementations.
 * Contributes to the quality of JSON-P implementations.
@@ -35,7 +35,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
