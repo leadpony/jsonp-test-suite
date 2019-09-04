@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.leadpony.jsonp.testsuite.helper.JsonAssertions;
 
 /**
  * A test type to test {@link JsonGenerator}.
@@ -272,7 +273,7 @@ public class JsonGeneratorTest {
             g.write(test.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(test.getString());
+        JsonAssertions.assertThat(actual).isEqualTo(test.getString());
     }
 
     /**

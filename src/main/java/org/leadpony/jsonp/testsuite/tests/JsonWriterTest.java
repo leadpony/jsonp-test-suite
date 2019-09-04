@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.leadpony.jsonp.testsuite.helper.JsonAssertions;
 
 /**
  * A test type to test {@link JsonWriter}.
@@ -57,7 +58,7 @@ public class JsonWriterTest {
             writer.write(test.getJsonValue());
         });
 
-        assertThat(actual).isEqualTo(test.getString());
+        JsonAssertions.assertThat(actual).isEqualTo(test.getString());
     }
 
     @ParameterizedTest
