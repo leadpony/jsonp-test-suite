@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.4.0 - 2019-09-29
+### Added
+* Add the automatic module name in the manifest file.
+
+## Fixed
+* Now allows both upper and lower cases in the hexadecimal letters of unicode escaping. (Issue #1 reported by @toddobryan)
+
 ## 1.3.0 - 2019-09-01
 ### Added
 - Tests for `JsonParser.skipArray()` and `JsonParser.skipObject()` in the middle of array/object.
