@@ -29,7 +29,7 @@ import javax.json.JsonReaderFactory;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 import org.leadpony.jsonp.testsuite.helper.Readers;
 
 /**
@@ -37,7 +37,7 @@ import org.leadpony.jsonp.testsuite.helper.Readers;
  */
 public class JsonReaderIOExceptionTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonReaderIOExceptionTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonReaderIOExceptionTest.class);
 
     private static JsonReaderFactory factory;
 

@@ -31,7 +31,7 @@ import javax.json.JsonValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * A test for testing {@link JsonPointer}.
@@ -40,7 +40,7 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
  */
 public class JsonPointerTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonPointerTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonPointerTest.class);
 
     /**
      * Test cases for JSON pointer creation.

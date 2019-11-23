@@ -37,14 +37,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonGenerationExceptionTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonGenerationExceptionTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonGenerationExceptionTest.class);
 
     private static JsonGeneratorFactory factory;
     protected JsonGenerator g;

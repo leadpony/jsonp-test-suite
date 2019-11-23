@@ -48,7 +48,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
 import org.leadpony.jsonp.testsuite.helper.JsonLocations;
 import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * A test type to test {@link JsonParser}.
@@ -57,7 +57,7 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
  */
 public class JsonParserTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonParserTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonParserTest.class);
 
     private static JsonParserFactory parserFactory;
 

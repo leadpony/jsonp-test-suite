@@ -32,7 +32,7 @@ import javax.json.JsonWriterFactory;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 import org.leadpony.jsonp.testsuite.helper.Writers;
 
 /**
@@ -40,7 +40,7 @@ import org.leadpony.jsonp.testsuite.helper.Writers;
  */
 public class JsonWriterIOExceptionTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonWriterIOExceptionTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonWriterIOExceptionTest.class);
 
     private static JsonWriterFactory factory;
 

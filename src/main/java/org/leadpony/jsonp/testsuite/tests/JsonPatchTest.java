@@ -31,14 +31,14 @@ import javax.json.JsonStructure;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonPatchTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonPatchTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonPatchTest.class);
 
     /**
      * Test cases for JSON patch.

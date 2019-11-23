@@ -40,7 +40,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * A test type to test {@link JsonReader}.
@@ -49,7 +49,7 @@ import org.leadpony.jsonp.testsuite.helper.LogHelper;
  */
 public class JsonReaderTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonReaderTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonReaderTest.class);
 
     private static JsonReaderFactory factory;
 

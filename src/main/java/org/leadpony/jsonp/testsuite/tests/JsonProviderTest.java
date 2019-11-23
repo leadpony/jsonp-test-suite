@@ -46,14 +46,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonProviderTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonProviderTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonProviderTest.class);
 
     private static JsonProvider provider;
 

@@ -21,11 +21,11 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
- * A helper class for logging.
+ * A factory for {@link Logger}.
  *
  * @author leadpony
  */
-public interface LogHelper {
+public interface LoggerFactory {
 
     LogManager LOG_MANAGER = configureLogManager();
 
@@ -35,7 +35,7 @@ public interface LogHelper {
 
     static LogManager configureLogManager() {
         LogManager manager = LogManager.getLogManager();
-        try (InputStream ins = LogHelper.class
+        try (InputStream ins = LoggerFactory.class
             .getResourceAsStream("/org/leadpony/jsonp/testsuite/logging.properties")) {
             manager.readConfiguration(ins);
         } catch (IOException e) {

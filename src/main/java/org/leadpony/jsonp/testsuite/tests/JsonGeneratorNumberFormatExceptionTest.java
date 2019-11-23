@@ -28,14 +28,14 @@ import javax.json.stream.JsonGeneratorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonGeneratorNumberFormatExceptionTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonGeneratorNumberFormatExceptionTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonGeneratorNumberFormatExceptionTest.class);
 
     private static JsonGeneratorFactory factory;
 

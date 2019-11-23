@@ -31,14 +31,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonWriterIllegalStateTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonWriterIllegalStateTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonWriterIllegalStateTest.class);
 
     private static JsonWriterFactory factory;
     protected JsonWriter writer;

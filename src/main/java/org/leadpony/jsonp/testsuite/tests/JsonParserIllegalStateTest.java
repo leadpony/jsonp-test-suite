@@ -30,14 +30,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
-import org.leadpony.jsonp.testsuite.helper.LogHelper;
+import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
  * @author leadpony
  */
 public class JsonParserIllegalStateTest {
 
-    private static final Logger LOG = LogHelper.getLogger(JsonParserIllegalStateTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JsonParserIllegalStateTest.class);
 
     private static JsonParserFactory parserFactory;
 
