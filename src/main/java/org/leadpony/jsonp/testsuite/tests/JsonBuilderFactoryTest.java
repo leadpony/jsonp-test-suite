@@ -37,6 +37,7 @@ import javax.json.JsonValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.leadpony.jsonp.testsuite.helper.Ambiguous;
 
 /**
  * @author leadpony
@@ -97,15 +98,47 @@ public class JsonBuilderFactoryTest {
             this.collection = collection;
             this.expected = expected;
         }
-
-        private static Collection<?> collection(Object... objects) {
-            return Arrays.asList(objects);
-        }
     }
 
     @ParameterizedTest
     @EnumSource(CollectionTestCase.class)
     public void createArrayBuilderShouldCreateBuilderFilledWithCollection(CollectionTestCase test) {
+        JsonBuilderFactory factory = createFactory();
+        try {
+            JsonArrayBuilder builder = factory.createArrayBuilder(test.collection);
+            JsonArray actual = builder.build();
+
+            assertThat(actual).isEqualTo(test.expected);
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum AmbiguousCollectionTestCase {
+        ARRAY_BUILDER(
+            collection(
+                "hello",
+                createFactory().createArrayBuilder().add(365)
+                ),
+            array(b -> b.add("hello").add(array(b2 -> b2.add(365))))
+            );
+
+        final Collection<?> collection;
+        final JsonArray expected;
+
+        AmbiguousCollectionTestCase(Collection<?> collection, JsonArray expected) {
+            this.collection = collection;
+            this.expected = expected;
+        }
+    }
+
+    @Ambiguous
+    @ParameterizedTest
+    @EnumSource(AmbiguousCollectionTestCase.class)
+    public void createArrayBuilderShouldCreateBuilderFilledWithCollection(AmbiguousCollectionTestCase test) {
         JsonBuilderFactory factory = createFactory();
         try {
             JsonArrayBuilder builder = factory.createArrayBuilder(test.collection);
@@ -183,17 +216,47 @@ public class JsonBuilderFactoryTest {
             this.map = map;
             this.expected = expected;
         }
-
-        private static Map<String, Object> map(Consumer<Map<String, Object>> consumer) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            consumer.accept(map);
-            return map;
-        }
     }
 
     @ParameterizedTest
     @EnumSource(MapTestCase.class)
     public void createObjectBuilderShouldCreateBuilderFilledWithMap(MapTestCase test) {
+        JsonBuilderFactory factory = createFactory();
+        try {
+            JsonObjectBuilder builder = factory.createObjectBuilder(test.map);
+            JsonObject actual = builder.build();
+
+            assertThat(actual).isEqualTo(test.expected);
+        } catch (Exception e) {
+            fail(e);
+        }
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum AmbiguousMapTestCase {
+        OBJECT_BUILDER(
+            map(m -> {
+                m.put("a", "hello");
+                m.put("b", createFactory().createObjectBuilder().add("x", 365));
+            }),
+            object(b -> b.add("a", "hello").add("b", object(b2 -> b2.add("x", 365))))
+            );
+
+        final Map<String, Object> map;
+        final JsonObject expected;
+
+        AmbiguousMapTestCase(Map<String, Object> map, JsonObject expected) {
+            this.map = map;
+            this.expected = expected;
+        }
+    }
+
+    @Ambiguous
+    @ParameterizedTest
+    @EnumSource(AmbiguousMapTestCase.class)
+    public void createObjectBuilderShouldCreateBuilderFilledWithMap(AmbiguousMapTestCase test) {
         JsonBuilderFactory factory = createFactory();
         try {
             JsonObjectBuilder builder = factory.createObjectBuilder(test.map);
@@ -232,6 +295,16 @@ public class JsonBuilderFactoryTest {
 
     private static JsonBuilderFactory createFactory(Map<String, ?> config) {
         return Json.createBuilderFactory(config);
+    }
+
+    private static Collection<?> collection(Object... objects) {
+        return Arrays.asList(objects);
+    }
+
+    private static Map<String, Object> map(Consumer<Map<String, Object>> consumer) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        consumer.accept(map);
+        return map;
     }
 
     private static JsonArray array(Consumer<JsonArrayBuilder> consumer) {
