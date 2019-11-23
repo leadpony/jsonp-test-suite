@@ -37,7 +37,7 @@ import javax.json.JsonValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.leadpony.jsonp.testsuite.helper.Ambiguous;
+import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
 
 /**
  * @author leadpony

@@ -32,7 +32,7 @@ import javax.json.stream.JsonGeneratorFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.leadpony.jsonp.testsuite.helper.Ambiguous;
+import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
 
 /**
  * A test type for testing pretty printing in {@link JsonGenerator}.

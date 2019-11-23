@@ -45,7 +45,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.leadpony.jsonp.testsuite.helper.Ambiguous;
+import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
 import org.leadpony.jsonp.testsuite.helper.JsonLocations;
 import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
 import org.leadpony.jsonp.testsuite.helper.LogHelper;
