@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the JSON-P Test Suite Authors.
+ * Copyright 2019-2020 the JSON-P Test Suite Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import java.math.BigInteger;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import javax.json.Json;
-import javax.json.JsonValue;
-import javax.json.stream.JsonGenerationException;
-import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonGeneratorFactory;
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonGenerationException;
+import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGeneratorFactory;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

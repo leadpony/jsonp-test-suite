@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the JSON-P Test Suite Authors.
+ * Copyright 2019-2020 the JSON-P Test Suite Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.json.JsonValue.ValueType;
+import jakarta.json.JsonValue.ValueType;
 
 /**
  * JSON resources.

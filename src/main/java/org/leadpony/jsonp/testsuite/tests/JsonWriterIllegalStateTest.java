@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the JSON-P Test Suite Authors.
+ * Copyright 2019-2020 the JSON-P Test Suite Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import java.io.StringWriter;
 import java.util.logging.Logger;
 
-import javax.json.Json;
-import javax.json.JsonValue;
-import javax.json.JsonWriter;
-import javax.json.JsonWriterFactory;
-import javax.json.stream.JsonGenerationException;
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+import jakarta.json.JsonWriterFactory;
+import jakarta.json.stream.JsonGenerationException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
