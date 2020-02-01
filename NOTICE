@@ -1,21 +1,36 @@
+# JSON-P Test Suite
 Copyright 2019-2020 the JSON-P Test Suite Authors.
 This software is licensed under the Apache License, Versions 2.0.
 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this product except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Third-Party Products
 This product includes 3rd-party products with separate copyright notices and
 license terms. Your use of the source code for these products is subject to the
 terms and conditions of the product's license, as noted in the
 LICENSE-<product name> files in this directory.
 
-* src/main/resources/com/github
+### Atom
+Copyright (c) 2011-2019 GitHub Inc.
 
-  The original JSON file in the directory is available at
-  <https://github.com/atom/atom>
+The original JSON file in the directory `src/main/resources/com/github` is available at
+<https://github.com/atom/atom>
 
-* src/main/resources/org/json
+### json.org
+The JSON documents in the directory `src/main/resources/org/json` was obtained from the web site
+<https://json.org/example>
 
-  The JSON documents in the directory was obtained from the web site
-  <https://json.org/example>
+### RFC 7159
+Copyright (c) 2014 IETF Trust and the persons identified as the
+document authors.  All rights reserved.
 
-* src/main/resources/org/ietf
-
-  The JSON documents in the directory was obtained from the RFC 7159.
+The JSON documents in the directory `src/main/resources/org/ietf` was obtained from the RFC 7159.
