@@ -114,7 +114,7 @@ public class JsonParserTest {
     enum HasNextExceptionTestCase {
         VALUE_AFTER_ARRAY("[1,2] 3", 4),
         VALUE_AFTER_OBJECT("{\"a\":1} 2}", 4),
-        VALUE_AFTER_VALUE("1 2", 1),
+        VALUE_AFTER_VALUE("\"hello\" \"world\"", 1),
         END_AFTER_ARRAY_START("[", 1),
         END_AFTER_FIRST_ITEM("[1", 2),
         END_AFTER_SECOND_ITEM("[1,2", 3),
@@ -321,6 +321,7 @@ public class JsonParserTest {
             this.value = value;
         }
 
+        @Override
         public String getJson() {
             return json;
         }
@@ -440,6 +441,7 @@ public class JsonParserTest {
             this.value = new BigDecimal(json);
         }
 
+        @Override
         public String getJson() {
             return json;
         }
@@ -597,6 +599,7 @@ public class JsonParserTest {
             this.value = value;
         }
 
+        @Override
         public String getJson() {
             return json;
         }
@@ -693,6 +696,7 @@ public class JsonParserTest {
             this.value = value;
         }
 
+        @Override
         public String getJson() {
             return json;
         }
