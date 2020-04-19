@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the JSON-P Test Suite Authors.
+ * Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.leadpony.jsonp.testsuite.annotation;
 
 import java.lang.annotation.ElementType;
@@ -23,12 +24,12 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Tag;
 
 /**
- * The test is not mandatory due to ambiguity in the specification.
+ * The test is only for pure JSON processors.
  *
  * @author leadpony
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-@Tag("ambiguous")
-public @interface Ambiguous {
+@Tag("json-exclusive")
+public @interface JsonExclusive {
 }

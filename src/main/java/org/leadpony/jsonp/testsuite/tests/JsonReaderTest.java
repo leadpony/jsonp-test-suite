@@ -40,6 +40,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
+import org.leadpony.jsonp.testsuite.annotation.JsonExclusive;
 import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
 
 /**
@@ -253,6 +254,28 @@ public class JsonReaderTest {
         assertThat(actual.toString()).isEqualTo(resource.getMinifiedJsonAsString());
     }
 
+    @ParameterizedTest
+    @EnumSource(IllFormedDocumentTestCase.class)
+    public void readValueShouldThrowExceptionIfIllFormed(IllFormedDocumentTestCase test) {
+        Throwable thrown = catchThrowable(() -> {
+            try (JsonReader reader = factory.createReader(
+                    new StringReader(test.getJson()))) {
+                reader.readValue();
+            }
+        });
+
+        LOG.info(test.toString());
+        LOG.info(thrown.getMessage());
+
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
+        JsonParsingException actual = (JsonParsingException) thrown;
+        JsonLocation location = actual.getLocation();
+        assertThat(location.getLineNumber()).isEqualTo(test.getLineNumber());
+        assertThat(location.getColumnNumber()).isEqualTo(test.getColumnNumber());
+        assertThat(location.getStreamOffset()).isEqualTo(test.getStreamOffset());
+    }
+
+    @JsonExclusive
     @ParameterizedTest
     @EnumSource(IllFormedJsonTestCase.class)
     public void readValueShouldThrowExceptionIfIllFormed(IllFormedJsonTestCase test) {
