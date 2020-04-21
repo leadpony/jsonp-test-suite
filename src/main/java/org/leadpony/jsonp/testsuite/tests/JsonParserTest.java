@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.leadpony.jsonp.testsuite.annotation.Ambiguous;
+import org.leadpony.jsonp.testsuite.annotation.JsonExclusive;
 import org.leadpony.jsonp.testsuite.helper.JsonLocations;
 import org.leadpony.jsonp.testsuite.helper.JsonSupplier;
 import org.leadpony.jsonp.testsuite.helper.LoggerFactory;
@@ -74,7 +75,7 @@ public class JsonParserTest {
     enum TerminationTestCase {
         LITERAL("365", 1),
         ARRAY("[1,2,3]", 5),
-        OBJECT("{\"a\":1}", 4);
+        OBJECT("{\"a\": 1}", 4);
 
         final String json;
         final int iterations;
@@ -111,22 +112,16 @@ public class JsonParserTest {
     /**
      * @author leadpony
      */
-    enum HasNextExceptionTestCase {
+    enum BadTerminationTestCase {
         VALUE_AFTER_ARRAY("[1,2] 3", 4),
-        VALUE_AFTER_OBJECT("{\"a\":1} 2}", 4),
+        VALUE_AFTER_OBJECT("{\"a\": 1} 2}", 4),
         VALUE_AFTER_VALUE("\"hello\" \"world\"", 1),
         END_AFTER_ARRAY_START("[", 1),
         END_AFTER_FIRST_ITEM("[1", 2),
         END_AFTER_SECOND_ITEM("[1,2", 3),
         EOI_AFTER_OBJECT_START("{", 1),
-        EOI_AFTER_FIRST_PROPERTY_KEY("{\"a\"", 2),
-        EOI_AFTER_FIRST_PROPERTY_VALUE("{\"a\":1", 3),
-        EOI_AFTER_SECOND_PROPERTY_KEY("{\"a\":1,\"b\"", 4),
-        EOI_AFTER_SECOND_PROPERTY_VALUE("{\"a\":1,\"b\":2", 5),
-
-        END_AFTER_ITEM_SEPARATOR("[1,", 2, true),
-        EOI_AFTER_COLON("{\"a\":", 2, true),
-        EOI_AFTER_PROPERTY_SEPARATOR("{\"a\":1,", 3, true),
+        EOI_AFTER_FIRST_PROPERTY_VALUE("{\"a\": 1", 3),
+        EOI_AFTER_SECOND_PROPERTY_VALUE("{\"a\": 1,\"b\": 2", 5),
 
         EMPTY("", 0, false),
         BLANK("    ", 0, false);
@@ -136,15 +131,14 @@ public class JsonParserTest {
         final boolean throwing;
         final boolean expected;
 
-        // separator
-        HasNextExceptionTestCase(String json, int iterations) {
+        BadTerminationTestCase(String json, int iterations) {
             this.json = json;
             this.iterations = iterations;
             this.throwing = true;
             this.expected = true;
         }
 
-        HasNextExceptionTestCase(String json, int iterations, boolean expected) {
+        BadTerminationTestCase(String json, int iterations, boolean expected) {
             this.json = json;
             this.iterations = iterations;
             this.throwing = false;
@@ -153,8 +147,65 @@ public class JsonParserTest {
     }
 
     @ParameterizedTest
-    @EnumSource(HasNextExceptionTestCase.class)
-    public void hasNextShouldThrowJsonParsingException(HasNextExceptionTestCase test) {
+    @EnumSource(BadTerminationTestCase.class)
+    public void hasNextShouldThrowJsonParsingException(BadTerminationTestCase test) {
+        JsonParser parser = createJsonParser(test.json);
+        int iterations = test.iterations;
+        while (iterations-- > 0) {
+            parser.next();
+        }
+
+        Throwable thrown = catchThrowable(() -> {
+            boolean actual = parser.hasNext();
+            assertThat(actual).isEqualTo(test.expected);
+        });
+        parser.close();
+
+        if (thrown != null) {
+            LOG.info(thrown.getMessage());
+        }
+
+        if (test.throwing) {
+            assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+        } else {
+            assertThat(thrown).isNull();
+        }
+    }
+
+    /**
+     * @author leadpony
+     */
+    enum JsonExclusiveBadTerminationTestCase {
+        EOI_AFTER_FIRST_PROPERTY_KEY("{\"a\"", 2),
+        EOI_AFTER_SECOND_PROPERTY_KEY("{\"a\": 1,\"b\"", 4),
+        END_AFTER_ITEM_SEPARATOR("[1,", 2, true),
+        EOI_AFTER_COLON("{\"a\":", 2, true),
+        EOI_AFTER_PROPERTY_SEPARATOR("{\"a\": 1,", 3, true);
+
+        final String json;
+        final int iterations;
+        final boolean throwing;
+        final boolean expected;
+
+        JsonExclusiveBadTerminationTestCase(String json, int iterations) {
+            this.json = json;
+            this.iterations = iterations;
+            this.throwing = true;
+            this.expected = true;
+        }
+
+        JsonExclusiveBadTerminationTestCase(String json, int iterations, boolean expected) {
+            this.json = json;
+            this.iterations = iterations;
+            this.throwing = false;
+            this.expected = expected;
+        }
+    }
+
+    @JsonExclusive
+    @ParameterizedTest
+    @EnumSource(JsonExclusiveBadTerminationTestCase.class)
+    public void hasNextShouldThrowJsonParsingException(JsonExclusiveBadTerminationTestCase test) {
         JsonParser parser = createJsonParser(test.json);
         int iterations = test.iterations;
         while (iterations-- > 0) {
