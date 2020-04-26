@@ -17,12 +17,20 @@ package org.leadpony.jsonp.testsuite.tests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.json.Json;
+import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -49,5 +57,38 @@ public class JsonParserFactoryTest {
         Map<String, ?> actual = factory.getConfigInUse();
 
         assertThat(actual).doesNotContainKey("unknown");
+    }
+
+    public static class InputStreamTest extends AbstractJsonParserTest {
+
+        private static JsonParserFactory sut;
+
+        @BeforeAll
+        public static void setUpOnce() {
+            sut = Json.createParserFactory(null);
+        }
+
+        @Override
+        protected JsonParser createJsonParser(String json) {
+            Charset charset = StandardCharsets.UTF_8;
+            InputStream in = new ByteArrayInputStream(json.getBytes(charset));
+            return sut.createParser(in, charset);
+        }
+    }
+
+    public static class ReaderTest extends AbstractJsonParserTest {
+
+        private static JsonParserFactory sut;
+
+        @BeforeAll
+        public static void setUpOnce() {
+            sut = Json.createParserFactory(null);
+        }
+
+        @Override
+        protected JsonParser createJsonParser(String json) {
+            Reader reader = new StringReader(json);
+            return sut.createParser(reader);
+        }
     }
 }
