@@ -14,7 +14,6 @@ This project provides a set of tests for implementations of [Jakarta JSON Proces
 
 The following JSON-P implementations are tested by this test suite.
 * [Jakarta JSON Processing] (Reference Implementation)
-* [Apache Johnzon]
 * [Joy]
 
 The latest test results are presented in [JSON-P Test Suite Reports].
@@ -35,7 +34,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>1.5.0</version>
+        <version>2.0.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -78,12 +77,6 @@ When testing with *Jakarta JSON Processing*:
 mvn test -P test-with-jakarta
 ```
 
-When testing with *Apache Johnzon*:
-
-```bash
-mvn test -P test-with-johnzon
-```
-
 When testing with *Joy*:
 
 ```bash
@@ -107,7 +100,6 @@ limitations under the License.
 [Apache 2.0 License]: https://www.apache.org/licenses/LICENSE-2.0
 [Jakarta JSON Processing API]: https://eclipse-ee4j.github.io/jsonp/
 [Jakarta JSON Processing]: https://eclipse-ee4j.github.io/jsonp/
-[Apache Johnzon]: https://johnzon.apache.org/
 [Joy]: https://github.com/leadpony/joy
 [Apache Maven]: https://maven.apache.org/
 [JSON-P Test Suite Reports]: https://leadpony.github.io/jsonp-test-suite/project-reports.html
