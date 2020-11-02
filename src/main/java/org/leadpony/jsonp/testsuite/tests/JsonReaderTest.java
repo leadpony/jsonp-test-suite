@@ -111,7 +111,7 @@ public class JsonReaderTest {
             reader.readArray();
         });
 
-        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
     }
 
     @ParameterizedTest
@@ -180,7 +180,7 @@ public class JsonReaderTest {
             reader.readObject();
         });
 
-        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
     }
 
     @ParameterizedTest
@@ -220,7 +220,7 @@ public class JsonReaderTest {
             reader.read();
         });
 
-        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
     }
 
     @Test
@@ -232,9 +232,8 @@ public class JsonReaderTest {
             reader.read();
         });
 
+        assertThat(thrown).isInstanceOf(JsonParsingException.class);
         LOG.info(thrown.getMessage());
-
-        assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
     }
 
     /*
@@ -265,9 +264,10 @@ public class JsonReaderTest {
         });
 
         LOG.info(test.toString());
-        LOG.info(thrown.getMessage());
 
         assertThat(thrown).isInstanceOf(JsonParsingException.class);
+        LOG.info(thrown.getMessage());
+
         JsonParsingException actual = (JsonParsingException) thrown;
         JsonLocation location = actual.getLocation();
         assertThat(location.getLineNumber()).isEqualTo(test.getLineNumber());
@@ -287,9 +287,10 @@ public class JsonReaderTest {
         });
 
         LOG.info(test.toString());
-        LOG.info(thrown.getMessage());
 
         assertThat(thrown).isInstanceOf(JsonParsingException.class);
+        LOG.info(thrown.getMessage());
+
         JsonParsingException actual = (JsonParsingException) thrown;
         JsonLocation location = actual.getLocation();
         assertThat(location.getLineNumber()).isEqualTo(test.getLineNumber());

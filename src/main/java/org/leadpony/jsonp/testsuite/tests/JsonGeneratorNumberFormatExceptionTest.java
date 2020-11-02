@@ -68,11 +68,8 @@ public class JsonGeneratorNumberFormatExceptionTest {
             g.write(test.value);
         });
 
+        assertThat(thrown).isInstanceOf(NumberFormatException.class);
         LOG.info(thrown.getMessage());
-
-        assertThat(thrown)
-            .isNotNull()
-            .isInstanceOf(NumberFormatException.class);
     }
 
     /**
@@ -102,11 +99,8 @@ public class JsonGeneratorNumberFormatExceptionTest {
             g.write(test.name, test.value);
         });
 
+        assertThat(thrown).isInstanceOf(NumberFormatException.class);
         LOG.info(thrown.getMessage());
-
-        assertThat(thrown)
-            .isNotNull()
-            .isInstanceOf(NumberFormatException.class);
     }
 
     private static JsonGenerator generator() {

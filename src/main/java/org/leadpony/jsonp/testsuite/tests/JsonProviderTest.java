@@ -175,8 +175,8 @@ public class JsonProviderTest {
             provider.createArrayBuilder(collection);
         });
 
-        LOG.info(thrown.getMessage());
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+        LOG.info(thrown.getMessage());
     }
 
     @Test
@@ -286,8 +286,8 @@ public class JsonProviderTest {
             provider.createObjectBuilder(map);
         });
 
-        LOG.info(thrown.getMessage());
         assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+        LOG.info(thrown.getMessage());
     }
 
     /**

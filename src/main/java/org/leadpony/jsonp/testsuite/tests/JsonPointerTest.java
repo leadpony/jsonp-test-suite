@@ -92,7 +92,7 @@ public class JsonPointerTest {
         if (test.valid) {
             assertThat(thrown).isNull();
         } else {
-            assertThat(thrown).isNotNull().isInstanceOf(JsonException.class);
+            assertThat(thrown).isInstanceOf(JsonException.class);
             LOG.info(thrown.getMessage());
         }
     }
