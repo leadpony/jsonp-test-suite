@@ -158,7 +158,7 @@ abstract class AbstractJsonParserTest {
         }
 
         if (test.throwing) {
-            assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+            assertThat(thrown).isInstanceOf(JsonParsingException.class);
         } else {
             assertThat(thrown).isNull();
         }
@@ -215,7 +215,7 @@ abstract class AbstractJsonParserTest {
         }
 
         if (test.throwing) {
-            assertThat(thrown).isNotNull().isInstanceOf(JsonParsingException.class);
+            assertThat(thrown).isInstanceOf(JsonParsingException.class);
         } else {
             assertThat(thrown).isNull();
         }

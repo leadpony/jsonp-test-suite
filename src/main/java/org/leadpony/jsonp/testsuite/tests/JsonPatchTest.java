@@ -87,10 +87,8 @@ public class JsonPatchTest {
         if (test.result != null) {
             assertThat(thrown).isNull();
         } else {
+            assertThat(thrown).isInstanceOf(JsonException.class);
             LOG.info(thrown.getMessage());
-            assertThat(thrown)
-                .isNotNull()
-                .isInstanceOf(JsonException.class);
         }
     }
 
@@ -109,11 +107,8 @@ public class JsonPatchTest {
                 patch.apply(test.json);
             });
 
+            assertThat(thrown).isInstanceOf(JsonException.class);
             LOG.info(thrown.getMessage());
-
-            assertThat(thrown)
-                .isNotNull()
-                .isInstanceOf(JsonException.class);
         } catch (Exception e) {
             fail(e);
         }
