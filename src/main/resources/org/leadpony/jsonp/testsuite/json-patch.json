@@ -32,6 +32,24 @@
         }
     },
     {
+        "title": "moving nonexistent value",
+        "json": {
+            "greeting": "hello"
+        },
+        "patch": [
+            { "op": "move", "from": "/nonexistent", "path": "/other" }
+        ]
+    },
+    {
+        "title": "moving nonexistent value to the same path",
+        "json": {
+            "greeting": "hello"
+        },
+        "patch": [
+            { "op": "move", "from": "/nonexistent", "path": "/nonexistent" }
+        ]
+    },
+    {
         "title": "copying a value",
         "json": {
             "foo": {
