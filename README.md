@@ -34,7 +34,7 @@ The jar-packaged artifact of this test suite is available from [JitPack] reposit
     <dependency>
         <groupId>org.leadpony</groupId>
         <artifactId>jsonp-test-suite</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
@@ -84,7 +84,7 @@ mvn test -P test-with-joy
 ```
 
 ## Copyright Notice
-Copyright 2019-2020 the original author or authors. All rights reserved.
+Copyright 2019-2021 the original author or authors. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this product except in compliance with the License.

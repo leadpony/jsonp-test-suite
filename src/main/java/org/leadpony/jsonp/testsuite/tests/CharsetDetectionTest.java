@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the JSON-P Test Suite Authors.
+ * Copyright 2019-2021 the JSON-P Test Suite Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  */
 package org.leadpony.jsonp.testsuite.tests;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -24,10 +26,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import jakarta.json.Json;
+import jakarta.json.JsonException;
 import jakarta.json.stream.JsonParser;
 import jakarta.json.stream.JsonParserFactory;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -112,19 +116,27 @@ public class CharsetDetectionTest {
         testParser(test, UTF_32LE, UTF_32LE_BOM);
     }
 
+    @Test
+    public void shouldFailToDetectEncoding() {
+        byte[] bytes = {0x00};
+        InputStream in = new ByteArrayInputStream(bytes);
+        Throwable thrown = catchThrowable(() -> {
+            parserFactory.createParser(in);
+        });
+        assertThat(thrown).isInstanceOf(JsonException.class);
+    }
+
     private void testParser(JsonTestCase test, Charset charset) {
         InputStream in = createEncodedStream(test.getJson(), charset);
-        assertThatCode(() -> {
-            JsonParser parser = parserFactory.createParser(in);
-            while (parser.hasNext()) {
-                parser.next();
-            }
-            parser.close();
-        }).doesNotThrowAnyException();
+        testParserWithStream(in);
     }
 
     private void testParser(JsonTestCase test, Charset charset, byte[] bom) {
         InputStream in = createEncodedStream(test.getJson(), charset, bom);
+        testParserWithStream(in);
+    }
+
+    private void testParserWithStream(InputStream in) {
         assertThatCode(() -> {
             JsonParser parser = parserFactory.createParser(in);
             while (parser.hasNext()) {
