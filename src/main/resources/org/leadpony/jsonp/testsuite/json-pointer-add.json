@@ -102,8 +102,10 @@
                 }
             },
             {
+                "description": "replace whole object with array",
                 "pointer": "",
-                "value": [3, 4]
+                "value": [3, 4],
+                "result": [3, 4]
             },
             {
                 "pointer": "",
@@ -283,8 +285,13 @@
                 "result": [3, 4]
             },
             {
+                "description": "replace whole array with object",
                 "pointer": "",
                 "value": {
+                    "a": 3,
+                    "b": 4
+                },
+                "result": {
                     "a": 3,
                     "b": 4
                 }
