@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased 
+### Added
+* Tests for JSON patch move operation on nonexistent value.
+
+### Changed
+* Add operation on empty JSON pointer to structure type now accepts both array and object. This change is due to the requirement in the TCK. 
+
 ## 2.0.0 - 2020-10-29
 ### Changed
 * Update the version of Jakarta JSON Processing API to 2.0.0.
